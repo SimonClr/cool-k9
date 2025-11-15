@@ -10,7 +10,12 @@
       "options": {
         "command": "webpack-cli build",
         "args": ["--node-env=production"],
-        "cwd": "apps/dog-trainer-back"
+        "cwd": "apps/dog-trainer-back",
+        "styles": [
+          "@taiga-ui/core/styles/taiga-ui-theme.less",
+          "@taiga-ui/core/styles/taiga-ui-fonts.less",
+          "@taiga-ui/addon-mobile/styles/taiga-ui-mobile.css"
+        ]
       },
       "configurations": {
         "development": {
