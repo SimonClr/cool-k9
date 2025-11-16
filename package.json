@@ -6,6 +6,12 @@
     "start:front": "nx serve dog-trainer-front",
     "start:back": "nx serve dog-trainer-back",
     "start": "nx run-many -t serve -p dog-trainer-front dog-trainer-back",
+    "build": "nx run-many -t build -p models dog-trainer-front dog-trainer-back",
+    "build:front": "nx build dog-trainer-front",
+    "build:back": "nx build dog-trainer-back",
+    "build:models": "nx build models",
+    "build:libs": "nx run-many -t build -p models",
+    "build:apps": "nx run-many -t build -p dog-trainer-front dog-trainer-back",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
