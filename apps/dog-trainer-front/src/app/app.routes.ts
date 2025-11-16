@@ -1,7 +1,17 @@
 import { Route } from '@angular/router';
-import { SessionsListComponent } from './pages/sessions-list/sessions-list.component';
 
 export const appRoutes: Route[] = [
   { path: '', redirectTo: '/sessions', pathMatch: 'full' },
-  { path: 'sessions', component: SessionsListComponent },
+  {
+    path: 'sessions',
+    loadComponent: () =>
+      import('./pages/sessions-list/sessions-list.component').then(
+        (m) => m.SessionsListComponent
+      ),
+  },
+  {
+    path: 'pricing',
+    loadComponent: () =>
+      import('./pages/pricing/pricing.component').then((m) => m.PricingComponent),
+  },
 ];

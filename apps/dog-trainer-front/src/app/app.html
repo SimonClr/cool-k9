@@ -1,3 +1,42 @@
 <tui-root>
-  <router-outlet></router-outlet>
+  <header tuiNavigationHeader>
+
+    <a routerLink="/" class="logo-link">
+      <tui-icon icon="@tui.dog" class="logo-icon" />
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav tuiNavigationNav class="desktop-nav">
+      <a tuiLink routerLink="/sessions" routerLinkActive="active">Sessions</a>
+      <a tuiLink routerLink="/pricing" routerLinkActive="active">Tarifs</a>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button
+      tuiIconButton
+      appearance="flat"
+      iconStart="@tui.menu"
+      class="mobile-menu-button"
+      [tuiDropdown]="mobileMenu"
+      [tuiDropdownManual]="drawerOpen()"
+      (click)="toggleMobileMenu()"
+    >
+      Menu
+    </button>
+
+    <ng-template #mobileMenu>
+      <nav tuiNavigationNav class="mobile-nav">
+        <a tuiLink routerLink="/sessions" routerLinkActive="active" (click)="closeMobileMenu()">
+          Sessions
+        </a>
+        <a tuiLink routerLink="/pricing" routerLinkActive="active" (click)="closeMobileMenu()">
+          Tarifs
+        </a>
+      </nav>
+    </ng-template>
+  </header>
+
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
 </tui-root>

@@ -1,0 +1,83 @@
+header[tuiNavigationHeader] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--tui-padding-l);
+  gap: var(--tui-padding-l);
+  background: var(--tui-background-elevation-1);
+  border-bottom: 1px solid var(--tui-border-normal);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Logo Link */
+.logo-link {
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--tui-text-primary);
+}
+
+.logo-icon {
+  font-size: 2rem;
+  display: block;
+}
+
+/* Desktop Navigation */
+.desktop-nav {
+  display: flex;
+  gap: var(--tui-padding-l);
+  align-items: center;
+}
+
+/* Mobile Menu Button - Hidden on desktop */
+.mobile-menu-button {
+  display: none;
+  font-size: 0;
+}
+
+nav[tuiNavigationNav] a {
+  white-space: nowrap;
+}
+
+nav[tuiNavigationNav] a.active {
+  color: var(--tui-text-primary);
+  font-weight: 600;
+}
+
+/* Mobile Navigation Drawer */
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-padding-m);
+  padding: var(--tui-padding-m);
+  min-width: 200px;
+}
+
+.app-content {
+  padding: var(--tui-padding-l);
+  margin: 0 auto;
+}
+
+/* Mobile Styles */
+@media (max-width: 48em) {
+  header[tuiNavigationHeader] {
+    padding: var(--tui-padding-m);
+  }
+
+  /* Hide desktop nav on mobile */
+  .desktop-nav {
+    display: none;
+  }
+
+  /* Show mobile menu button */
+  .mobile-menu-button {
+    display: flex;
+  }
+
+  .app-content {
+    padding: var(--tui-padding-m);
+  }
+}
