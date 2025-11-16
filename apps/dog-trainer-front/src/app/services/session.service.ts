@@ -11,10 +11,7 @@ export class SessionService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:3000/api/sessions';
 
-  getSessions(
-    userId?: string,
-    exerciseType?: ExerciseType
-  ): Observable<Session[]> {
+  getSessions(userId?: string, exerciseType?: ExerciseType): Observable<Session[]> {
     let params = new HttpParams();
 
     if (userId) {
@@ -26,8 +23,8 @@ export class SessionService {
     }
 
     return this.http.get<Session[]>(this.apiUrl, { params }).pipe(
-      map((sessions) =>
-        sessions.map((session) => ({
+      map(sessions =>
+        sessions.map(session => ({
           ...session,
           date: new Date(session.date),
         }))

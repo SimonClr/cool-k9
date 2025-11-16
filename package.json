@@ -5,7 +5,9 @@
   "scripts": {
     "start:front": "nx serve dog-trainer-front",
     "start:back": "nx serve dog-trainer-back",
-    "start": "nx run-many -t serve -p dog-trainer-front dog-trainer-back"
+    "start": "nx run-many -t serve -p dog-trainer-front dog-trainer-back",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "private": true,
   "dependencies": {
@@ -74,7 +76,7 @@
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
     "nx": "22.0.3",
-    "prettier": "^2.6.2",
+    "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",

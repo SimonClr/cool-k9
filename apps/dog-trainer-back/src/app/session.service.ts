@@ -61,23 +61,17 @@ export class SessionService {
   ];
 
   getAllSessions(userId: string, exerciseType?: ExerciseType): Session[] {
-    let filteredSessions = this.sessions.filter(
-      (session) => session.userId === userId
-    );
+    let filteredSessions = this.sessions.filter(session => session.userId === userId);
 
     if (exerciseType) {
-      filteredSessions = filteredSessions.filter(
-        (session) => session.exerciseType === exerciseType
-      );
+      filteredSessions = filteredSessions.filter(session => session.exerciseType === exerciseType);
     }
 
-    return filteredSessions.sort(
-      (a, b) => b.date.getTime() - a.date.getTime()
-    );
+    return filteredSessions.sort((a, b) => b.date.getTime() - a.date.getTime());
   }
 
   getSessionById(id: string): Session | undefined {
-    return this.sessions.find((session) => session.id === id);
+    return this.sessions.find(session => session.id === id);
   }
 
   createSession(session: Omit<Session, 'id'>): Session {

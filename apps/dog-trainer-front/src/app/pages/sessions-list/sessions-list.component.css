@@ -29,9 +29,10 @@
   border-color: var(--tui-border-focus);
 }
 
-
 .session-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .card-header {
@@ -55,32 +56,32 @@
   font-weight: 600;
 }
 
-.badge[data-type="obedience"] {
+.badge[data-type='obedience'] {
   background: #dbeafe;
   color: #1e40af;
 }
 
-.badge[data-type="agility"] {
+.badge[data-type='agility'] {
   background: #fef3c7;
   color: #92400e;
 }
 
-.badge[data-type="socialization"] {
+.badge[data-type='socialization'] {
   background: #d1fae5;
   color: #065f46;
 }
 
-.badge[data-type="tricks"] {
+.badge[data-type='tricks'] {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.badge[data-type="recall"] {
+.badge[data-type='recall'] {
   background: #f3e8ff;
   color: #6b21a8;
 }
 
-.badge[data-type="leash_training"] {
+.badge[data-type='leash_training'] {
   background: #ffedd5;
   color: #9a3412;
 }

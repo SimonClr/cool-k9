@@ -3,11 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { TuiIcon, TuiTextfieldComponent, TuiTextfieldDropdownDirective } from '@taiga-ui/core';
 import { TuiDataListWrapper, TuiSelect, TuiBadge, TuiChevron, TuiInputRange } from '@taiga-ui/kit';
 import { SessionService } from '../../services/session.service';
-import {
-  Session,
-  ExerciseType,
-  EXERCISE_TYPE_LABELS,
-} from '../../models/session.model';
+import { Session, ExerciseType, EXERCISE_TYPE_LABELS } from '../../models/session.model';
 import { TuiCardLarge } from '@taiga-ui/layout';
 
 @Component({
@@ -41,9 +37,7 @@ export class SessionsListComponent implements OnInit {
     const selectedType = this.selectedExerciseType();
 
     if (selectedType) {
-      return sessions.filter(
-        (session) => session.exerciseType === selectedType
-      );
+      return sessions.filter(session => session.exerciseType === selectedType);
     }
     return sessions;
   });
@@ -54,10 +48,10 @@ export class SessionsListComponent implements OnInit {
 
   loadSessions(): void {
     this.sessionService.getSessions().subscribe({
-      next: (sessions) => {
+      next: sessions => {
         this.sessions.set(sessions);
       },
-      error: (error) => {
+      error: error => {
         console.error('Error loading sessions:', error);
       },
     });

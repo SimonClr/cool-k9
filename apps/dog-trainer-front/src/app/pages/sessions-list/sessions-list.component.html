@@ -6,63 +6,59 @@
   <label tuiLabel>
     Filtrer par type
     <tui-textfield tuiChevron>
-    <input
-      tuiSelect
-      [(ngModel)]="selectedExerciseType"
-    />
+      <input tuiSelect [(ngModel)]="selectedExerciseType" />
 
-    <tui-data-list-wrapper
-      *tuiTextfieldDropdown
-      [items]="exerciseTypes"
-      [itemContent]="exerciseTypeLabels"
-    />
-  </tui-textfield>
+      <tui-data-list-wrapper
+        *tuiTextfieldDropdown
+        [items]="exerciseTypes"
+        [itemContent]="exerciseTypeLabels"
+      />
+    </tui-textfield>
   </label>
 
   @for (session of filteredSessions(); track session.id) {
-        <div tuiCardLarge class="session-card tui-island">
-          <div class="card-header">
-            <div class="date-container">
-              <div class="date">{{ formatDate(session.date) }}</div>
-              <div class="time">{{ formatTime(session.date) }}</div>
-            </div>
-            <tui-badge
-              size="m"
-              [class]="'badge-' + session.exerciseType"
-            >{{getExerciseTypeLabel(session.exerciseType)}}</tui-badge>
-          </div>
+    <div tuiCardLarge class="session-card tui-island">
+      <div class="card-header">
+        <div class="date-container">
+          <div class="date">{{ formatDate(session.date) }}</div>
+          <div class="time">{{ formatTime(session.date) }}</div>
+        </div>
+        <tui-badge size="m" [class]="'badge-' + session.exerciseType">{{
+          getExerciseTypeLabel(session.exerciseType)
+        }}</tui-badge>
+      </div>
 
-          <div class="card-content">
-            <div class="info-row">
-              <tui-icon icon="@tui.user" class="info-icon"/>
-              <div class="info-content">
-                <div class="info-label">Chien</div>
-                <div class="info-value">{{ session.dogName }}</div>
-              </div>
-            </div>
-
-            <div class="info-row">
-              <tui-icon icon="@tui.clock" class="info-icon"/>
-              <div class="info-content">
-                <div class="info-label">Durée</div>
-                <div class="info-value">{{ session.duration }} min</div>
-              </div>
-            </div>
-
-            @if (session.notes) {
-              <div class="notes">
-                <tui-icon icon="@tui.file-text" class="notes-icon"/>
-                <p>{{ session.notes }}</p>
-              </div>
-            }
+      <div class="card-content">
+        <div class="info-row">
+          <tui-icon icon="@tui.user" class="info-icon" />
+          <div class="info-content">
+            <div class="info-label">Chien</div>
+            <div class="info-value">{{ session.dogName }}</div>
           </div>
         </div>
+
+        <div class="info-row">
+          <tui-icon icon="@tui.clock" class="info-icon" />
+          <div class="info-content">
+            <div class="info-label">Durée</div>
+            <div class="info-value">{{ session.duration }} min</div>
+          </div>
+        </div>
+
+        @if (session.notes) {
+          <div class="notes">
+            <tui-icon icon="@tui.file-text" class="notes-icon" />
+            <p>{{ session.notes }}</p>
+          </div>
+        }
+      </div>
+    </div>
   }
 
   @if (filteredSessions().length === 0) {
-      <div class="empty-state">
-        <tui-icon icon="@tui.inbox" class="empty-icon"/>
-        <p>Aucune séance trouvée</p>
-      </div>
+    <div class="empty-state">
+      <tui-icon icon="@tui.inbox" class="empty-icon" />
+      <p>Aucune séance trouvée</p>
+    </div>
   }
 </div>
