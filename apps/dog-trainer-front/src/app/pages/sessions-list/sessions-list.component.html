@@ -1,52 +1,49 @@
-<div class="sessions-page">
-  <header class="header">
-    <h1 class="tui-text_h3">Mes Séances d'Entraînement</h1>
-  </header>
+<header tuiHeader="h1">
+  <hgroup tuiTitle>
+    <h1>Mes séances d'entraînement</h1>
+  </hgroup>
+</header>
 
+<section class="session-list">
   @for (session of filteredSessions(); track session.id) {
-    <div tuiCardLarge class="session-card tui-island">
-      <div class="card-header">
-        <div class="date-container">
-          <div class="date">{{ formatDate(session.date) }}</div>
-          <div class="time">{{ formatTime(session.date) }}</div>
-        </div>
-        <tui-badge size="m" [class]="'badge-' + session.exerciseType">{{
-            getExerciseTypeLabel(session.exerciseType)
-          }}
-        </tui-badge>
-      </div>
+    @let exerciseTypeData = getExerciseTypeData(session.exerciseType);
+    <div tuiCardLarge class="session-card">
+      <header tuiHeader>
+        <hgroup tuiTitle>
+          <h2>Séance du {{ session.date | date }}</h2>
+        </hgroup>
+        <aside>
+          <tui-badge size="l" [appearance]="exerciseTypeData.color">
+            {{ exerciseTypeData.label }}
+          </tui-badge>
+        </aside>
+      </header>
 
-      <div class="card-content">
+      <section class="card-content">
         <div class="info-row">
-          <tui-icon icon="@tui.user" class="info-icon" />
-          <div class="info-content">
-            <div class="info-label">Chien</div>
-            <div class="info-value">{{ session.dogName }}</div>
-          </div>
+          <tui-icon icon="@tui.dog" />
+          <p>{{ session.dogName }}</p>
         </div>
 
         <div class="info-row">
           <tui-icon icon="@tui.clock" class="info-icon" />
-          <div class="info-content">
-            <div class="info-label">Durée</div>
-            <div class="info-value">{{ session.duration }} min</div>
-          </div>
+          <p>{{ session.duration }} min</p>
         </div>
 
         @if (session.notes) {
-          <div class="notes">
+          <div class="info-row">
             <tui-icon icon="@tui.file-text" class="notes-icon" />
             <p>{{ session.notes }}</p>
           </div>
         }
-      </div>
+      </section>
     </div>
   }
 
   @if (filteredSessions().length === 0) {
-    <div class="empty-state">
+    <tui-block-status class="empty-state">
       <tui-icon icon="@tui.inbox" class="empty-icon" />
       <p>Aucune séance trouvée</p>
-    </div>
+    </tui-block-status>
   }
-</div>
+</section>
