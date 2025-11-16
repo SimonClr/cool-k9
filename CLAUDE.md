@@ -11,3 +11,8 @@
 - If the user needs help with an Nx configuration or project graph error, use the `nx_workspace` tool to get any errors
 
 <!-- nx configuration end-->
+
+<behavioral_rules>
+<rule_1>Utilise tout le temps la documentation de la librairie Taiga UI quand tu dois implémenter un template et du style : https://taiga-ui.dev/getting-started</rule_1>
+<rule_2>On utilise Angular 20 alors utilise les dernière façons de coder (signals, control flow, et en te basant sur la doc : https://angular.dev/installation</rule_2>
+</behavioral_rules>
