@@ -18,9 +18,14 @@
           {
             "glob": "**/*",
             "input": "apps/dog-trainer-front/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/@taiga-ui/icons/src",
+            "output": "assets/taiga-ui/icons"
           }
         ],
-        "styles": ["apps/dog-trainer-front/src/styles.css"],
+        "styles": ["apps/dog-trainer-front/src/styles.less"],
         "server": "apps/dog-trainer-front/src/main.server.ts",
         "ssr": {
           "entry": "apps/dog-trainer-front/src/server.ts"

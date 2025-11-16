@@ -3,19 +3,6 @@
     <h1 class="tui-text_h3">Mes Séances d'Entraînement</h1>
   </header>
 
-  <label tuiLabel>
-    Filtrer par type
-    <tui-textfield tuiChevron>
-      <input tuiSelect [(ngModel)]="selectedExerciseType" />
-
-      <tui-data-list-wrapper
-        *tuiTextfieldDropdown
-        [items]="exerciseTypes"
-        [itemContent]="exerciseTypeLabels"
-      />
-    </tui-textfield>
-  </label>
-
   @for (session of filteredSessions(); track session.id) {
     <div tuiCardLarge class="session-card tui-island">
       <div class="card-header">
@@ -24,8 +11,9 @@
           <div class="time">{{ formatTime(session.date) }}</div>
         </div>
         <tui-badge size="m" [class]="'badge-' + session.exerciseType">{{
-          getExerciseTypeLabel(session.exerciseType)
-        }}</tui-badge>
+            getExerciseTypeLabel(session.exerciseType)
+          }}
+        </tui-badge>
       </div>
 
       <div class="card-content">
