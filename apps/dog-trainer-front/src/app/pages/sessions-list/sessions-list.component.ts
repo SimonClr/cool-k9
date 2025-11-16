@@ -1,7 +1,15 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TuiIcon, TuiTitle } from '@taiga-ui/core';
-import { SessionService } from '../../shared/services/session.service';
+import { SessionService } from '@shared/services/session.service';
 import { TuiBlockStatusComponent, TuiHeader } from '@taiga-ui/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SessionCard } from './components/session-card/session-card';
@@ -12,7 +20,8 @@ import { ExerciseType, Session } from '@dog-trainer/models';
   standalone: true,
   imports: [FormsModule, TuiIcon, TuiHeader, TuiTitle, TuiBlockStatusComponent, SessionCard],
   templateUrl: './sessions-list.component.html',
-  styleUrls: ['./sessions-list.component.css'],
+  styleUrl: './sessions-list.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionsListComponent implements OnInit {
   private readonly sessionService = inject(SessionService);

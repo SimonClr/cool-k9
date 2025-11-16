@@ -1,9 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { EXERCISE_TYPE_LABELS, ExerciseTypeData } from '../../core/models/session.model';
+import { EXERCISE_TYPE_LABELS, ExerciseTypeData } from '@core/models/session.model';
 import { ExerciseType } from '@dog-trainer/models';
 
 @Pipe({
   name: 'exerciseDataPipe',
+  pure: true,
 })
 export class ExerciseDataPipe implements PipeTransform {
   transform(type: ExerciseType | ''): ExerciseTypeData {
