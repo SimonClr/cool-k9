@@ -1,11 +1,11 @@
 :host {
-  max-width: 1200px;
-  padding: 2rem;
+  padding: var(--tui-padding-s) var(--tui-padding-l);
   display: flex;
   flex-direction: column;
+  gap: var(--tui-padding-s);
 
   .session-list {
-    gap: 1rem;
+    gap: var(--tui-padding-m);
     display: flex;
     flex-direction: column;
 
@@ -14,12 +14,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 4rem 2rem;
       text-align: center;
+      padding: var(--tui-padding-l) var(--tui-padding-m);
 
       .empty-icon {
         font-size: 4rem;
-        margin-bottom: 1rem;
         opacity: 0.5;
       }
     }

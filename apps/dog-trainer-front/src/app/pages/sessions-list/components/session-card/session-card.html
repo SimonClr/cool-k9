@@ -1,10 +1,10 @@
-@let exerciseTypeData = session().exerciseType | exerciseDataPipe;
 <div tuiCardLarge class="session-card">
   <header tuiHeader>
     <hgroup tuiTitle>
       <h2>Séance du {{ session().date | date }}</h2>
     </hgroup>
     <aside>
+      @let exerciseTypeData = session().exerciseType | exerciseDataPipe;
       <tui-badge size="l" [appearance]="exerciseTypeData.color">
         {{ exerciseTypeData.label }}
       </tui-badge>
