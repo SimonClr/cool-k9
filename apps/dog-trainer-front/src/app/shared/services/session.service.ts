@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Session, ExerciseType } from '../models/session.model';
+import { ExerciseType, Session } from '../../core/models/session.model';
 
 @Injectable({
   providedIn: 'root',

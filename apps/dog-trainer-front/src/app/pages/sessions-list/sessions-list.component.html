@@ -6,7 +6,7 @@
 
 <section class="session-list">
   @for (session of filteredSessions(); track session.id) {
-    @let exerciseTypeData = getExerciseTypeData(session.exerciseType);
+    @let exerciseTypeData = session.exerciseType | exerciseDataPipe;
     <div tuiCardLarge class="session-card">
       <header tuiHeader>
         <hgroup tuiTitle>
