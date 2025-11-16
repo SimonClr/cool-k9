@@ -1,21 +1,4 @@
-export enum ExerciseType {
-  OBEDIENCE = 'obedience',
-  AGILITY = 'agility',
-  SOCIALIZATION = 'socialization',
-  TRICKS = 'tricks',
-  RECALL = 'recall',
-  LEASH_TRAINING = 'leash_training',
-}
-
-export interface Session {
-  id: string;
-  date: Date;
-  dogName: string;
-  exerciseType: ExerciseType;
-  duration: number;
-  userId: string;
-  notes?: string;
-}
+import { ExerciseType } from '@dog-trainer/models';
 
 export const EXERCISE_TYPE_LABELS: Record<ExerciseType, ExerciseTypeData> = {
   [ExerciseType.OBEDIENCE]: {

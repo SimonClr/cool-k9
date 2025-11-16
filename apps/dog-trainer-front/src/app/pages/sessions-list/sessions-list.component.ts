@@ -2,10 +2,10 @@ import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angula
 import { FormsModule } from '@angular/forms';
 import { TuiIcon, TuiTitle } from '@taiga-ui/core';
 import { SessionService } from '../../shared/services/session.service';
-import { ExerciseType, Session } from '../../core/models/session.model';
 import { TuiBlockStatusComponent, TuiHeader } from '@taiga-ui/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SessionCard } from './components/session-card/session-card';
+import { ExerciseType, Session } from '@dog-trainer/models';
 
 @Component({
   selector: 'app-sessions-list',
