@@ -1,7 +1,7 @@
-<div tuiCardLarge class="session-card">
+<div tuiCardLarge="compact" class="session-card">
   <header tuiHeader>
     <hgroup tuiTitle>
-      <h2>Séance du {{ session().date | date }}</h2>
+      <h2>{{ session().date | date: 'dd/MM/yyyy' }}</h2>
     </hgroup>
     <aside>
       @let exerciseTypeData = session().exerciseType | exerciseDataPipe;

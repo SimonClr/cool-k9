@@ -9,7 +9,7 @@ import { Session } from '@dog-trainer/models';
 @Component({
   selector: 'app-session-card',
   standalone: true,
-  imports: [TuiCardLarge, TuiHeader, TuiTitle, TuiBadge, TuiIcon, ExerciseDataPipe, DatePipe],
+  imports: [TuiHeader, TuiTitle, TuiBadge, TuiIcon, ExerciseDataPipe, DatePipe, TuiCardLarge],
   templateUrl: './session-card.html',
   styleUrl: './session-card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
