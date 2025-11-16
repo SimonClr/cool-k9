@@ -1,0 +1,23 @@
+.session-card {
+  padding: 1rem;
+  border: 1px solid var(--tui-background-accent-1-hover);
+  border-radius: var(--tui-radius-m);
+
+  tui-badge {
+    padding: 0 0.875rem;
+    border-radius: var(--tui-radius-xl);
+    font-weight: 600;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+
+    .info-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+}

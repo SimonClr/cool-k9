@@ -1,0 +1,32 @@
+@let exerciseTypeData = session().exerciseType | exerciseDataPipe;
+<div tuiCardLarge class="session-card">
+  <header tuiHeader>
+    <hgroup tuiTitle>
+      <h2>Séance du {{ session().date | date }}</h2>
+    </hgroup>
+    <aside>
+      <tui-badge size="l" [appearance]="exerciseTypeData.color">
+        {{ exerciseTypeData.label }}
+      </tui-badge>
+    </aside>
+  </header>
+
+  <section class="card-content">
+    <div class="info-row">
+      <tui-icon icon="@tui.dog" />
+      <p>{{ session().dogName }}</p>
+    </div>
+
+    <div class="info-row">
+      <tui-icon icon="@tui.clock" class="info-icon" />
+      <p>{{ session().duration }} min</p>
+    </div>
+
+    @if (session().notes) {
+      <div class="info-row">
+        <tui-icon icon="@tui.file-text" class="notes-icon" />
+        <p>{{ session().notes }}</p>
+      </div>
+    }
+  </section>
+</div>

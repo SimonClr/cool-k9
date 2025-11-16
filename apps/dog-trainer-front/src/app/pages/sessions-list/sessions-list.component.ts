@@ -1,28 +1,16 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TuiIcon, TuiTitle } from '@taiga-ui/core';
-import { TuiBadge } from '@taiga-ui/kit';
 import { SessionService } from '../../shared/services/session.service';
 import { ExerciseType, Session } from '../../core/models/session.model';
-import { TuiBlockStatusComponent, TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
-import { DatePipe } from '@angular/common';
+import { TuiBlockStatusComponent, TuiHeader } from '@taiga-ui/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ExerciseDataPipe } from '../../shared/pipes/exercise-data.pipe';
+import { SessionCard } from './components/session-card/session-card';
 
 @Component({
   selector: 'app-sessions-list',
   standalone: true,
-  imports: [
-    FormsModule,
-    TuiIcon,
-    TuiBadge,
-    TuiCardLarge,
-    TuiHeader,
-    TuiTitle,
-    DatePipe,
-    TuiBlockStatusComponent,
-    ExerciseDataPipe,
-  ],
+  imports: [FormsModule, TuiIcon, TuiHeader, TuiTitle, TuiBlockStatusComponent, SessionCard],
   templateUrl: './sessions-list.component.html',
   styleUrls: ['./sessions-list.component.css'],
 })
