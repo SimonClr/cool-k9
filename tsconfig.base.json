@@ -15,9 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@dog-trainer/models": ["libs/models/src/index.ts"],
-      "@core/*": ["apps/dog-trainer-front/src/app/core/*"],
-      "@shared/*": ["apps/dog-trainer-front/src/app/shared/*"]
+      "@models": ["libs/models/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

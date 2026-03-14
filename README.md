@@ -1,87 +1,192 @@
-# DogTrainer
+# Cool K9 - Dog Trainer App
 
 <a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+Application de gestion de séances d'éducation canine construite avec un monorepo Nx.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## Architecture du projet
 
-## Finish your CI setup
+Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/3lqnY42sgN)
+- **cool-k9-front** : Application React frontend
+- **cool-k9-back** : API NestJS backend
+- **models** : Bibliothèque partagée de modèles TypeScript
 
-## Run tasks
+## Stack technique
 
-To run the dev server for the frontend, use:
+### Frontend (cool-k9-front)
+- **React 19** - Framework UI avec hooks et functional components
+- **Vite 7** - Build tool et dev server ultra-rapide
+- **TypeScript** - Typage statique
+- **React Router 6** - Routage côté client
+- **Tailwind CSS 3** - Framework CSS utility-first
+- **shadcn/ui** - Composants UI construits sur Radix UI
+- **lucide-react** - Bibliothèque d'icônes
 
-```sh
-npx nx serve dog-trainer-front
-```
+### Backend (cool-k9-back)
+- **NestJS** - Framework Node.js progressif
+- **TypeScript** - Typage statique
 
-To run the dev server for the backend, use:
+### Shared
+- **@dog-trainer/models** - Types et interfaces partagés entre frontend et backend
 
-```sh
-npx nx serve dog-trainer-back
-```
+## Prérequis
 
-To create a production bundle:
+- Node.js (version recommandée : 18+)
+- pnpm (gestionnaire de packages)
 
-```sh
-npx nx build dog-trainer-front
-```
-
-To see all available targets to run for a project, run:
-
-```sh
-npx nx show project dog-trainer-front
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
+## Installation
 
 ```sh
-npx nx g @nx/angular:app demo
+pnpm install
 ```
 
-To generate a new library, use:
+## Commandes de développement
+
+### Démarrer le frontend
 
 ```sh
-npx nx g @nx/angular:lib mylib
+pnpm start:front
+# ou
+nx serve cool-k9-front
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+L'application sera disponible sur [http://localhost:4200](http://localhost:4200)
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Démarrer le backend
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```sh
+pnpm start:back
+# ou
+nx serve cool-k9-back
+```
 
-## Install Nx Console
+L'API sera disponible sur [http://localhost:3000](http://localhost:3000)
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+### Démarrer frontend et backend simultanément
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```sh
+pnpm start
+```
 
-## Useful links
+## Commandes de build
 
-Learn more:
+### Build du frontend
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```sh
+pnpm build:front
+# ou
+nx build cool-k9-front
+```
 
-And join the Nx community:
+### Build du backend
+
+```sh
+pnpm build:back
+# ou
+nx build cool-k9-back
+```
+
+### Build complet (frontend + backend + libs)
+
+```sh
+pnpm build
+# ou
+nx run-many -t build
+```
+
+## Structure du code
+
+```
+dog-trainer/
+├── apps/
+│   ├── cool-k9-front/          # Application React
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── components/  # Composants réutilisables
+│   │   │   │   ├── pages/       # Pages de l'application
+│   │   │   │   ├── services/    # Services API
+│   │   │   │   └── utils/       # Utilitaires
+│   │   │   ├── components/      # Composants UI shadcn
+│   │   │   └── lib/             # Bibliothèques utilitaires
+│   │   ├── tailwind.config.js
+│   │   └── vite.config.mts
+│   └── cool-k9-back/            # API NestJS
+│       └── src/
+├── libs/
+│   └── models/                  # Types partagés
+│       └── src/
+│           └── lib/
+│               └── models.ts
+└── package.json
+```
+
+## Composants shadcn/ui disponibles
+
+- **Card** - Cartes de contenu avec header, title, description, content et footer
+- **Badge** - Badges avec variantes (default, secondary, destructive, outline, success, warning, info)
+- **Button** - Boutons avec variantes (default, destructive, outline, secondary, ghost, link) et tailles
+
+## Fonctionnalités
+
+- Liste des séances d'éducation canine
+- Affichage des détails de chaque séance (type d'exercice, chien, durée, notes)
+- Page des tarifs
+- Navigation responsive (desktop et mobile)
+- Interface moderne avec Tailwind CSS et shadcn/ui
+
+## Gestion des tâches Nx
+
+Pour voir toutes les tâches disponibles pour un projet :
+
+```sh
+nx show project cool-k9-front
+```
+
+Pour visualiser le graphe de dépendances :
+
+```sh
+nx graph
+```
+
+## Génération de code
+
+### Créer un nouveau composant React
+
+```sh
+nx g @nx/react:component my-component --project=cool-k9-front
+```
+
+### Créer une nouvelle bibliothèque
+
+```sh
+nx g @nx/react:lib my-lib
+```
+
+## Ressources utiles
+
+### Nx
+- [Documentation Nx](https://nx.dev)
+- [Nx Console](https://nx.dev/getting-started/editor-setup) - Extension VSCode/IntelliJ
+
+### React & Ecosystem
+- [React Documentation](https://react.dev)
+- [Vite Documentation](https://vite.dev)
+- [React Router](https://reactrouter.com)
+
+### UI & Styling
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [shadcn/ui Documentation](https://ui.shadcn.com)
+- [Radix UI](https://www.radix-ui.com)
+- [lucide-react Icons](https://lucide.dev)
+
+### Backend
+- [NestJS Documentation](https://docs.nestjs.com)
+
+## Communauté Nx
 
 - [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [Twitter/X](https://twitter.com/nxdevtools)
+- [LinkedIn](https://www.linkedin.com/company/nrwl)
+- [YouTube](https://www.youtube.com/@nxdevtools)
+- [Blog](https://nx.dev/blog)

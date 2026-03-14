@@ -13,6 +13,8 @@
 <!-- nx configuration end-->
 
 <behavioral_rules>
-<rule_1>Utilise tout le temps la documentation de la librairie Taiga UI quand tu dois implémenter un template et du style : https://taiga-ui.dev/getting-started</rule_1>
-<rule_2>On utilise Angular 20 alors utilise les dernière façons de coder (signals, control flow, et en te basant sur la doc : https://angular.dev/installation</rule_2>
+<rule_1>Utilise tout le temps la documentation de shadcn-ui pour les composants UI : https://ui.shadcn.com/</rule_1>
+<rule_2>On utilise React 19 avec TypeScript. Utilise les dernières pratiques : hooks, functional components, et les conventions modernes de React : https://react.dev/</rule_2>
+<rule_3>Pour le styling, utilise Tailwind CSS v4 avec les utility classes : https://tailwindcss.com/</rule_3>
+<rule_4>Les composants shadcn-ui doivent être importés depuis @/components/ui et utilisent l'utilitaire cn() pour merger les classes</rule_4>
 </behavioral_rules>
