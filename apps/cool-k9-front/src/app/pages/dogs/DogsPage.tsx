@@ -1,24 +1,13 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Dog } from '@models';
-import { DogService } from '../../services/dog.service';
+import { useDogs } from '../../hooks/useDogs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Inbox, Loader2, PlusCircle } from 'lucide-react';
 
 export function DogsPage() {
-  const [dogs, setDogs] = useState<Dog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: dogs = [], isLoading, isError } = useDogs();
 
-  useEffect(() => {
-    DogService.getDogs()
-      .then(setDogs)
-      .catch(() => setError('Erreur lors du chargement des chiens'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
@@ -31,11 +20,11 @@ export function DogsPage() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center text-destructive gap-2">
         <AlertCircle className="h-6 w-6" aria-hidden="true" />
-        <p>{error}</p>
+        <p>Erreur lors du chargement des chiens</p>
       </div>
     );
   }

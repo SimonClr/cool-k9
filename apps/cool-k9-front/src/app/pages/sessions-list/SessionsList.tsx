@@ -1,33 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Session } from '@models';
-import { SessionService } from '../../services/session.service';
+import { useSessions } from '../../hooks/useSessions';
 import { SessionCard } from './components/SessionCard';
 import { AlertCircle, Inbox, Loader2 } from 'lucide-react';
 
 export function SessionsList() {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: sessions = [], isLoading, isError } = useSessions();
 
-  useEffect(() => {
-    loadSessions();
-  }, []);
-
-  const loadSessions = async () => {
-    try {
-      setLoading(true);
-      const data = await SessionService.getSessions();
-      setSessions(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error loading sessions:', err);
-      setError('Erreur lors du chargement des séances');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8">
@@ -41,7 +19,7 @@ export function SessionsList() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8">
@@ -49,7 +27,7 @@ export function SessionsList() {
         </header>
         <div role="alert" className="flex items-center gap-2 text-destructive py-4">
           <AlertCircle className="h-5 w-5" aria-hidden="true" />
-          <p>{error}</p>
+          <p>Erreur lors du chargement des séances</p>
         </div>
       </div>
     );

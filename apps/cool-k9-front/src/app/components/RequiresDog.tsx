@@ -1,20 +1,11 @@
-import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { DogService } from '../services/dog.service';
+import { useDogs } from '../hooks/useDogs';
 import { Loader2 } from 'lucide-react';
 
-type Status = 'loading' | 'has-dogs' | 'no-dogs';
-
 export function RequiresDog({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<Status>('loading');
+  const { data: dogs, isLoading } = useDogs();
 
-  useEffect(() => {
-    DogService.getDogs()
-      .then(dogs => setStatus(dogs.length > 0 ? 'has-dogs' : 'no-dogs'))
-      .catch(() => setStatus('has-dogs')); // fail open : ne pas bloquer en cas d'erreur API
-  }, []);
-
-  if (status === 'loading') {
+  if (isLoading) {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
@@ -27,7 +18,7 @@ export function RequiresDog({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (status === 'no-dogs') {
+  if (!dogs || dogs.length === 0) {
     return <Navigate to="/dogs/new" replace />;
   }
 

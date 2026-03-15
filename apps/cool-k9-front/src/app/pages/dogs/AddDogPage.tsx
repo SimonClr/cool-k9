@@ -1,6 +1,6 @@
 import { FormEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DogService } from '../../services/dog.service';
+import { useCreateDog } from '../../hooks/useDogs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,10 +10,10 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 export function AddDogPage() {
   const navigate = useNavigate();
   const ageRef = useRef<HTMLInputElement>(null);
+  const createDog = useCreateDog();
 
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
-  const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; age?: string }>({});
 
@@ -32,21 +32,18 @@ export function AddDogPage() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
-    setLoading(true);
     setApiError(null);
-
-    try {
-      await DogService.createDog(name.trim(), parseInt(age, 10));
-      navigate('/dogs', { replace: true });
-    } catch {
-      setApiError("Erreur lors de l'ajout du chien. Veuillez réessayer.");
-    } finally {
-      setLoading(false);
-    }
+    createDog.mutate(
+      { name: name.trim(), age: parseInt(age, 10) },
+      {
+        onSuccess: () => navigate('/dogs', { replace: true }),
+        onError: () => setApiError("Erreur lors de l'ajout du chien. Veuillez réessayer."),
+      }
+    );
   };
 
   return (
@@ -130,8 +127,8 @@ export function AddDogPage() {
               )}
             </div>
 
-            <Button type="submit" className="w-full mt-2" disabled={loading} aria-busy={loading}>
-              {loading ? (
+            <Button type="submit" className="w-full mt-2" disabled={createDog.isPending} aria-busy={createDog.isPending}>
+              {createDog.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                   Ajout en cours...
