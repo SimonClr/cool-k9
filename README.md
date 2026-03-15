@@ -10,7 +10,8 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 
 - **cool-k9-front** : Application React frontend
 - **cool-k9-back** : API NestJS backend
-- **models** : Bibliothèque partagée de modèles TypeScript
+- **models** : Bibliothèque partagée de modèles TypeScript (`@models`)
+- **authentication** : Bibliothèque partagée de gestion de l'authentification (`@authentication`)
 
 ## Stack technique
 
@@ -27,8 +28,9 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 - **NestJS** - Framework Node.js progressif
 - **TypeScript** - Typage statique
 
-### Shared
-- **@dog-trainer/models** - Types et interfaces partagés entre frontend et backend
+### Libs partagées
+- **@models** - Types et interfaces partagés entre frontend et backend
+- **@authentication** - Contexte d'authentification React (`AuthProvider`, `useAuth`, `ProtectedRoute`) basé sur Supabase
 
 ## Prérequis
 
@@ -100,40 +102,30 @@ nx run-many -t build
 ```
 dog-trainer/
 ├── apps/
-│   ├── cool-k9-front/          # Application React
-│   │   ├── src/
-│   │   │   ├── app/
-│   │   │   │   ├── components/  # Composants réutilisables
-│   │   │   │   ├── pages/       # Pages de l'application
-│   │   │   │   ├── services/    # Services API
-│   │   │   │   └── utils/       # Utilitaires
-│   │   │   ├── components/      # Composants UI shadcn
-│   │   │   └── lib/             # Bibliothèques utilitaires
-│   │   ├── tailwind.config.js
-│   │   └── vite.config.mts
-│   └── cool-k9-back/            # API NestJS
-│       └── src/
+│   ├── cool-k9-front/               # Application React
+│   │   └── src/
+│   │       ├── app/
+│   │       │   ├── components/      # Composants réutilisables (Layout, RequiresDog…)
+│   │       │   ├── hooks/           # Hooks TanStack Query (useDogs, useSessions)
+│   │       │   ├── pages/
+│   │       │   │   ├── dogs/        # Liste et ajout de chiens
+│   │       │   │   ├── login/
+│   │       │   │   ├── register/
+│   │       │   │   ├── pricing/
+│   │       │   │   └── sessions-list/
+│   │       │   └── services/        # Appels API (DogService, SessionService)
+│   │       └── components/          # Composants UI shadcn
+│   └── cool-k9-back/                # API NestJS
+│       └── src/app/
+│           ├── auth/                # Guard Supabase
+│           ├── dog/                 # Controller + Service chiens
+│           ├── session/             # Controller + Service séances
+│           └── supabase/            # Client Supabase
 ├── libs/
-│   └── models/                  # Types partagés
-│       └── src/
-│           └── lib/
-│               └── models.ts
+│   ├── models/                      # Types partagés (@models)
+│   └── authentication/              # Auth Supabase (@authentication)
 └── package.json
 ```
-
-## Composants shadcn/ui disponibles
-
-- **Card** - Cartes de contenu avec header, title, description, content et footer
-- **Badge** - Badges avec variantes (default, secondary, destructive, outline, success, warning, info)
-- **Button** - Boutons avec variantes (default, destructive, outline, secondary, ghost, link) et tailles
-
-## Fonctionnalités
-
-- Liste des séances d'éducation canine
-- Affichage des détails de chaque séance (type d'exercice, chien, durée, notes)
-- Page des tarifs
-- Navigation responsive (desktop et mobile)
-- Interface moderne avec Tailwind CSS et shadcn/ui
 
 ## Gestion des tâches Nx
 
@@ -163,30 +155,3 @@ nx g @nx/react:component my-component --project=cool-k9-front
 nx g @nx/react:lib my-lib
 ```
 
-## Ressources utiles
-
-### Nx
-- [Documentation Nx](https://nx.dev)
-- [Nx Console](https://nx.dev/getting-started/editor-setup) - Extension VSCode/IntelliJ
-
-### React & Ecosystem
-- [React Documentation](https://react.dev)
-- [Vite Documentation](https://vite.dev)
-- [React Router](https://reactrouter.com)
-
-### UI & Styling
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com)
-- [Radix UI](https://www.radix-ui.com)
-- [lucide-react Icons](https://lucide.dev)
-
-### Backend
-- [NestJS Documentation](https://docs.nestjs.com)
-
-## Communauté Nx
-
-- [Discord](https://go.nx.dev/community)
-- [Twitter/X](https://twitter.com/nxdevtools)
-- [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [YouTube](https://www.youtube.com/@nxdevtools)
-- [Blog](https://nx.dev/blog)
