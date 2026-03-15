@@ -20,12 +20,10 @@ import { cn } from '@/lib/utils';
 import { LocationAutocomplete, LocationValue } from '../../components/LocationAutocomplete';
 
 const EXERCISE_TYPE_LABELS: Record<ExerciseType, string> = {
-  [ExerciseType.OBEDIENCE]: 'Obéissance',
-  [ExerciseType.AGILITY]: 'Agilité',
-  [ExerciseType.SOCIALIZATION]: 'Socialisation',
-  [ExerciseType.TRICKS]: 'Tricks',
-  [ExerciseType.RECALL]: 'Rappel',
-  [ExerciseType.LEASH_TRAINING]: 'Marche en laisse',
+  [ExerciseType.HUNTING_GAMES]: 'Hunting Games',
+  [ExerciseType.NOSEWORK]: 'Nosework',
+  [ExerciseType.PISTAGE]: 'Pistage',
+  [ExerciseType.MANTRAILING]: 'Mantrailing',
 };
 
 const ENVIRONMENT_LABELS: Record<Environment, string> = {

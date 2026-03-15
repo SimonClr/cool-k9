@@ -6,29 +6,21 @@ export interface ExerciseTypeData {
 }
 
 export const EXERCISE_TYPE_LABELS: Record<ExerciseType, ExerciseTypeData> = {
-  [ExerciseType.OBEDIENCE]: {
-    label: 'Obéissance',
-    color: 'primary',
-  },
-  [ExerciseType.AGILITY]: {
-    label: 'Agilité',
-    color: 'accent',
-  },
-  [ExerciseType.SOCIALIZATION]: {
-    label: 'Socialisation',
-    color: 'success',
-  },
-  [ExerciseType.TRICKS]: {
-    label: 'Tricks',
+  [ExerciseType.HUNTING_GAMES]: {
+    label: 'Hunting Games',
     color: 'warning',
   },
-  [ExerciseType.RECALL]: {
-    label: 'Rappel',
-    color: 'neutral',
+  [ExerciseType.NOSEWORK]: {
+    label: 'Nosework',
+    color: 'primary',
   },
-  [ExerciseType.LEASH_TRAINING]: {
-    label: 'Marche en laisse',
-    color: 'info',
+  [ExerciseType.PISTAGE]: {
+    label: 'Pistage',
+    color: 'success',
+  },
+  [ExerciseType.MANTRAILING]: {
+    label: 'Mantrailing',
+    color: 'accent',
   },
 };
 
