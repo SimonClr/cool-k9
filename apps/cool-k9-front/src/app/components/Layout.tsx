@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Menu, LogOut, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,6 +10,12 @@ export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
+  const queryClient = useQueryClient();
+
+  const handleLogout = () => {
+    logout();
+    queryClient.clear();
+  };
   const { theme, toggleTheme } = useTheme();
 
   const toggleMobileMenu = () => {
@@ -82,7 +89,7 @@ export function Layout() {
               <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}>
                 {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
               </Button>
-              <Button variant="ghost" size="icon" onClick={logout} aria-label="Se déconnecter">
+              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Se déconnecter">
                 <LogOut className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
@@ -159,7 +166,7 @@ export function Layout() {
                     {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
                     {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
                   </Button>
-                  <Button variant="ghost" className="justify-start gap-2 px-0" onClick={() => { logout(); closeMobileMenu(); }}>
+                  <Button variant="ghost" className="justify-start gap-2 px-0" onClick={() => { handleLogout(); closeMobileMenu(); }}>
                     <LogOut className="h-4 w-4" aria-hidden="true" />
                     Se déconnecter
                   </Button>

@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, Request, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { ExerciseType } from '@models';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
@@ -18,5 +18,13 @@ export class SessionController {
     @Query('exerciseType') exerciseType?: ExerciseType
   ) {
     return this.sessionService.getAllSessions(req.user.userId, exerciseType);
+  }
+
+  @Get(':id')
+  getSession(
+    @Request() req: AuthenticatedRequest,
+    @Param('id') id: string
+  ) {
+    return this.sessionService.getSession(req.user.userId, id);
   }
 }

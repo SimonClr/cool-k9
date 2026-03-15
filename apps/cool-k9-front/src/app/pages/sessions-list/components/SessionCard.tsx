@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Session } from '@models';
 import { getExerciseTypeData } from '@/app/utils/exercise-type';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,32 +33,34 @@ export function SessionCard({ session }: SessionCardProps) {
   };
 
   return (
-    <Card className="transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-primary/40 dark:hover:border-primary/60 dark:hover:shadow-[0_4px_20px_hsl(var(--primary)/0.15)]">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl">{formatDate(session.date)}</CardTitle>
-          <Badge variant={getBadgeVariant(exerciseTypeData.color)}>{exerciseTypeData.label}</Badge>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-2">
-        <div className="flex items-center gap-3 text-sm">
-          <Dog className="h-4 w-4 text-muted-foreground" />
-          <span>{session.dogName}</span>
-        </div>
-
-        <div className="flex items-center gap-3 text-sm">
-          <Clock className="h-4 w-4 text-muted-foreground" />
-          <span>{session.duration} min</span>
-        </div>
-
-        {session.notes && (
-          <div className="flex items-center gap-3 text-sm">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            <span className="line-clamp-2">{session.notes}</span>
+    <Link to={`/sessions/${session.id}`} className="block">
+      <Card className="transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-primary/40 dark:hover:border-primary/60 dark:hover:shadow-[0_4px_20px_hsl(var(--primary)/0.15)]">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl">{formatDate(session.date)}</CardTitle>
+            <Badge variant={getBadgeVariant(exerciseTypeData.color)}>{exerciseTypeData.label}</Badge>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardHeader>
+
+        <CardContent className="space-y-2">
+          <div className="flex items-center gap-3 text-sm">
+            <Dog className="h-4 w-4 text-muted-foreground" />
+            <span>{session.dogName}</span>
+          </div>
+
+          <div className="flex items-center gap-3 text-sm">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span>{session.duration} min</span>
+          </div>
+
+          {session.notes && (
+            <div className="flex items-center gap-3 text-sm">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <span className="line-clamp-2">{session.notes}</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

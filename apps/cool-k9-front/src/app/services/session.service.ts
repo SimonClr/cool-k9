@@ -1,4 +1,4 @@
-import { ExerciseType, Session } from '@dog-trainer/models';
+import { ExerciseType, Session } from '@models';
 import { supabase } from '@authentication';
 
 const API_URL = 'http://localhost:3000/api/sessions';
@@ -34,5 +34,18 @@ export class SessionService {
       ...session,
       date: new Date(session.date),
     }));
+  }
+
+  static async getSession(id: string): Promise<Session> {
+    const response = await fetch(`${API_URL}/${id}`, {
+      headers: await getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch session');
+    }
+
+    const session: Session = await response.json();
+    return { ...session, date: new Date(session.date) };
   }
 }
