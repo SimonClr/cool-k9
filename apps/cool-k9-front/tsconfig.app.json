@@ -6,7 +6,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@models": ["../../libs/models/src/index.ts"],
-      "@dog-trainer/supabase": ["../../libs/supabase/src/index.ts"]
+      "@authentication": ["../../libs/authentication/src/index.ts"]
     },
     "types": [
       "node",

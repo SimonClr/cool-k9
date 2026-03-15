@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@dog-trainer/supabase';
+import { useAuth } from '@authentication';
 
 export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);

@@ -1,5 +1,5 @@
 import { ExerciseType, Session } from '@dog-trainer/models';
-import { supabase } from '@dog-trainer/supabase';
+import { supabase } from '@authentication';
 
 const API_URL = 'http://localhost:3000/api/sessions';
 

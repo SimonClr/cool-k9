@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from '@dog-trainer/supabase';
+import { ProtectedRoute } from '@authentication';
 import { Layout } from './components/Layout';
 import { SessionsList } from './pages/sessions-list/SessionsList';
 import { Pricing } from './pages/pricing/Pricing';

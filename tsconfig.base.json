@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@models": ["libs/models/src/index.ts"],
-      "@dog-trainer/supabase": ["libs/supabase/src/index.ts"]
+      "@authentication": ["libs/authentication/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

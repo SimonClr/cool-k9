@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@dog-trainer/supabase';
+import { useAuth } from '@authentication';
 import {
   Card,
   CardContent,
