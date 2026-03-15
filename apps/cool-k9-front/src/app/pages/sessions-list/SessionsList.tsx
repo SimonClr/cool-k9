@@ -33,8 +33,8 @@ export function SessionsList() {
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Mes séances</h1>
         </header>
-        <div className="flex items-center justify-center gap-2 text-muted-foreground py-12">
-          <Loader2 className="h-6 w-6 animate-spin" />
+        <div aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-2 text-muted-foreground py-12">
+          <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
           <p>Chargement...</p>
         </div>
       </div>
@@ -47,8 +47,8 @@ export function SessionsList() {
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Mes séances</h1>
         </header>
-        <div className="flex items-center gap-2 text-destructive py-4">
-          <AlertCircle className="h-5 w-5" />
+        <div role="alert" className="flex items-center gap-2 text-destructive py-4">
+          <AlertCircle className="h-5 w-5" aria-hidden="true" />
           <p>{error}</p>
         </div>
       </div>
@@ -68,7 +68,7 @@ export function SessionsList() {
 
         {sessions.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center gap-3 py-12 text-muted-foreground">
-            <Inbox className="h-12 w-12" />
+            <Inbox className="h-12 w-12" aria-hidden="true" />
             <p>Aucune séance trouvée</p>
           </div>
         )}

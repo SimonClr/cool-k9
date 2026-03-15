@@ -46,7 +46,10 @@ export function Register() {
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
-            <img src="/logo.png" alt="Cool K9" className="h-32 w-auto mx-auto mb-2" />
+            <picture>
+                <source srcSet="/logo.webp" type="image/webp" />
+                <img src="/logo.png" alt="Cool K9" className="h-32 w-auto mx-auto mb-2" width="128" height="128" />
+              </picture>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4 text-center">
             <CheckCircle2 className="h-12 w-12 text-primary" />
@@ -75,8 +78,8 @@ export function Register() {
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {error && (
-              <div className="flex items-center gap-2 text-destructive text-sm">
-                <AlertCircle className="h-4 w-4 shrink-0" />
+              <div role="alert" className="flex items-center gap-2 text-destructive text-sm">
+                <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
                 <span>{error}</span>
               </div>
             )}
@@ -99,11 +102,13 @@ export function Register() {
                 }}
                 placeholder="trainer@coolk9.com"
                 autoComplete="email"
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                 className={fieldErrors.email ? 'border-destructive' : ''}
               />
               {fieldErrors.email && (
-                <p className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" />
+                <p id="email-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
+                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
                   {fieldErrors.email}
                 </p>
               )}
@@ -127,11 +132,13 @@ export function Register() {
                   }
                 }}
                 autoComplete="new-password"
+                aria-invalid={!!fieldErrors.password}
+                aria-describedby={fieldErrors.password ? 'register-password-error' : undefined}
                 className={fieldErrors.password ? 'border-destructive' : ''}
               />
               {fieldErrors.password && (
-                <p className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" />
+                <p id="register-password-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
+                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
                   {fieldErrors.password}
                 </p>
               )}
@@ -155,19 +162,21 @@ export function Register() {
                   }
                 }}
                 autoComplete="new-password"
+                aria-invalid={!!fieldErrors.confirmPassword}
+                aria-describedby={fieldErrors.confirmPassword ? 'confirm-password-error' : undefined}
                 className={fieldErrors.confirmPassword ? 'border-destructive' : ''}
               />
               {fieldErrors.confirmPassword && (
-                <p className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" />
+                <p id="confirm-password-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
+                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
                   {fieldErrors.confirmPassword}
                 </p>
               )}
             </div>
-            <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+            <Button type="submit" className="w-full mt-2" disabled={isLoading} aria-busy={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                   Création...
                 </>
               ) : (

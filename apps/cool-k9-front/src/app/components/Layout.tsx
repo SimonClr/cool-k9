@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, LogOut, X, Sun, Moon } from 'lucide-react';
@@ -18,6 +18,15 @@ export function Layout() {
   const closeMobileMenu = () => {
     setDrawerOpen(false);
   };
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMobileMenu();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [drawerOpen]);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -59,11 +68,11 @@ export function Layout() {
             </nav>
             <div className="flex items-center gap-2 border-l pl-6">
               <span className="text-sm text-muted-foreground">{user?.email}</span>
-              <Button variant="ghost" size="icon" onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}>
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}>
+                {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
               </Button>
-              <Button variant="ghost" size="icon" onClick={logout} title="Se déconnecter">
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={logout} aria-label="Se déconnecter">
+                <LogOut className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
           </div>
@@ -74,9 +83,11 @@ export function Layout() {
             size="icon"
             className="md:hidden"
             onClick={toggleMobileMenu}
+            aria-expanded={drawerOpen}
+            aria-controls="mobile-menu"
+            aria-label="Ouvrir le menu"
           >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Menu</span>
+            <Menu className="h-5 w-5" aria-hidden="true" />
           </Button>
 
           {/* Mobile Navigation Drawer */}
@@ -85,12 +96,13 @@ export function Layout() {
               <div
                 className="fixed inset-0 bg-background/80 backdrop-blur-sm md:hidden"
                 onClick={closeMobileMenu}
+                aria-hidden="true"
               ></div>
-              <nav className="fixed top-0 right-0 bottom-0 w-64 bg-background border-l md:hidden flex flex-col">
+              <nav id="mobile-menu" className="fixed top-0 right-0 bottom-0 w-64 bg-background border-l md:hidden flex flex-col" role="dialog" aria-modal="true" aria-label="Menu de navigation">
                 <div className="flex items-center justify-between h-16 px-6 border-b shrink-0">
                   <img src="/logo.png" alt="Cool K9" className="h-12 w-auto" />
-                  <Button variant="ghost" size="icon" onClick={closeMobileMenu}>
-                    <X className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" onClick={closeMobileMenu} aria-label="Fermer le menu">
+                    <X className="h-5 w-5" aria-hidden="true" />
                   </Button>
                 </div>
                 <div className="flex flex-col gap-4 p-6 flex-1">
@@ -121,11 +133,11 @@ export function Layout() {
                 <div className="mt-auto pt-4 border-t flex flex-col gap-2">
                   <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
                   <Button variant="ghost" className="justify-start gap-2 px-0" onClick={toggleTheme}>
-                    {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
                     {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
                   </Button>
                   <Button variant="ghost" className="justify-start gap-2 px-0" onClick={() => { logout(); closeMobileMenu(); }}>
-                    <LogOut className="h-4 w-4" />
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
                     Se déconnecter
                   </Button>
                 </div>
