@@ -1,10 +1,10 @@
 export enum ExerciseType {
-  OBEDIENCE = 'obedience',
-  AGILITY = 'agility',
-  SOCIALIZATION = 'socialization',
-  TRICKS = 'tricks',
-  RECALL = 'recall',
-  LEASH_TRAINING = 'leash_training',
+  OBEDIENCE = 'OBEDIENCE',
+  AGILITY = 'AGILITY',
+  SOCIALIZATION = 'SOCIALIZATION',
+  TRICKS = 'TRICKS',
+  RECALL = 'RECALL',
+  LEASH_TRAINING = 'LEASH_TRAINING',
 }
 
 export interface Session {
