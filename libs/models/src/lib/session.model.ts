@@ -10,6 +10,7 @@ export enum ExerciseType {
 export interface Session {
   id: string;
   date: Date;
+  dogId?: string;
   dogName: string;
   exerciseType: ExerciseType;
   duration: number; // in minutes

@@ -9,7 +9,7 @@ export class SessionService {
   async getAllSessions(userId: string, exerciseType?: ExerciseType): Promise<Session[]> {
     let query = this.supabaseService.admin
       .from('sessions')
-      .select('*')
+      .select('*, dogs(name)')
       .eq('user_id', userId)
       .order('date', { ascending: false });
 
@@ -24,7 +24,8 @@ export class SessionService {
     return (data ?? []).map(row => ({
       id: row['id'],
       date: new Date(row['date']),
-      dogName: row['dog_name'],
+      dogId: row['dog_id'] ?? undefined,
+      dogName: (row['dogs'] as { name: string } | null)?.name ?? '',
       exerciseType: row['exercise_type'] as ExerciseType,
       duration: row['duration'],
       userId: row['user_id'],

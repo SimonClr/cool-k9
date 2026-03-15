@@ -55,6 +55,17 @@ export function Layout() {
                 Sessions
               </Link>
               <Link
+                to="/dogs"
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-primary',
+                  isActive('/dogs')
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                )}
+              >
+                Chiens
+              </Link>
+              <Link
                 to="/pricing"
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-primary',
@@ -117,6 +128,18 @@ export function Layout() {
                   onClick={closeMobileMenu}
                 >
                   Sessions
+                </Link>
+                <Link
+                  to="/dogs"
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-primary',
+                    isActive('/dogs')
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
+                  )}
+                  onClick={closeMobileMenu}
+                >
+                  Chiens
                 </Link>
                 <Link
                   to="/pricing"
