@@ -7,7 +7,7 @@ import { SupabaseAuthGuard } from './auth/supabase-auth.guard';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: 'apps/cool-k9-back/.env' }),
     SupabaseModule,
   ],
   controllers: [SessionController],

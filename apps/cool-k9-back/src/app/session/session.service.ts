@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ExerciseType } from './session.entity';
-import { Session } from '@dog-trainer/models';
+import { ExerciseType, Session } from '@models';
 import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
@@ -22,7 +21,7 @@ export class SessionService {
 
     if (error) throw new Error(error.message);
 
-    return (data ?? []).map((row) => ({
+    return (data ?? []).map(row => ({
       id: row['id'],
       date: new Date(row['date']),
       dogName: row['dog_name'],

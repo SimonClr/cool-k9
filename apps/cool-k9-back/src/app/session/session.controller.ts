@@ -1,6 +1,6 @@
-import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Query, Request, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { ExerciseType } from './session.entity';
+import { ExerciseType } from '@models';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
 
 interface AuthenticatedRequest extends Request {

@@ -1,2 +1,2 @@
-export { ExerciseType } from '@dog-trainer/models';
-export type { Session } from '@dog-trainer/models';
+export { ExerciseType } from '@models';
+export type { Session } from '@models';
