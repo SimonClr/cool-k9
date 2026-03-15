@@ -4,11 +4,13 @@ import { Layout } from './components/Layout';
 import { SessionsList } from './pages/sessions-list/SessionsList';
 import { Pricing } from './pages/pricing/Pricing';
 import { Login } from './pages/login/Login';
+import { Register } from './pages/register/Register';
 
 export function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route
         path="/"
         element={

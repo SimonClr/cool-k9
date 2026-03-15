@@ -11,6 +11,7 @@ import type { AuthState, AuthUser } from './types';
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -58,8 +59,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const register = async (email: string, password: string) => {
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+    const { error } = await supabase.auth.signUp({ email, password });
+    setState((prev) => ({ ...prev, isLoading: false }));
+    if (error) {
+      setState((prev) => ({ ...prev, error: 'Erreur lors de la création du compte' }));
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout }}>
+    <AuthContext.Provider value={{ ...state, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
