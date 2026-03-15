@@ -1,18 +1,22 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { Session, ExerciseType } from './session.entity';
+import { ExerciseType } from './session.entity';
+import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
+
+interface AuthenticatedRequest extends Request {
+  user: { userId: string; email: string };
+}
 
 @Controller('sessions')
+@UseGuards(SupabaseAuthGuard)
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 
   @Get()
   getAllSessions(
-    @Query('userId') userId: string,
+    @Request() req: AuthenticatedRequest,
     @Query('exerciseType') exerciseType?: ExerciseType
-  ): Session[] {
-    // For now, using a hardcoded userId until authentication is implemented
-    const currentUserId = userId || 'user1';
-    return this.sessionService.getAllSessions(currentUserId, exerciseType);
+  ) {
+    return this.sessionService.getAllSessions(req.user.userId, exerciseType);
   }
 }

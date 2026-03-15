@@ -1,17 +1,18 @@
 import { ExerciseType, Session } from '@dog-trainer/models';
+import { supabase } from '@dog-trainer/supabase';
 
 const API_URL = 'http://localhost:3000/api/sessions';
 
-export class SessionService {
-  static async getSessions(
-    userId?: string,
-    exerciseType?: ExerciseType
-  ): Promise<Session[]> {
-    const params = new URLSearchParams();
+async function getAuthHeaders(): Promise<HeadersInit> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token
+    ? { Authorization: `Bearer ${session.access_token}` }
+    : {};
+}
 
-    if (userId) {
-      params.set('userId', userId);
-    }
+export class SessionService {
+  static async getSessions(exerciseType?: ExerciseType): Promise<Session[]> {
+    const params = new URLSearchParams();
 
     if (exerciseType) {
       params.set('exerciseType', exerciseType);
@@ -19,7 +20,9 @@ export class SessionService {
 
     const url = params.toString() ? `${API_URL}?${params}` : API_URL;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: await getAuthHeaders(),
+    });
 
     if (!response.ok) {
       throw new Error('Failed to fetch sessions');

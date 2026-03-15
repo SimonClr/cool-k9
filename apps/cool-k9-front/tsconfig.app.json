@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@models": ["../../libs/models/src/index.ts"]
+      "@models": ["../../libs/models/src/index.ts"],
+      "@dog-trainer/supabase": ["../../libs/supabase/src/index.ts"]
     },
     "types": [
       "node",

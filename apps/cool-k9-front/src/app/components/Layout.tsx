@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@dog-trainer/supabase';
 
 export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const toggleMobileMenu = () => {
     setDrawerOpen(!drawerOpen);
@@ -29,30 +31,38 @@ export function Layout() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex gap-6">
-            <Link
-              to="/sessions"
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                isActive('/sessions')
-                  ? 'text-foreground'
-                  : 'text-muted-foreground'
-              )}
-            >
-              Sessions
-            </Link>
-            <Link
-              to="/pricing"
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                isActive('/pricing')
-                  ? 'text-foreground'
-                  : 'text-muted-foreground'
-              )}
-            >
-              Tarifs
-            </Link>
-          </nav>
+          <div className="hidden md:flex items-center gap-6">
+            <nav className="flex gap-6">
+              <Link
+                to="/sessions"
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-primary',
+                  isActive('/sessions')
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                )}
+              >
+                Sessions
+              </Link>
+              <Link
+                to="/pricing"
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-primary',
+                  isActive('/pricing')
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                )}
+              >
+                Tarifs
+              </Link>
+            </nav>
+            <div className="flex items-center gap-2 border-l pl-6">
+              <span className="text-sm text-muted-foreground">{user?.email}</span>
+              <Button variant="ghost" size="icon" onClick={logout} title="Se déconnecter">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
 
           {/* Mobile Menu Button */}
           <Button
