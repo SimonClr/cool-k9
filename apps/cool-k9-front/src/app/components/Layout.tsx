@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu, LogOut, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@authentication';
 
@@ -82,7 +82,14 @@ export function Layout() {
                 className="fixed inset-0 bg-background/80 backdrop-blur-sm md:hidden"
                 onClick={closeMobileMenu}
               ></div>
-              <nav className="fixed top-16 right-0 bottom-0 w-64 bg-background border-l p-6 md:hidden flex flex-col gap-4">
+              <nav className="fixed top-0 right-0 bottom-0 w-64 bg-background border-l md:hidden flex flex-col">
+                <div className="flex items-center justify-between h-16 px-6 border-b shrink-0">
+                  <span className="text-2xl">🐕</span>
+                  <Button variant="ghost" size="icon" onClick={closeMobileMenu}>
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <div className="flex flex-col gap-4 p-6 flex-1">
                 <Link
                   to="/sessions"
                   className={cn(
@@ -107,13 +114,21 @@ export function Layout() {
                 >
                   Tarifs
                 </Link>
+                <div className="mt-auto pt-4 border-t flex flex-col gap-2">
+                  <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
+                  <Button variant="ghost" className="justify-start gap-2 px-0" onClick={() => { logout(); closeMobileMenu(); }}>
+                    <LogOut className="h-4 w-4" />
+                    Se déconnecter
+                  </Button>
+                </div>
+                </div>
               </nav>
             </>
           )}
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 px-4 py-6">
         <Outlet />
       </main>
     </div>
