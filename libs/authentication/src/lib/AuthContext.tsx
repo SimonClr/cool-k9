@@ -61,10 +61,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     setState((prev) => ({ ...prev, isLoading: false }));
+
+    if (data.user?.identities?.length === 0) {
+      const msg = 'Un compte existe déjà avec cette adresse email';
+      setState((prev) => ({ ...prev, error: msg }));
+      throw new Error(msg);
+    }
+
     if (error) {
-      setState((prev) => ({ ...prev, error: 'Erreur lors de la création du compte' }));
+      let msg = 'Erreur lors de la création du compte';
+      if (error.code === 'weak_password') {
+        msg = 'Le mot de passe est trop faible. Il doit contenir au moins 6 caractères avec des minuscules, majuscules, chiffres et caractères spéciaux.';
+      } else if (error.code === 'email_exists' || error.code === 'user_already_exists') {
+        msg = 'Un compte existe déjà avec cette adresse email';
+      }
+      setState((prev) => ({ ...prev, error: msg }));
       throw error;
     }
   };
