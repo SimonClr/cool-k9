@@ -34,7 +34,8 @@ export class SessionService {
       .from('sessions')
       .select('*, dogs(name)')
       .eq('user_id', userId)
-      .order('date', { ascending: false });
+      .order('date', { ascending: false })
+      .order('created_at', { ascending: false });
 
     if (exerciseType) {
       query = query.eq('exercise_type', exerciseType);
