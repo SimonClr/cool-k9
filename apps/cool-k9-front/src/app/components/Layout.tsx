@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, X } from 'lucide-react';
+import { Menu, LogOut, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@authentication';
+import { useAuth, useTheme } from '@authentication';
 
 export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const toggleMobileMenu = () => {
     setDrawerOpen(!drawerOpen);
@@ -27,7 +28,7 @@ export function Layout() {
       <header className="border-b bg-background sticky top-0 z-50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 text-xl font-bold">
-            <span className="text-2xl">🐕</span>
+            <img src="/logo.png" alt="Cool K9" className="h-12 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -58,6 +59,9 @@ export function Layout() {
             </nav>
             <div className="flex items-center gap-2 border-l pl-6">
               <span className="text-sm text-muted-foreground">{user?.email}</span>
+              <Button variant="ghost" size="icon" onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}>
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
               <Button variant="ghost" size="icon" onClick={logout} title="Se déconnecter">
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -84,7 +88,7 @@ export function Layout() {
               ></div>
               <nav className="fixed top-0 right-0 bottom-0 w-64 bg-background border-l md:hidden flex flex-col">
                 <div className="flex items-center justify-between h-16 px-6 border-b shrink-0">
-                  <span className="text-2xl">🐕</span>
+                  <img src="/logo.png" alt="Cool K9" className="h-12 w-auto" />
                   <Button variant="ghost" size="icon" onClick={closeMobileMenu}>
                     <X className="h-5 w-5" />
                   </Button>
@@ -116,6 +120,10 @@ export function Layout() {
                 </Link>
                 <div className="mt-auto pt-4 border-t flex flex-col gap-2">
                   <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
+                  <Button variant="ghost" className="justify-start gap-2 px-0" onClick={toggleTheme}>
+                    {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+                  </Button>
                   <Button variant="ghost" className="justify-start gap-2 px-0" onClick={() => { logout(); closeMobileMenu(); }}>
                     <LogOut className="h-4 w-4" />
                     Se déconnecter
