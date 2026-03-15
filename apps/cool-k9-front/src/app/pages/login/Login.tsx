@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@authentication';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
@@ -8,10 +8,12 @@ import { Label } from '@/components/ui/label';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
 export function Login() {
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/sessions';
+
+  useEffect(() => { clearError(); }, []);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

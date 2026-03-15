@@ -12,6 +12,7 @@ interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -59,6 +60,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const clearError = () => setState((prev) => ({ ...prev, error: null }));
+
   const register = async (email: string, password: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     const { data, error } = await supabase.auth.signUp({ email, password });
@@ -83,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, register }}>
+    <AuthContext.Provider value={{ ...state, login, logout, register, clearError }}>
       {children}
     </AuthContext.Provider>
   );
