@@ -35,8 +35,9 @@ export interface Session {
   exerciseType: ExerciseType;
   duration: number; // in minutes
   userId: string;
-  notes?: string;
   location?: string;
+  locationLat?: number;
+  locationLon?: number;
   environment?: Environment;
   weather?: Weather;
   route?: string;

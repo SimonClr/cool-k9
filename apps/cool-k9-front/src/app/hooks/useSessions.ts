@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@authentication';
-import { SessionService } from '../services/session.service';
+import { SessionService, CreateSessionInput } from '../services/session.service';
 import { ExerciseType } from '@models';
 
 export const SESSIONS_QUERY_KEY = (userId: string, exerciseType?: ExerciseType) =>
@@ -24,5 +24,16 @@ export function useSession(id: string) {
     queryKey: SESSION_QUERY_KEY(user?.id ?? '', id),
     queryFn: () => SessionService.getSession(id),
     enabled: !!user,
+  });
+}
+
+export function useCreateSession() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (dto: CreateSessionInput) => SessionService.createSession(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions', user?.id ?? ''] });
+    },
   });
 }

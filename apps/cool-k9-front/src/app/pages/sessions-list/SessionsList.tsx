@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
 import { useSessions } from '../../hooks/useSessions';
 import { SessionCard } from './components/SessionCard';
-import { AlertCircle, Inbox, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Inbox, Loader2, PlusCircle } from 'lucide-react';
 
 export function SessionsList() {
   const { data: sessions = [], isLoading, isError } = useSessions();
@@ -8,7 +10,7 @@ export function SessionsList() {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <header className="mb-8">
+        <header className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold">Mes séances</h1>
         </header>
         <div aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-2 text-muted-foreground py-12">
@@ -22,7 +24,7 @@ export function SessionsList() {
   if (isError) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <header className="mb-8">
+        <header className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold">Mes séances</h1>
         </header>
         <div role="alert" className="flex items-center gap-2 text-destructive py-4">
@@ -35,8 +37,14 @@ export function SessionsList() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="mb-8">
+      <header className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Mes séances</h1>
+        <Button asChild>
+          <Link to="/sessions/new">
+            <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
+            Nouvelle séance
+          </Link>
+        </Button>
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

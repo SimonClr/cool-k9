@@ -1,4 +1,6 @@
 import { ExerciseType, Session } from '@models';
+
+export type CreateSessionInput = Omit<Session, 'id' | 'userId' | 'dogName'>;
 import { supabase } from '@authentication';
 
 const API_URL = 'http://localhost:3000/api/sessions';
@@ -43,6 +45,21 @@ export class SessionService {
 
     if (!response.ok) {
       throw new Error('Failed to fetch session');
+    }
+
+    const session: Session = await response.json();
+    return { ...session, date: new Date(session.date) };
+  }
+
+  static async createSession(dto: CreateSessionInput): Promise<Session> {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { ...(await getAuthHeaders()), 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create session');
     }
 
     const session: Session = await response.json();

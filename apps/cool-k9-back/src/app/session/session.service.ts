@@ -15,8 +15,9 @@ export class SessionService {
       exerciseType: row['exercise_type'] as ExerciseType,
       duration: row['duration'] as number,
       userId: row['user_id'] as string,
-      notes: (row['notes'] as string | null) ?? undefined,
       location: (row['location'] as string | null) ?? undefined,
+      locationLat: (row['location_lat'] as number | null) ?? undefined,
+      locationLon: (row['location_lon'] as number | null) ?? undefined,
       environment: (row['environment'] as Environment | null) ?? undefined,
       weather: (row['weather'] as Weather | null) ?? undefined,
       route: (row['route'] as string | null) ?? undefined,
@@ -44,6 +45,34 @@ export class SessionService {
     if (error) throw new Error(error.message);
 
     return (data ?? []).map(row => this.mapRow(row as Record<string, unknown>));
+  }
+
+  async createSession(userId: string, dto: import('./create-session.dto').CreateSessionDto): Promise<Session> {
+    const { data, error } = await this.supabaseService.admin
+      .from('sessions')
+      .insert({
+        user_id: userId,
+        date: dto.date,
+        dog_id: dto.dogId ?? null,
+        exercise_type: dto.exerciseType,
+        duration: dto.duration,
+        location: dto.location ?? null,
+        location_lat: dto.locationLat ?? null,
+        location_lon: dto.locationLon ?? null,
+        environment: dto.environment ?? null,
+        weather: dto.weather ?? null,
+        route: dto.route ?? null,
+        previous_objectives: dto.previousObjectives ?? null,
+        next_objectives: dto.nextObjectives ?? null,
+        owner_observations: dto.ownerObservations ?? null,
+        trainer_observations: dto.trainerObservations ?? null,
+        observation_status: dto.observationStatus ?? null,
+      })
+      .select('*, dogs(name)')
+      .single();
+
+    if (error || !data) throw new Error(error?.message ?? 'Failed to create session');
+    return this.mapRow(data as Record<string, unknown>);
   }
 
   async getSession(userId: string, id: string): Promise<Session> {

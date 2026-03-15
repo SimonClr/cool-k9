@@ -12,6 +12,7 @@ const Register = lazy(() => import('./pages/register/Register').then(m => ({ def
 const DogsPage = lazy(() => import('./pages/dogs/DogsPage').then(m => ({ default: m.DogsPage })));
 const AddDogPage = lazy(() => import('./pages/dogs/AddDogPage').then(m => ({ default: m.AddDogPage })));
 const SessionDetailPage = lazy(() => import('./pages/sessions-list/SessionDetailPage').then(m => ({ default: m.SessionDetailPage })));
+const AddSessionPage = lazy(() => import('./pages/sessions-list/AddSessionPage').then(m => ({ default: m.AddSessionPage })));
 
 function PageLoader() {
   return (
@@ -38,6 +39,7 @@ export function App() {
         >
           <Route index element={<Navigate to="/sessions" replace />} />
           <Route path="sessions" element={<RequiresDog><SessionsList /></RequiresDog>} />
+          <Route path="sessions/new" element={<RequiresDog><AddSessionPage /></RequiresDog>} />
           <Route path="sessions/:id" element={<RequiresDog><SessionDetailPage /></RequiresDog>} />
           <Route path="pricing" element={<Pricing />} />
           <Route path="dogs" element={<DogsPage />} />
