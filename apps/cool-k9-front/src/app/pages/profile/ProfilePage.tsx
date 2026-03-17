@@ -1,13 +1,15 @@
-import { Link } from 'react-router-dom';
-import { PlusCircle, Loader2, Dog } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2, Dog, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@authentication';
 import { useDogs } from '../../hooks/useDogs';
+import { AddDogModal } from '../../components/AddDogModal';
 
 export function ProfilePage() {
   const { user } = useAuth();
   const { data: dogs, isLoading } = useDogs();
+  const [addDogOpen, setAddDogOpen] = useState(false);
 
   return (
     <div className="max-w-lg mx-auto flex flex-col gap-6">
@@ -25,11 +27,9 @@ export function ProfilePage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Mes chiens</CardTitle>
-          <Button asChild size="sm">
-            <Link to="/dogs/new">
-              <PlusCircle className="h-4 w-4" aria-hidden="true" />
-              Ajouter
-            </Link>
+          <Button size="sm" onClick={() => setAddDogOpen(true)}>
+            <PlusCircle className="h-4 w-4" aria-hidden="true" />
+            Ajouter
           </Button>
         </CardHeader>
         <CardContent>
@@ -52,6 +52,8 @@ export function ProfilePage() {
           )}
         </CardContent>
       </Card>
+
+      <AddDogModal open={addDogOpen} onOpenChange={setAddDogOpen} />
     </div>
   );
 }

@@ -2,14 +2,12 @@ import { lazy, Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '@authentication';
 import { Layout } from './components/Layout';
-import { RequiresDog } from './components/RequiresDog';
 import { Loader2 } from 'lucide-react';
 import { Login } from './pages/login/Login';
 
 const SessionsList = lazy(() => import('./pages/sessions-list/SessionsList').then(m => ({ default: m.SessionsList })));
 const Pricing = lazy(() => import('./pages/pricing/Pricing').then(m => ({ default: m.Pricing })));
 const Register = lazy(() => import('./pages/register/Register').then(m => ({ default: m.Register })));
-const AddDogPage = lazy(() => import('./pages/dogs/AddDogPage').then(m => ({ default: m.AddDogPage })));
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const SessionDetailPage = lazy(() => import('./pages/sessions-list/SessionDetailPage').then(m => ({ default: m.SessionDetailPage })));
 const AddSessionPage = lazy(() => import('./pages/sessions-list/AddSessionPage').then(m => ({ default: m.AddSessionPage })));
@@ -38,12 +36,11 @@ export function App() {
           }
         >
           <Route index element={<Navigate to="/sessions" replace />} />
-          <Route path="sessions" element={<RequiresDog><SessionsList /></RequiresDog>} />
-          <Route path="sessions/new" element={<RequiresDog><AddSessionPage /></RequiresDog>} />
-          <Route path="sessions/:id" element={<RequiresDog><SessionDetailPage /></RequiresDog>} />
+          <Route path="sessions" element={<SessionsList />} />
+          <Route path="sessions/new" element={<AddSessionPage />} />
+          <Route path="sessions/:id" element={<SessionDetailPage />} />
           <Route path="pricing" element={<Pricing />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="dogs/new" element={<AddDogPage />} />
         </Route>
       </Routes>
     </Suspense>

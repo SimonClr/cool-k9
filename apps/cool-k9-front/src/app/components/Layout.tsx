@@ -5,11 +5,22 @@ import { Menu, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@authentication';
 import { ProfileMenu } from './ProfileMenu';
+import { AddDogModal } from './AddDogModal';
+import { useDogs } from '../hooks/useDogs';
 
 export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [addDogOpen, setAddDogOpen] = useState(false);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { data: dogs, isLoading: dogsLoading } = useDogs();
+
+  // Auto-open modal on first login (no dogs yet)
+  useEffect(() => {
+    if (!dogsLoading && dogs && dogs.length === 0) {
+      setAddDogOpen(true);
+    }
+  }, [dogsLoading, dogs]);
 
   const toggleMobileMenu = () => {
     setDrawerOpen(!drawerOpen);
@@ -144,6 +155,8 @@ export function Layout() {
       <main className="flex-1 px-4 py-6">
         <Outlet />
       </main>
+
+      <AddDogModal open={addDogOpen} onOpenChange={setAddDogOpen} />
     </div>
   );
 }

@@ -1,11 +1,23 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useSessions } from '../../hooks/useSessions';
+import { useDogs } from '../../hooks/useDogs';
 import { SessionCard } from './components/SessionCard';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Inbox, Loader2, PlusCircle } from 'lucide-react';
 
 export function SessionsList() {
+  const navigate = useNavigate();
   const { data: sessions = [], isLoading, isError } = useSessions();
+  const { data: dogs = [] } = useDogs();
+
+  const handleNewSession = () => {
+    if (dogs.length === 0) {
+      toast.error('Créez d\'abord un chien avant de créer une séance (Mon profil > Mes chiens > Ajouter)');
+      return;
+    }
+    navigate('/sessions/new');
+  };
 
   if (isLoading) {
     return (
@@ -39,11 +51,9 @@ export function SessionsList() {
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Mes séances</h1>
-        <Button asChild>
-          <Link to="/sessions/new">
-            <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
-            Nouvelle séance
-          </Link>
+        <Button onClick={handleNewSession}>
+          <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
+          Nouvelle séance
         </Button>
       </header>
 

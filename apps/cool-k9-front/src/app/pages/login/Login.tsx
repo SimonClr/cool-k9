@@ -11,7 +11,8 @@ export function Login() {
   const { login, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/sessions';
+  const fromPath = (location.state as { from?: { pathname: string } })?.from?.pathname;
+  const from = fromPath && fromPath !== '/profile' ? fromPath : '/sessions';
 
   useEffect(() => { clearError(); }, []);
 
