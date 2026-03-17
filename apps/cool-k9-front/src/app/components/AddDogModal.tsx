@@ -1,4 +1,5 @@
 import { FormEvent, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { useCreateDog } from '../hooks/useDogs';
 import {
   Dialog,
@@ -23,13 +24,11 @@ export function AddDogModal({ open, onOpenChange }: AddDogModalProps) {
 
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
-  const [apiError, setApiError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; age?: string }>({});
 
   const reset = () => {
     setName('');
     setAge('');
-    setApiError(null);
     setFieldErrors({});
   };
 
@@ -52,15 +51,17 @@ export function AddDogModal({ open, onOpenChange }: AddDogModalProps) {
     e.preventDefault();
     if (!validate()) return;
 
-    setApiError(null);
     createDog.mutate(
       { name: name.trim(), age: parseInt(age, 10) },
       {
         onSuccess: () => {
           reset();
           onOpenChange(false);
+          toast.success('Chien ajouté avec succès !');
         },
-        onError: () => setApiError("Erreur lors de l'ajout du chien. Veuillez réessayer."),
+        onError: () => {
+          toast.error("Une erreur est survenue. Veuillez réessayer.");
+        },
       }
     );
   };
@@ -79,13 +80,6 @@ export function AddDogModal({ open, onOpenChange }: AddDogModalProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-          {apiError && (
-            <div role="alert" className="flex items-center gap-2 text-destructive text-sm">
-              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>{apiError}</span>
-            </div>
-          )}
-
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="dog-name">Nom</Label>
             <Input
