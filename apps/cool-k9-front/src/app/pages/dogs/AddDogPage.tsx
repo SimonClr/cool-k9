@@ -40,7 +40,7 @@ export function AddDogPage() {
     createDog.mutate(
       { name: name.trim(), age: parseInt(age, 10) },
       {
-        onSuccess: () => navigate('/dogs', { replace: true }),
+        onSuccess: () => navigate('/sessions', { replace: true }),
         onError: () => setApiError("Erreur lors de l'ajout du chien. Veuillez réessayer."),
       }
     );

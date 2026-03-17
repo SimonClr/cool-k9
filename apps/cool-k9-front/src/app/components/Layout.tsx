@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth, useTheme } from '@authentication';
+import { useTheme } from '@authentication';
+import { ProfileMenu } from './ProfileMenu';
 
 export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
-  const { user, logout } = useAuth();
-  const queryClient = useQueryClient();
-
-  const handleLogout = () => {
-    logout();
-    queryClient.clear();
-  };
   const { theme, toggleTheme } = useTheme();
 
   const toggleMobileMenu = () => {
@@ -62,17 +55,6 @@ export function Layout() {
                 Sessions
               </Link>
               <Link
-                to="/dogs"
-                className={cn(
-                  'text-sm font-medium transition-colors hover:text-primary',
-                  isActive('/dogs')
-                    ? 'text-foreground'
-                    : 'text-muted-foreground'
-                )}
-              >
-                Chiens
-              </Link>
-              <Link
                 to="/pricing"
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-primary',
@@ -85,13 +67,10 @@ export function Layout() {
               </Link>
             </nav>
             <div className="flex items-center gap-2 border-l pl-6">
-              <span className="text-sm text-muted-foreground">{user?.email}</span>
               <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}>
                 {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Se déconnecter">
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-              </Button>
+              <ProfileMenu />
             </div>
           </div>
 
@@ -124,53 +103,37 @@ export function Layout() {
                   </Button>
                 </div>
                 <div className="flex flex-col gap-4 p-6 flex-1">
-                <Link
-                  to="/sessions"
-                  className={cn(
-                    'text-sm font-medium transition-colors hover:text-primary',
-                    isActive('/sessions')
-                      ? 'text-foreground'
-                      : 'text-muted-foreground'
-                  )}
-                  onClick={closeMobileMenu}
-                >
-                  Sessions
-                </Link>
-                <Link
-                  to="/dogs"
-                  className={cn(
-                    'text-sm font-medium transition-colors hover:text-primary',
-                    isActive('/dogs')
-                      ? 'text-foreground'
-                      : 'text-muted-foreground'
-                  )}
-                  onClick={closeMobileMenu}
-                >
-                  Chiens
-                </Link>
-                <Link
-                  to="/pricing"
-                  className={cn(
-                    'text-sm font-medium transition-colors hover:text-primary',
-                    isActive('/pricing')
-                      ? 'text-foreground'
-                      : 'text-muted-foreground'
-                  )}
-                  onClick={closeMobileMenu}
-                >
-                  Tarifs
-                </Link>
-                <div className="mt-auto pt-4 border-t flex flex-col gap-2">
-                  <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
-                  <Button variant="ghost" className="justify-start gap-2 px-0" onClick={toggleTheme}>
-                    {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
-                    {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
-                  </Button>
-                  <Button variant="ghost" className="justify-start gap-2 px-0" onClick={() => { handleLogout(); closeMobileMenu(); }}>
-                    <LogOut className="h-4 w-4" aria-hidden="true" />
-                    Se déconnecter
-                  </Button>
-                </div>
+                  <Link
+                    to="/sessions"
+                    className={cn(
+                      'text-sm font-medium transition-colors hover:text-primary',
+                      isActive('/sessions')
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
+                    )}
+                    onClick={closeMobileMenu}
+                  >
+                    Sessions
+                  </Link>
+                  <Link
+                    to="/pricing"
+                    className={cn(
+                      'text-sm font-medium transition-colors hover:text-primary',
+                      isActive('/pricing')
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
+                    )}
+                    onClick={closeMobileMenu}
+                  >
+                    Tarifs
+                  </Link>
+                  <div className="mt-auto pt-4 border-t flex items-center gap-2">
+                    <Button variant="ghost" className="justify-start gap-2 px-0" onClick={toggleTheme}>
+                      {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
+                      {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+                    </Button>
+                    <ProfileMenu />
+                  </div>
                 </div>
               </nav>
             </>

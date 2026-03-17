@@ -9,8 +9,8 @@ import { Login } from './pages/login/Login';
 const SessionsList = lazy(() => import('./pages/sessions-list/SessionsList').then(m => ({ default: m.SessionsList })));
 const Pricing = lazy(() => import('./pages/pricing/Pricing').then(m => ({ default: m.Pricing })));
 const Register = lazy(() => import('./pages/register/Register').then(m => ({ default: m.Register })));
-const DogsPage = lazy(() => import('./pages/dogs/DogsPage').then(m => ({ default: m.DogsPage })));
 const AddDogPage = lazy(() => import('./pages/dogs/AddDogPage').then(m => ({ default: m.AddDogPage })));
+const ProfilePage = lazy(() => import('./pages/profile/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const SessionDetailPage = lazy(() => import('./pages/sessions-list/SessionDetailPage').then(m => ({ default: m.SessionDetailPage })));
 const AddSessionPage = lazy(() => import('./pages/sessions-list/AddSessionPage').then(m => ({ default: m.AddSessionPage })));
 
@@ -42,7 +42,7 @@ export function App() {
           <Route path="sessions/new" element={<RequiresDog><AddSessionPage /></RequiresDog>} />
           <Route path="sessions/:id" element={<RequiresDog><SessionDetailPage /></RequiresDog>} />
           <Route path="pricing" element={<Pricing />} />
-          <Route path="dogs" element={<DogsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
           <Route path="dogs/new" element={<AddDogPage />} />
         </Route>
       </Routes>
