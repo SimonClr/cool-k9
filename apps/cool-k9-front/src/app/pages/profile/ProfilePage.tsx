@@ -28,10 +28,12 @@ export function ProfilePage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Mes chiens</CardTitle>
-          <Button size="sm" onClick={() => setAddDogOpen(true)}>
-            <PlusCircle className="h-4 w-4" aria-hidden="true" />
-            Ajouter
-          </Button>
+          {dogs && dogs.length > 0 && (
+            <Button size="sm" onClick={() => setAddDogOpen(true)}>
+              <PlusCircle className="h-4 w-4" aria-hidden="true" />
+              Ajouter
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
           {isLoading ? (

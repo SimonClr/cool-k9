@@ -52,10 +52,12 @@ export function SessionsList() {
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Mes séances</h1>
-        <Button onClick={handleNewSession}>
-          <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
-          Nouvelle séance
-        </Button>
+        {sessions.length > 0 && (
+          <Button onClick={handleNewSession}>
+            <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
+            Nouvelle séance
+          </Button>
+        )}
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
