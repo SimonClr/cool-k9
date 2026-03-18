@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Menu, X, Sun, Moon, LogOut, UserCircle } from 'lucide-react';
+import { Loader2, Menu, X, Sun, Moon, LogOut, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth, useTheme } from '@authentication';
 
@@ -201,7 +201,14 @@ export function Layout() {
       </header>
 
       <main className="flex-1 overflow-y-auto overscroll-none px-4 py-6">
-        <Outlet />
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-full" aria-live="polite" aria-busy="true">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">Chargement...</span>
+          </div>
+        }>
+          <Outlet />
+        </Suspense>
       </main>
 
       <AddDogModal open={addDogOpen} onOpenChange={setAddDogOpen} />

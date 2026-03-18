@@ -23,27 +23,25 @@ function PageLoader() {
 
 export function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/sessions" replace />} />
-          <Route path="sessions" element={<SessionsList />} />
-          <Route path="sessions/new" element={<AddSessionPage />} />
-          <Route path="sessions/:id" element={<SessionDetailPage />} />
-          <Route path="pricing" element={<AdminRoute><Pricing /></AdminRoute>} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
-      </Routes>
-    </Suspense>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Suspense fallback={<PageLoader />}><Register /></Suspense>} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/sessions" replace />} />
+        <Route path="sessions" element={<SessionsList />} />
+        <Route path="sessions/new" element={<AddSessionPage />} />
+        <Route path="sessions/:id" element={<SessionDetailPage />} />
+        <Route path="pricing" element={<AdminRoute><Pricing /></AdminRoute>} />
+        <Route path="profile" element={<ProfilePage />} />
+      </Route>
+    </Routes>
   );
 }
 
