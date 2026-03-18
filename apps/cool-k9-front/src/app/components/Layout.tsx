@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Menu, X, Sun, Moon, LogOut, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth, useTheme } from '@authentication';
-import { ProfileMenu } from './ProfileMenu';
+
 import { AddDogModal } from './AddDogModal';
 import { useDogs } from '../hooks/useDogs';
 
@@ -13,6 +14,7 @@ export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [addDogOpen, setAddDogOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { logout, user } = useAuth();
   const queryClient = useQueryClient();
   const { theme, toggleTheme } = useTheme();
@@ -68,7 +70,7 @@ export function Layout() {
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-primary',
                   isActive('/sessions')
-                    ? 'text-foreground'
+                    ? 'text-primary'
                     : 'text-muted-foreground'
                 )}
               >
@@ -80,7 +82,7 @@ export function Layout() {
                   className={cn(
                     'text-sm font-medium transition-colors hover:text-primary',
                     isActive('/pricing')
-                      ? 'text-foreground'
+                      ? 'text-primary'
                       : 'text-muted-foreground'
                   )}
                 >
@@ -88,12 +90,34 @@ export function Layout() {
                 </Link>
               )}
             </nav>
-            <div className="flex items-center gap-2 border-l pl-6">
-              <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}>
-                {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
-              </Button>
-              <ProfileMenu />
-            </div>
+            <TooltipProvider delayDuration={200}>
+              <div className="flex items-center gap-2 border-l pl-6">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}>
+                      {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{theme === 'dark' ? 'Mode clair' : 'Mode sombre'}</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Mon profil" onClick={() => navigate('/profile')}>
+                      <UserCircle className="h-5 w-5" aria-hidden="true" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Mon profil</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Se déconnecter" className="text-destructive hover:text-destructive">
+                      <LogOut className="h-4 w-4" aria-hidden="true" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Se déconnecter</TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
           </div>
 
           {/* Mobile Menu Button */}
