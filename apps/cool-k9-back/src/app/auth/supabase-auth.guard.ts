@@ -29,9 +29,10 @@ export class SupabaseAuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
-    (request as Request & { user: { userId: string; email: string } }).user = {
+    (request as Request & { user: { userId: string; email: string; role?: string } }).user = {
       userId: user.id,
       email: user.email ?? '',
+      role: user.app_metadata?.['role'],
     };
 
     return true;

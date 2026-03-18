@@ -13,7 +13,7 @@ export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [addDogOpen, setAddDogOpen] = useState(false);
   const location = useLocation();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const queryClient = useQueryClient();
   const { theme, toggleTheme } = useTheme();
   const { data: dogs, isLoading: dogsLoading } = useDogs();
@@ -74,17 +74,19 @@ export function Layout() {
               >
                 Mes séances
               </Link>
-              <Link
-                to="/pricing"
-                className={cn(
-                  'text-sm font-medium transition-colors hover:text-primary',
-                  isActive('/pricing')
-                    ? 'text-foreground'
-                    : 'text-muted-foreground'
-                )}
-              >
-                Tarifs
-              </Link>
+              {user?.isAdmin && (
+                <Link
+                  to="/pricing"
+                  className={cn(
+                    'text-sm font-medium transition-colors hover:text-primary',
+                    isActive('/pricing')
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  Tarifs
+                </Link>
+              )}
             </nav>
             <div className="flex items-center gap-2 border-l pl-6">
               <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}>
@@ -135,18 +137,20 @@ export function Layout() {
                   >
                     Mes séances
                   </Link>
-                  <Link
-                    to="/pricing"
-                    className={cn(
-                      'text-sm font-medium transition-colors hover:text-primary',
-                      isActive('/pricing')
-                        ? 'text-foreground'
-                        : 'text-muted-foreground'
-                    )}
-                    onClick={closeMobileMenu}
-                  >
-                    Tarifs
-                  </Link>
+                  {user?.isAdmin && (
+                    <Link
+                      to="/pricing"
+                      className={cn(
+                        'text-sm font-medium transition-colors hover:text-primary',
+                        isActive('/pricing')
+                          ? 'text-foreground'
+                          : 'text-muted-foreground'
+                      )}
+                      onClick={closeMobileMenu}
+                    >
+                      Tarifs
+                    </Link>
+                  )}
                   <div className="mt-auto pt-4 border-t flex flex-col gap-3">
                     <Button variant="ghost" className="justify-start gap-2 px-2" onClick={toggleTheme}>
                       {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}

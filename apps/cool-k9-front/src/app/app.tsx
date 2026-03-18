@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from '@authentication';
+import { AdminRoute, ProtectedRoute } from '@authentication';
 import { Layout } from './components/Layout';
 import { Loader2 } from 'lucide-react';
 import { Login } from './pages/login/Login';
@@ -39,7 +39,7 @@ export function App() {
           <Route path="sessions" element={<SessionsList />} />
           <Route path="sessions/new" element={<AddSessionPage />} />
           <Route path="sessions/:id" element={<SessionDetailPage />} />
-          <Route path="pricing" element={<Pricing />} />
+          <Route path="pricing" element={<AdminRoute><Pricing /></AdminRoute>} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>
