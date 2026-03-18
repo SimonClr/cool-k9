@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Sun, Moon, LogOut } from 'lucide-react';
+import { Menu, X, Sun, Moon, LogOut, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth, useTheme } from '@authentication';
 import { ProfileMenu } from './ProfileMenu';
@@ -124,18 +124,6 @@ export function Layout() {
                 </div>
                 <div className="flex flex-col gap-4 p-6 flex-1">
                   <Link
-                    to="/profile"
-                    className={cn(
-                      'text-sm font-medium transition-colors hover:text-primary',
-                      isActive('/profile')
-                        ? 'text-foreground'
-                        : 'text-muted-foreground'
-                    )}
-                    onClick={closeMobileMenu}
-                  >
-                    Mon profil
-                  </Link>
-                  <Link
                     to="/sessions"
                     className={cn(
                       'text-sm font-medium transition-colors hover:text-primary',
@@ -159,12 +147,18 @@ export function Layout() {
                   >
                     Tarifs
                   </Link>
-                  <div className="mt-auto pt-4 border-t flex flex-col gap-2">
-                    <Button variant="ghost" className="justify-start gap-2 px-0" onClick={toggleTheme}>
+                  <div className="mt-auto pt-4 border-t flex flex-col gap-3">
+                    <Button variant="ghost" className="justify-start gap-2 px-2" onClick={toggleTheme}>
                       {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
                       {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
                     </Button>
-                    <Button variant="ghost" className="justify-start gap-2 px-0 text-destructive hover:text-destructive" onClick={handleLogout}>
+                    <Button variant="ghost" className="justify-start gap-2 px-2" asChild>
+                      <Link to="/profile" onClick={closeMobileMenu}>
+                        <UserCircle className="h-4 w-4" aria-hidden="true" />
+                        Mon profil
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" className="justify-start gap-2 px-2 text-destructive hover:text-destructive" onClick={handleLogout}>
                       <LogOut className="h-4 w-4" aria-hidden="true" />
                       Se déconnecter
                     </Button>
