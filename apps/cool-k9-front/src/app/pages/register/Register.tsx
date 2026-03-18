@@ -10,17 +10,23 @@ import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 export function Register() {
   const { register, isLoading, error } = useAuth();
 
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{ firstName?: string; lastName?: string; email?: string; password?: string; confirmPassword?: string }>({});
   const [success, setSuccess] = useState(false);
 
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
   const validate = () => {
-    const errors: { email?: string; password?: string; confirmPassword?: string } = {};
+    const errors: typeof fieldErrors = {};
+    if (!firstName.trim()) errors.firstName = 'Le prénom est obligatoire';
+    if (!lastName.trim()) errors.lastName = 'Le nom est obligatoire';
     if (!email.trim()) errors.email = 'L\'email est obligatoire';
     if (!password) errors.password = 'Le mot de passe est obligatoire';
     if (!confirmPassword) errors.confirmPassword = 'Veuillez confirmer le mot de passe';
@@ -34,7 +40,7 @@ export function Register() {
     if (!validate()) return;
 
     try {
-      await register(email, password);
+      await register(email, password, firstName, lastName);
       setSuccess(true);
     } catch {
       // error is already set in auth context
@@ -83,22 +89,75 @@ export function Register() {
                 <span>{error}</span>
               </div>
             )}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="firstName">Prénom</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={e => {
+                    setFirstName(e.target.value);
+                    if (fieldErrors.firstName) setFieldErrors(prev => ({ ...prev, firstName: undefined }));
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { e.preventDefault(); lastNameRef.current?.focus(); }
+                  }}
+                  autoComplete="given-name"
+                  aria-invalid={!!fieldErrors.firstName}
+                  aria-describedby={fieldErrors.firstName ? 'firstName-error' : undefined}
+                  className={fieldErrors.firstName ? 'border-destructive' : ''}
+                />
+                {fieldErrors.firstName && (
+                  <p id="firstName-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
+                    <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    {fieldErrors.firstName}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lastName">Nom</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  ref={lastNameRef}
+                  value={lastName}
+                  onChange={e => {
+                    setLastName(e.target.value);
+                    if (fieldErrors.lastName) setFieldErrors(prev => ({ ...prev, lastName: undefined }));
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { e.preventDefault(); emailRef.current?.focus(); }
+                  }}
+                  autoComplete="family-name"
+                  aria-invalid={!!fieldErrors.lastName}
+                  aria-describedby={fieldErrors.lastName ? 'lastName-error' : undefined}
+                  className={fieldErrors.lastName ? 'border-destructive' : ''}
+                />
+                {fieldErrors.lastName && (
+                  <p id="lastName-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
+                    <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
+                    {fieldErrors.lastName}
+                  </p>
+                )}
+              </div>
+            </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
+                ref={emailRef}
                 value={email}
                 onChange={e => {
                   setEmail(e.target.value);
                   if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
                 }}
                 onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    passwordRef.current?.focus();
-                  }
+                  if (e.key === 'Enter') { e.preventDefault(); passwordRef.current?.focus(); }
                 }}
                 placeholder="trainer@coolk9.com"
                 autoComplete="email"
@@ -126,10 +185,7 @@ export function Register() {
                   if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
                 }}
                 onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    confirmPasswordRef.current?.focus();
-                  }
+                  if (e.key === 'Enter') { e.preventDefault(); confirmPasswordRef.current?.focus(); }
                 }}
                 autoComplete="new-password"
                 aria-invalid={!!fieldErrors.password}
@@ -156,10 +212,7 @@ export function Register() {
                   if (fieldErrors.confirmPassword) setFieldErrors(prev => ({ ...prev, confirmPassword: undefined }));
                 }}
                 onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSubmit(e as unknown as FormEvent);
-                  }
+                  if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent); }
                 }}
                 autoComplete="new-password"
                 aria-invalid={!!fieldErrors.confirmPassword}

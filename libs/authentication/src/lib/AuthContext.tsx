@@ -11,7 +11,8 @@ import type { AuthState, AuthUser } from './types';
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  updateProfile: (firstName: string, lastName: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -28,14 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const user: AuthUser | null = session?.user
-        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['role'] === 'admin' }
+        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['role'] === 'admin', firstName: session.user.user_metadata?.['first_name'] ?? '', lastName: session.user.user_metadata?.['last_name'] ?? '' }
         : null;
       setState({ user, isAuthenticated: !!user, isLoading: false, error: null });
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const user: AuthUser | null = session?.user
-        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['role'] === 'admin' }
+        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['role'] === 'admin', firstName: session.user.user_metadata?.['first_name'] ?? '', lastName: session.user.user_metadata?.['last_name'] ?? '' }
         : null;
       setState({ user, isAuthenticated: !!user, isLoading: false, error: null });
     });
@@ -60,11 +61,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const updateProfile = async (firstName: string, lastName: string) => {
+    const { error } = await supabase.auth.updateUser({ data: { first_name: firstName, last_name: lastName } });
+    if (error) throw error;
+    setState((prev) => ({
+      ...prev,
+      user: prev.user ? { ...prev.user, firstName, lastName } : null,
+    }));
+  };
+
   const clearError = () => setState((prev) => ({ ...prev, error: null }));
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { first_name: firstName, last_name: lastName } } });
     setState((prev) => ({ ...prev, isLoading: false }));
 
     if (data.user?.identities?.length === 0) {
@@ -86,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, register, clearError }}>
+    <AuthContext.Provider value={{ ...state, login, logout, register, updateProfile, clearError }}>
       {children}
     </AuthContext.Provider>
   );
