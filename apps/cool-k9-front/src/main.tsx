@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import * as ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import App from './app/app';
 import { AuthProvider, ThemeProvider } from '@authentication';
 
@@ -24,7 +24,7 @@ root.render(
         <AuthProvider>
           <ThemeProvider>
             <App />
-            <Toaster richColors position="top-right" />
+            <Toaster richColors position="top-center" />
           </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>

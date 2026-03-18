@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSessions } from '../../hooks/useSessions';
@@ -5,16 +6,23 @@ import { useDogs } from '../../hooks/useDogs';
 import { SessionCard } from './components/SessionCard';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
+import { AddDogModal } from '../../components/AddDogModal';
 import { AlertCircle, Inbox, Loader2, PlusCircle } from 'lucide-react';
 
 export function SessionsList() {
   const navigate = useNavigate();
   const { data: sessions = [], isLoading, isError } = useSessions();
   const { data: dogs = [] } = useDogs();
+  const [addDogOpen, setAddDogOpen] = useState(false);
 
   const handleNewSession = () => {
     if (dogs.length === 0) {
-      toast.error('Créez d\'abord un chien avant de créer une séance (Mon profil > Mes chiens > Ajouter)');
+      toast.error('Créez d\'abord un chien avant de créer une séance', {
+        action: {
+          label: 'Ajouter un chien',
+          onClick: () => setAddDogOpen(true),
+        },
+      });
       return;
     }
     navigate('/sessions/new');
@@ -84,6 +92,8 @@ export function SessionsList() {
           </div>
         )}
       </section>
+
+      <AddDogModal open={addDogOpen} onOpenChange={setAddDogOpen} />
     </div>
   );
 }
