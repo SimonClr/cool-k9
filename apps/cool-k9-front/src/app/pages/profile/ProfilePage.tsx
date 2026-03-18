@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Loader2, Dog, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
 import { useAuth } from '@authentication';
 import { useDogs } from '../../hooks/useDogs';
 import { AddDogModal } from '../../components/AddDogModal';
@@ -38,7 +39,20 @@ export function ProfilePage() {
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden="true" />
             </div>
           ) : !dogs || dogs.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">Aucun chien enregistré</p>
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia>
+                  <Dog className="h-12 w-12" aria-hidden="true" />
+                </EmptyMedia>
+                <EmptyDescription>Aucun chien enregistré</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={() => setAddDogOpen(true)}>
+                  <PlusCircle className="h-4 w-4" aria-hidden="true" />
+                  Ajouter un chien
+                </Button>
+              </EmptyContent>
+            </Empty>
           ) : (
             <ul className="flex flex-col divide-y">
               {dogs.map(dog => (

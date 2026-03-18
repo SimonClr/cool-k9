@@ -4,6 +4,7 @@ import { useSessions } from '../../hooks/useSessions';
 import { useDogs } from '../../hooks/useDogs';
 import { SessionCard } from './components/SessionCard';
 import { Button } from '@/components/ui/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
 import { AlertCircle, Inbox, Loader2, PlusCircle } from 'lucide-react';
 
 export function SessionsList() {
@@ -63,9 +64,21 @@ export function SessionsList() {
         ))}
 
         {sessions.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center gap-3 py-12 text-muted-foreground">
-            <Inbox className="h-12 w-12" aria-hidden="true" />
-            <p>Aucune séance trouvée</p>
+          <div className="col-span-full">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia>
+                  <Inbox className="h-12 w-12" aria-hidden="true" />
+                </EmptyMedia>
+                <EmptyDescription>Aucune séance trouvée</EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button onClick={handleNewSession}>
+                  <PlusCircle className="h-4 w-4" aria-hidden="true" />
+                  Nouvelle séance
+                </Button>
+              </EmptyContent>
+            </Empty>
           </div>
         )}
       </section>
