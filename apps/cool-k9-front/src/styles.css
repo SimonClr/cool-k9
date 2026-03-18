@@ -52,6 +52,11 @@
     border-color: hsl(var(--border));
   }
 
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Lato', sans-serif;

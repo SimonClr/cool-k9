@@ -57,8 +57,8 @@ export function Layout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-background sticky top-0 z-50">
+    <div className="h-screen flex flex-col overflow-hidden">
+      <header className="border-b bg-background shrink-0 z-50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 text-xl font-bold">
             <img src="/logo.png" alt="Cool K9" className="h-12 w-auto" />
@@ -200,7 +200,7 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="flex-1 px-4 py-6">
+      <main className="flex-1 overflow-y-auto overscroll-none px-4 py-6">
         <Outlet />
       </main>
 
