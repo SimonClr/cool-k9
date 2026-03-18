@@ -109,19 +109,7 @@ export function SessionDetailPage() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h1 className="text-2xl font-bold capitalize">{formatDateLong(session.date)}</h1>
           <div className="flex flex-wrap gap-2">
-            <Badge
-              variant={
-                exerciseTypeData.color === 'primary'
-                  ? 'default'
-                  : exerciseTypeData.color === 'success'
-                    ? 'success'
-                    : exerciseTypeData.color === 'warning'
-                      ? 'warning'
-                      : exerciseTypeData.color === 'info'
-                        ? 'info'
-                        : 'secondary'
-              }
-            >
+            <Badge variant={exerciseTypeData.variant}>
               {exerciseTypeData.label}
             </Badge>
             {session.observationStatus && (

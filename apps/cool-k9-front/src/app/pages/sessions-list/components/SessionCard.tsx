@@ -10,18 +10,6 @@ interface SessionCardProps {
   session: Session;
 }
 
-const getBadgeVariant = (color: string) => {
-  const variantMap: Record<string, 'default' | 'secondary' | 'success' | 'warning' | 'info'> = {
-    primary: 'default',
-    accent: 'secondary',
-    success: 'success',
-    warning: 'warning',
-    info: 'info',
-    neutral: 'secondary',
-  };
-  return variantMap[color] || 'default';
-};
-
 export function SessionCard({ session }: SessionCardProps) {
   const exerciseTypeData = getExerciseTypeData(session.exerciseType);
 
@@ -39,7 +27,7 @@ export function SessionCard({ session }: SessionCardProps) {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl">{formatDate(session.date)}</CardTitle>
-            <Badge variant={getBadgeVariant(exerciseTypeData.color)}>{exerciseTypeData.label}</Badge>
+            <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
           </div>
         </CardHeader>
 
