@@ -93,7 +93,7 @@ export function SessionDetailPage() {
   const showTrainerObservations = session.observationStatus !== ObservationStatus.WAITING_OWNER;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="container mx-auto max-w-2xl">
       {/* Bouton retour */}
       <Button
         variant="ghost"
