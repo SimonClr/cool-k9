@@ -30,7 +30,7 @@ export function SessionsList() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto">
         <header className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold">Mes séances</h1>
         </header>
@@ -44,7 +44,7 @@ export function SessionsList() {
 
   if (isError) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto">
         <header className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold">Mes séances</h1>
         </header>
@@ -57,7 +57,7 @@ export function SessionsList() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="max-w-2xl mx-auto">
       <header className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Mes séances</h1>
         {sessions.length > 0 && (
@@ -68,7 +68,7 @@ export function SessionsList() {
         )}
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="flex flex-col gap-4">
         {sessions.map(session => (
           <SessionCard key={session.id} session={session} />
         ))}

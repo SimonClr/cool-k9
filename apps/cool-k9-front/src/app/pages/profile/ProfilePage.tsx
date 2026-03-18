@@ -13,7 +13,7 @@ export function ProfilePage() {
   const [addDogOpen, setAddDogOpen] = useState(false);
 
   return (
-    <div className="max-w-lg mx-auto flex flex-col gap-6">
+    <div className="max-w-2xl mx-auto flex flex-col gap-6">
       {/* User info */}
       <Card>
         <CardHeader>

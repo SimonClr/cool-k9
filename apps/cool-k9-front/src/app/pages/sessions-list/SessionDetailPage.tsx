@@ -2,6 +2,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useSession } from '../../hooks/useSessions';
 import { Environment, ObservationStatus } from '@models';
 import { getExerciseTypeData } from '@/app/utils/exercise-type';
+import { WEATHER_LABELS, ENVIRONMENT_LABELS } from '@/app/utils/session-labels';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,19 +19,6 @@ import {
   Thermometer,
 } from 'lucide-react';
 
-const WEATHER_LABELS: Record<string, string> = {
-  SUNNY: '☀️ Soleil',
-  CLOUDY: '☁️ Nuageux',
-  RAIN: '🌧️ Pluie',
-  WIND: '💨 Vent',
-  SNOW: '❄️ Neige',
-  STORM: '⛈️ Orage',
-};
-
-const ENVIRONMENT_LABELS: Record<string, string> = {
-  INDOOR: 'Intérieur',
-  OUTDOOR: 'Extérieur',
-};
 
 const OBSERVATION_STATUS_LABELS: Record<string, string> = {
   WAITING_OWNER: 'En attente propriétaire',
@@ -225,11 +213,6 @@ export function SessionDetailPage() {
           </SectionCard>
         )}
 
-        {session.notes && (
-          <SectionCard icon={<FileText className="h-4 w-4" aria-hidden="true" />} title="Notes">
-            {session.notes}
-          </SectionCard>
-        )}
       </div>
     </div>
   );

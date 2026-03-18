@@ -22,26 +22,13 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { LocationAutocomplete, LocationValue } from '../../components/LocationAutocomplete';
+import { WEATHER_LABELS, ENVIRONMENT_LABELS } from '@/app/utils/session-labels';
 
 const EXERCISE_TYPE_LABELS: Record<ExerciseType, string> = {
   [ExerciseType.HUNTING_GAMES]: 'Hunting Games',
   [ExerciseType.NOSEWORK]: 'Nosework',
   [ExerciseType.PISTAGE]: 'Pistage',
   [ExerciseType.MANTRAILING]: 'Mantrailing',
-};
-
-const ENVIRONMENT_LABELS: Record<Environment, string> = {
-  [Environment.INDOOR]: 'Intérieur',
-  [Environment.OUTDOOR]: 'Extérieur',
-};
-
-const WEATHER_LABELS: Record<Weather, string> = {
-  [Weather.SUNNY]: '☀️ Soleil',
-  [Weather.CLOUDY]: '☁️ Nuageux',
-  [Weather.RAIN]: '🌧️ Pluie',
-  [Weather.WIND]: '💨 Vent',
-  [Weather.SNOW]: '❄️ Neige',
-  [Weather.STORM]: '⛈️ Orage',
 };
 
 type FieldErrors = {

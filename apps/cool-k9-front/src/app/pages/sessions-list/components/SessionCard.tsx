@@ -3,7 +3,8 @@ import { Session } from '@models';
 import { getExerciseTypeData } from '@/app/utils/exercise-type';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Dog, FileText } from 'lucide-react';
+import { Clock, Dog, MapPin, Thermometer } from 'lucide-react';
+import { WEATHER_LABELS } from '@/app/utils/session-labels';
 
 interface SessionCardProps {
   session: Session;
@@ -53,12 +54,20 @@ export function SessionCard({ session }: SessionCardProps) {
             <span>{session.duration} min</span>
           </div>
 
-          {session.notes && (
+          {session.location && (
             <div className="flex items-center gap-3 text-sm">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              <span className="line-clamp-2">{session.notes}</span>
+              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="truncate">{session.location}</span>
             </div>
           )}
+
+          {session.weather && (
+            <div className="flex items-center gap-3 text-sm">
+              <Thermometer className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span>{WEATHER_LABELS[session.weather]}</span>
+            </div>
+          )}
+
         </CardContent>
       </Card>
     </Link>
