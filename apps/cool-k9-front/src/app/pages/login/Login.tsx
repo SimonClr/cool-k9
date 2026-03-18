@@ -40,6 +40,14 @@ export function Login() {
     }
   };
 
+  const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); passwordRef.current?.focus(); }
+  };
+
+  const handlePasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent); }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
@@ -69,12 +77,7 @@ export function Login() {
                   setEmail(e.target.value);
                   if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
                 }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    passwordRef.current?.focus();
-                  }
-                }}
+                onKeyDown={handleEmailKeyDown}
                 placeholder="trainer@coolk9.com"
                 autoComplete="email"
                 aria-invalid={!!fieldErrors.email}
@@ -100,12 +103,7 @@ export function Login() {
                   setPassword(e.target.value);
                   if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
                 }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleSubmit(e as unknown as FormEvent);
-                  }
-                }}
+                onKeyDown={handlePasswordKeyDown}
                 autoComplete="current-password"
                 aria-invalid={!!fieldErrors.password}
                 aria-describedby={fieldErrors.password ? 'password-error' : undefined}

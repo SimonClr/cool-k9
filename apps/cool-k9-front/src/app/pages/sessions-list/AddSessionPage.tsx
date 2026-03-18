@@ -119,6 +119,28 @@ export function AddSessionPage() {
     );
   };
 
+  const handleBack = () => navigate(-1);
+
+  const handleDateSelect = (d: Date | undefined) => {
+    if (d) {
+      setDate(d);
+      setDateOpen(false);
+      if (fieldErrors.date) setFieldErrors(p => ({ ...p, date: undefined }));
+    }
+  };
+
+  const handleEnvironmentChange = (value: string) => {
+    setEnvironment(value as Environment);
+    if (value !== Environment.OUTDOOR) setWeather('');
+  };
+
+  const handleExerciseTypeChange = (value: string) => {
+    setExerciseType(value as ExerciseType);
+    if (fieldErrors.exerciseType) setFieldErrors(p => ({ ...p, exerciseType: undefined }));
+  };
+
+  const handleWeatherChange = (value: string) => setWeather(value as Weather);
+
   return (
     <div className="max-w-2xl mx-auto">
       <Card>
@@ -190,13 +212,7 @@ export function AddSessionPage() {
                     <Calendar
                       mode="single"
                       selected={date}
-                      onSelect={d => {
-                        if (d) {
-                          setDate(d);
-                          setDateOpen(false);
-                          if (fieldErrors.date) setFieldErrors(p => ({ ...p, date: undefined }));
-                        }
-                      }}
+                      onSelect={handleDateSelect}
                       locale={fr}
                       classNames={{ root: 'w-full' }}
                     />
@@ -232,11 +248,7 @@ export function AddSessionPage() {
               <Label htmlFor="exerciseType">Type de séance</Label>
               <Select
                 value={exerciseType}
-                onValueChange={value => {
-                  setExerciseType(value as ExerciseType);
-                  if (fieldErrors.exerciseType)
-                    setFieldErrors(p => ({ ...p, exerciseType: undefined }));
-                }}
+                onValueChange={handleExerciseTypeChange}
               >
                 <SelectTrigger
                   id="exerciseType"
@@ -265,10 +277,7 @@ export function AddSessionPage() {
                 <Label htmlFor="environment">Environnement</Label>
                 <Select
                   value={environment}
-                  onValueChange={value => {
-                    setEnvironment(value as Environment);
-                    if (value !== Environment.OUTDOOR) setWeather('');
-                  }}
+                  onValueChange={handleEnvironmentChange}
                 >
                   <SelectTrigger id="environment">
                     <SelectValue placeholder="— Non défini —" />
@@ -288,7 +297,7 @@ export function AddSessionPage() {
                   <Label htmlFor="weather">Météo</Label>
                   <Select
                     value={weather}
-                    onValueChange={value => setWeather(value as Weather)}
+                    onValueChange={handleWeatherChange}
                   >
                     <SelectTrigger id="weather">
                       <SelectValue placeholder="— Non défini —" />
@@ -356,7 +365,7 @@ export function AddSessionPage() {
                 type="button"
                 variant="outline"
                 className="flex-1"
-                onClick={() => navigate(-1)}
+                onClick={handleBack}
                 disabled={createSession.isPending}
               >
                 Annuler

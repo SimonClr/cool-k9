@@ -82,6 +82,15 @@ export function LocationAutocomplete({
     search(q);
   };
 
+  const handleFocus = () => {
+    if (suggestions.length > 0) setOpen(true);
+  };
+
+  const createSuggestionMouseDownHandler = (result: NominatimResult) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleSelect(result);
+  };
+
   const handleSelect = (result: NominatimResult) => {
     const short = result.display_name.split(',').slice(0, 2).join(',').trim();
     setQuery(short);
@@ -100,7 +109,7 @@ export function LocationAutocomplete({
         type="text"
         value={query}
         onChange={handleInput}
-        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onFocus={handleFocus}
         placeholder={placeholder}
         className={cn('pr-8', className)}
         autoComplete="off"
@@ -116,10 +125,7 @@ export function LocationAutocomplete({
               <li
                 key={result.place_id}
                 className="px-3 py-2.5 cursor-pointer hover:bg-accent hover:text-accent-foreground border-b last:border-b-0"
-                onMouseDown={e => {
-                  e.preventDefault();
-                  handleSelect(result);
-                }}
+                onMouseDown={createSuggestionMouseDownHandler(result)}
               >
                 <p className="text-sm font-medium leading-tight">{primary}</p>
                 {secondary && (

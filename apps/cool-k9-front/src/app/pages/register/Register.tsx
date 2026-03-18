@@ -47,6 +47,26 @@ export function Register() {
     }
   };
 
+  const handleFirstNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); lastNameRef.current?.focus(); }
+  };
+
+  const handleLastNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); emailRef.current?.focus(); }
+  };
+
+  const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); passwordRef.current?.focus(); }
+  };
+
+  const handlePasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); confirmPasswordRef.current?.focus(); }
+  };
+
+  const handleConfirmPasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent); }
+  };
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -101,9 +121,7 @@ export function Register() {
                     setFirstName(e.target.value);
                     if (fieldErrors.firstName) setFieldErrors(prev => ({ ...prev, firstName: undefined }));
                   }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') { e.preventDefault(); lastNameRef.current?.focus(); }
-                  }}
+                  onKeyDown={handleFirstNameKeyDown}
                   autoComplete="given-name"
                   aria-invalid={!!fieldErrors.firstName}
                   aria-describedby={fieldErrors.firstName ? 'firstName-error' : undefined}
@@ -128,9 +146,7 @@ export function Register() {
                     setLastName(e.target.value);
                     if (fieldErrors.lastName) setFieldErrors(prev => ({ ...prev, lastName: undefined }));
                   }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') { e.preventDefault(); emailRef.current?.focus(); }
-                  }}
+                  onKeyDown={handleLastNameKeyDown}
                   autoComplete="family-name"
                   aria-invalid={!!fieldErrors.lastName}
                   aria-describedby={fieldErrors.lastName ? 'lastName-error' : undefined}
@@ -156,9 +172,7 @@ export function Register() {
                   setEmail(e.target.value);
                   if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
                 }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') { e.preventDefault(); passwordRef.current?.focus(); }
-                }}
+                onKeyDown={handleEmailKeyDown}
                 placeholder="trainer@coolk9.com"
                 autoComplete="email"
                 aria-invalid={!!fieldErrors.email}
@@ -184,9 +198,7 @@ export function Register() {
                   setPassword(e.target.value);
                   if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
                 }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') { e.preventDefault(); confirmPasswordRef.current?.focus(); }
-                }}
+                onKeyDown={handlePasswordKeyDown}
                 autoComplete="new-password"
                 aria-invalid={!!fieldErrors.password}
                 aria-describedby={fieldErrors.password ? 'register-password-error' : undefined}
@@ -211,9 +223,7 @@ export function Register() {
                   setConfirmPassword(e.target.value);
                   if (fieldErrors.confirmPassword) setFieldErrors(prev => ({ ...prev, confirmPassword: undefined }));
                 }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent); }
-                }}
+                onKeyDown={handleConfirmPasswordKeyDown}
                 autoComplete="new-password"
                 aria-invalid={!!fieldErrors.confirmPassword}
                 aria-describedby={fieldErrors.confirmPassword ? 'confirm-password-error' : undefined}

@@ -27,6 +27,8 @@ export function Layout() {
     }
   }, [dogsLoading, dogs]);
 
+  const handleNavigateProfile = () => navigate('/profile');
+
   const toggleMobileMenu = () => {
     setDrawerOpen(!drawerOpen);
   };
@@ -102,7 +104,7 @@ export function Layout() {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" aria-label="Mon profil" onClick={() => navigate('/profile')}>
+                    <Button variant="ghost" size="icon" aria-label="Mon profil" onClick={handleNavigateProfile}>
                       <UserCircle className="h-5 w-5" aria-hidden="true" />
                     </Button>
                   </TooltipTrigger>

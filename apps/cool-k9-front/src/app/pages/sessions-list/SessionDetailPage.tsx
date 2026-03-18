@@ -89,6 +89,8 @@ export function SessionDetailPage() {
     return <Navigate to="/sessions" replace />;
   }
 
+  const handleBack = () => navigate(-1);
+
   const exerciseTypeData = getExerciseTypeData(session.exerciseType);
   const showTrainerObservations = session.observationStatus !== ObservationStatus.WAITING_OWNER;
 
@@ -98,7 +100,7 @@ export function SessionDetailPage() {
       <Button
         variant="ghost"
         className="mb-6 -ml-2 gap-2 text-muted-foreground hover:text-foreground"
-        onClick={() => navigate(-1)}
+        onClick={handleBack}
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Mes séances
