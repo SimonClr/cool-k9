@@ -15,7 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AlertCircle, CalendarIcon, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { LocationAutocomplete, LocationValue } from '../../components/LocationAutocomplete';
 
@@ -40,8 +44,6 @@ const WEATHER_LABELS: Record<Weather, string> = {
   [Weather.STORM]: '⛈️ Orage',
 };
 
-const today = new Date().toISOString().split('T')[0];
-
 type FieldErrors = {
   dogId?: string;
   date?: string;
@@ -65,7 +67,8 @@ export function AddSessionPage() {
 
   // Champs requis
   const [dogId, setDogId] = useState('');
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState<Date>(new Date());
+  const [dateOpen, setDateOpen] = useState(false);
   const [duration, setDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<ExerciseType | ''>('');
 
@@ -86,6 +89,7 @@ export function AddSessionPage() {
     const errors: FieldErrors = {};
     if (!effectiveDogId) errors.dogId = 'Veuillez sélectionner un chien';
     if (!date) errors.date = 'La date est obligatoire';
+
     if (!duration) {
       errors.duration = 'La durée est obligatoire';
     } else {
@@ -104,7 +108,7 @@ export function AddSessionPage() {
     setApiError(null);
     createSession.mutate(
       {
-        date: new Date(date) as unknown as Date,
+        date: date as unknown as Date,
         dogId: effectiveDogId || undefined,
         exerciseType: exerciseType as ExerciseType,
         duration: parseInt(duration, 10),
@@ -129,7 +133,7 @@ export function AddSessionPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="max-w-2xl mx-auto">
       <Card>
         <CardHeader>
           <CardTitle>Nouvelle séance</CardTitle>
@@ -176,21 +180,41 @@ export function AddSessionPage() {
             </div>
 
             {/* Date + Durée */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={date}
-                  onChange={e => {
-                    setDate(e.target.value);
-                    if (fieldErrors.date) setFieldErrors(p => ({ ...p, date: undefined }));
-                  }}
-                  aria-invalid={!!fieldErrors.date}
-                  aria-describedby={fieldErrors.date ? 'date-error' : undefined}
-                  className={fieldErrors.date ? 'border-destructive' : ''}
-                />
+                <Label>Date</Label>
+                <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      aria-invalid={!!fieldErrors.date}
+                      aria-describedby={fieldErrors.date ? 'date-error' : undefined}
+                      className={cn(
+                        'justify-start text-left font-normal',
+                        !date && 'text-muted-foreground',
+                        fieldErrors.date && 'border-destructive'
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                      {date ? format(date, 'PPP', { locale: fr }) : 'Choisir une date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={d => {
+                        if (d) {
+                          setDate(d);
+                          setDateOpen(false);
+                          if (fieldErrors.date) setFieldErrors(p => ({ ...p, date: undefined }));
+                        }
+                      }}
+                      locale={fr}
+                      classNames={{ root: 'w-full' }}
+                    />
+                  </PopoverContent>
+                </Popover>
                 {fieldErrors.date && <FieldError id="date-error" message={fieldErrors.date} />}
               </div>
 
