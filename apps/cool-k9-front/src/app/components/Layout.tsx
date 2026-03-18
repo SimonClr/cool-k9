@@ -20,7 +20,7 @@ export function Layout() {
 
   // Auto-open modal on first login (no dogs yet)
   useEffect(() => {
-    if (!dogsLoading && dogs && dogs.length === 0) {
+    if (!dogsLoading && dogs && dogs.length === 0 && !user?.isAdmin) {
       setAddDogOpen(true);
     }
   }, [dogsLoading, dogs]);
