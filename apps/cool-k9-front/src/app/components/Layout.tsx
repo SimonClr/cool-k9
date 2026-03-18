@@ -72,7 +72,7 @@ export function Layout() {
                     : 'text-muted-foreground'
                 )}
               >
-                Sessions
+                Mes séances
               </Link>
               <Link
                 to="/pricing"
@@ -145,7 +145,7 @@ export function Layout() {
                     )}
                     onClick={closeMobileMenu}
                   >
-                    Sessions
+                    Mes séances
                   </Link>
                   <Link
                     to="/pricing"
