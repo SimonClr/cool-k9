@@ -105,7 +105,7 @@ export function MultiSelect({
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
               selectedOptions.map(opt => (
-                <Badge key={opt.value} variant="secondary" className="gap-1 pr-1 max-w-[160px]">
+                <Badge key={opt.value} variant="default" className="gap-1 pr-1 max-w-[160px]">
                   <span className="truncate">{opt.label}</span>
                   <span
                     role="button"
