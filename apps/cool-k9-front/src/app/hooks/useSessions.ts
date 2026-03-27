@@ -9,11 +9,21 @@ export const SESSIONS_QUERY_KEY = (userId: string, exerciseType?: ExerciseType) 
 export const SESSION_QUERY_KEY = (userId: string, id: string) =>
   ['sessions', userId, id] as const;
 
-export function useSessions(exerciseType?: ExerciseType, page = 1) {
+export function useSessions(
+  exerciseType?: ExerciseType,
+  page = 1,
+  userIds?: string[],
+  dogIds?: string[],
+) {
   const { user } = useAuth();
   return useQuery({
-    queryKey: [...SESSIONS_QUERY_KEY(user?.id ?? '', exerciseType), page],
-    queryFn: () => SessionService.getSessions({ exerciseType, page, perPage: 20 }),
+    queryKey: [
+      ...SESSIONS_QUERY_KEY(user?.id ?? '', exerciseType),
+      page,
+      userIds?.join(',') ?? '',
+      dogIds?.join(',') ?? '',
+    ],
+    queryFn: () => SessionService.getSessions({ exerciseType, page, perPage: 20, userIds, dogIds }),
     enabled: !!user,
   });
 }

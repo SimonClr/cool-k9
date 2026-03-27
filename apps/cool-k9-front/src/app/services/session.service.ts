@@ -24,12 +24,16 @@ export class SessionService {
     exerciseType?: ExerciseType;
     page?: number;
     perPage?: number;
+    userIds?: string[];
+    dogIds?: string[];
   }): Promise<SessionsPage> {
     const query = new URLSearchParams();
 
     if (params?.exerciseType) query.set('exerciseType', params.exerciseType);
     if (params?.page != null) query.set('page', String(params.page));
     if (params?.perPage != null) query.set('perPage', String(params.perPage));
+    if (params?.userIds?.length) query.set('userIds', params.userIds.join(','));
+    if (params?.dogIds?.length) query.set('dogIds', params.dogIds.join(','));
 
     const url = query.toString() ? `${API_URL}?${query}` : API_URL;
 

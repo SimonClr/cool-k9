@@ -35,6 +35,8 @@ export class SessionService {
     exerciseType?: ExerciseType,
     page = 1,
     perPage = 20,
+    userIds?: string[],
+    dogIds?: string[],
   ): Promise<{ sessions: Session[]; total: number; page: number; perPage: number }> {
     let query = this.supabaseService.admin
       .from('sessions')
@@ -44,10 +46,16 @@ export class SessionService {
 
     if (role !== 'admin') {
       query = query.contains('user_ids', [userId]);
+    } else if (userIds?.length) {
+      query = query.overlaps('user_ids', userIds);
     }
 
     if (exerciseType) {
       query = query.eq('exercise_type', exerciseType);
+    }
+
+    if (dogIds?.length) {
+      query = query.overlaps('dog_ids', dogIds);
     }
 
     const from = (page - 1) * perPage;
