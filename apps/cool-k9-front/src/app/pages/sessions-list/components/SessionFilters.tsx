@@ -1,0 +1,122 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '@authentication';
+import { useUserSearch } from '@/app/hooks/useUsers';
+import { useDogs, useMultiUserDogs } from '@/app/hooks/useDogs';
+import { Label } from '@/components/ui/label';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dog } from '@models';
+import type { MultiSelectOption } from '@/components/ui/multi-select';
+
+interface SessionFiltersProps {
+  userIds: string[];
+  dogIds: string[];
+  onUserIdsChange: (ids: string[]) => void;
+  onDogIdsChange: (ids: string[]) => void;
+}
+
+export function SessionFilters({
+  userIds,
+  dogIds,
+  onUserIdsChange,
+  onDogIdsChange,
+}: SessionFiltersProps) {
+  const { user } = useAuth();
+
+  // ── Filtre utilisateurs (admin) ───────────────────────────────
+  const [usersOpen, setUsersOpen] = useState(false);
+  const [usersSearch, setUsersSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(usersSearch), 300);
+    return () => clearTimeout(t);
+  }, [usersSearch]);
+
+  const {
+    data: usersPages,
+    isLoading: usersLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useUserSearch(debouncedSearch, usersOpen);
+
+  const userOptions: MultiSelectOption[] = (usersPages?.pages ?? [])
+    .flatMap(p => p.users)
+    .map(u => ({
+      value: u.id,
+      label: `${u.firstName} ${u.lastName}`.trim() || u.email,
+      sublabel: u.email,
+    }));
+
+  // ── Filtre chiens ─────────────────────────────────────────────
+  const { data: adminDogs, isLoading: adminDogsLoading } = useMultiUserDogs(
+    user?.isAdmin ? userIds : [],
+  );
+  const { data: ownDogs } = useDogs();
+
+  // Pour un non-admin : afficher seulement si > 1 chien
+  const showDogFilter = user?.isAdmin || (ownDogs?.length ?? 0) > 1;
+
+  const dogDisabled = user?.isAdmin ? userIds.length === 0 : false;
+
+  const availableDogs: Dog[] = user?.isAdmin ? adminDogs : (ownDogs ?? []);
+
+  const dogOptions: MultiSelectOption[] = availableDogs.map(d => ({
+    value: d.id,
+    label: d.name,
+    sublabel: `${d.age} ans`,
+  }));
+
+  const hasFilters = user?.isAdmin || showDogFilter;
+  if (!hasFilters) return null;
+
+  return (
+    <TooltipProvider>
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        {user?.isAdmin && (
+          <div className="flex flex-col gap-1.5 flex-1">
+            <Label>Utilisateurs</Label>
+            <MultiSelect
+              options={userOptions}
+              selected={userIds}
+              onChange={onUserIdsChange}
+              placeholder="Tous les utilisateurs"
+              searchPlaceholder="Rechercher un utilisateur..."
+              onSearchChange={setUsersSearch}
+              isLoading={usersLoading}
+              hasMore={hasNextPage}
+              onLoadMore={() => fetchNextPage()}
+              onOpenChange={setUsersOpen}
+            />
+          </div>
+        )}
+
+        {showDogFilter && (
+          <div className="flex flex-col gap-1.5 flex-1">
+            <Label className={dogDisabled ? 'text-muted-foreground' : ''}>Chiens</Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {/* span nécessaire pour que le tooltip fonctionne sur un élément désactivé */}
+                <span className="w-full">
+                  <MultiSelect
+                    options={dogOptions}
+                    selected={dogIds}
+                    onChange={onDogIdsChange}
+                    placeholder="Tous les chiens"
+                    searchPlaceholder="Rechercher un chien..."
+                    disabled={dogDisabled || adminDogsLoading}
+                  />
+                </span>
+              </TooltipTrigger>
+              {dogDisabled && (
+                <TooltipContent>
+                  Sélectionnez un utilisateur pour filtrer par chien
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </div>
+        )}
+      </div>
+    </TooltipProvider>
+  );
+}
