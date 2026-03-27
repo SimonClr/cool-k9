@@ -5,6 +5,7 @@ import { useDogs, useMultiUserDogs } from '@/app/hooks/useDogs';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import { Dog, ExerciseType } from '@models';
 import { EXERCISE_TYPE_LABELS } from '@/app/utils/exercise-type';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
@@ -16,6 +17,7 @@ interface SessionFiltersProps {
   onUserIdsChange: (ids: string[]) => void;
   onDogIdsChange: (ids: string[]) => void;
   onExerciseTypesChange: (types: ExerciseType[]) => void;
+  className?: string;
 }
 
 const exerciseTypeOptions: MultiSelectOption[] = Object.values(ExerciseType).map(value => ({
@@ -30,6 +32,7 @@ export function SessionFilters({
   onUserIdsChange,
   onDogIdsChange,
   onExerciseTypesChange,
+  className,
 }: SessionFiltersProps) {
   const { user } = useAuth();
 
@@ -80,8 +83,7 @@ export function SessionFilters({
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col gap-3 mb-6">
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className={cn('flex flex-col sm:flex-row gap-3', className)}>
         {user?.isAdmin && (
           <div className="flex flex-col gap-1.5 flex-1">
             <Label>Utilisateurs</Label>
@@ -105,7 +107,6 @@ export function SessionFilters({
             <Label className={dogDisabled ? 'text-muted-foreground' : ''}>Chiens</Label>
             <Tooltip>
               <TooltipTrigger asChild>
-                {/* span nécessaire pour que le tooltip fonctionne sur un élément désactivé */}
                 <span className="w-full">
                   <MultiSelect
                     options={dogOptions}
@@ -125,20 +126,18 @@ export function SessionFilters({
             </Tooltip>
           </div>
         )}
-      </div>
 
-      {/* Filtre type de séance */}
-      <div className="flex flex-col gap-1.5">
-        <Label>Type de séance</Label>
-        <MultiSelect
-          options={exerciseTypeOptions}
-          selected={exerciseTypes}
-          onChange={types => onExerciseTypesChange(types as ExerciseType[])}
-          placeholder="Tous les types"
-          searchPlaceholder="Rechercher un type..."
-        />
+        <div className="flex flex-col gap-1.5 flex-1">
+          <Label>Type de séance</Label>
+          <MultiSelect
+            options={exerciseTypeOptions}
+            selected={exerciseTypes}
+            onChange={types => onExerciseTypesChange(types as ExerciseType[])}
+            placeholder="Tous les types"
+            searchPlaceholder="Rechercher un type..."
+          />
+        </div>
       </div>
-    </div>
     </TooltipProvider>
   );
 }

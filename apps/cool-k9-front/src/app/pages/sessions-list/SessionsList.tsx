@@ -46,94 +46,100 @@ export function SessionsList() {
   const handleNewSession = () => navigate('/sessions/new');
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <header className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Mes séances</h1>
-        {user?.isAdmin && sessions.length > 0 && (
-          <Button onClick={handleNewSession}>
+    <div>
+      <header className="flex flex-col sm:flex-row sm:items-end gap-4 mb-6">
+        <SessionFilters
+          userIds={filterUserIds}
+          dogIds={filterDogIds}
+          exerciseTypes={filterExerciseTypes}
+          onUserIdsChange={handleUserIdsChange}
+          onDogIdsChange={handleDogIdsChange}
+          onExerciseTypesChange={handleExerciseTypesChange}
+          className="flex-1"
+        />
+
+        {user?.isAdmin && (
+          <Button onClick={handleNewSession} className="shrink-0">
             <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
             Nouvelle séance
           </Button>
         )}
       </header>
 
-      <SessionFilters
-        userIds={filterUserIds}
-        dogIds={filterDogIds}
-        exerciseTypes={filterExerciseTypes}
-        onUserIdsChange={handleUserIdsChange}
-        onDogIdsChange={handleDogIdsChange}
-        onExerciseTypesChange={handleExerciseTypesChange}
-      />
+      <div className="max-w-4xl mx-auto">
+        {/* Liste */}
+        <section className="flex flex-col gap-2">
+          {isError ? (
+            <div role="alert" className="flex items-center gap-2 text-destructive py-4">
+              <AlertCircle className="h-5 w-5" aria-hidden="true" />
+              <p>Erreur lors du chargement des séances</p>
+            </div>
+          ) : isLoading ? (
+            <div
+              aria-live="polite"
+              aria-busy="true"
+              className="flex items-center justify-center gap-2 text-muted-foreground py-12"
+            >
+              <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
+              <p>Chargement...</p>
+            </div>
+          ) : (
+            <>
+              {sessions.map(session => (
+                <SessionCard key={session.id} session={session} />
+              ))}
 
-      {/* Liste */}
-      <section className="flex flex-col gap-4">
-        {isError ? (
-          <div role="alert" className="flex items-center gap-2 text-destructive py-4">
-            <AlertCircle className="h-5 w-5" aria-hidden="true" />
-            <p>Erreur lors du chargement des séances</p>
-          </div>
-        ) : isLoading ? (
-          <div aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-2 text-muted-foreground py-12">
-            <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
-            <p>Chargement...</p>
-          </div>
-        ) : (
-          <>
-            {sessions.map(session => (
-              <SessionCard key={session.id} session={session} />
-            ))}
+              {sessions.length === 0 && (
+                <div className="col-span-full">
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia>
+                        <Inbox className="h-12 w-12" aria-hidden="true" />
+                      </EmptyMedia>
+                      <EmptyDescription>Aucune séance trouvée</EmptyDescription>
+                    </EmptyHeader>
+                    {user?.isAdmin && filterUserIds.length === 0 && filterDogIds.length === 0 && (
+                      <EmptyContent>
+                        <Button onClick={handleNewSession}>
+                          <PlusCircle className="h-4 w-4" aria-hidden="true" />
+                          Nouvelle séance
+                        </Button>
+                      </EmptyContent>
+                    )}
+                  </Empty>
+                </div>
+              )}
+            </>
+          )}
+        </section>
 
-            {sessions.length === 0 && (
-              <div className="col-span-full">
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyMedia>
-                      <Inbox className="h-12 w-12" aria-hidden="true" />
-                    </EmptyMedia>
-                    <EmptyDescription>Aucune séance trouvée</EmptyDescription>
-                  </EmptyHeader>
-                  {user?.isAdmin && filterUserIds.length === 0 && filterDogIds.length === 0 && (
-                    <EmptyContent>
-                      <Button onClick={handleNewSession}>
-                        <PlusCircle className="h-4 w-4" aria-hidden="true" />
-                        Nouvelle séance
-                      </Button>
-                    </EmptyContent>
-                  )}
-                </Empty>
-              </div>
-            )}
-          </>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 mt-8">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => p - 1)}
+              disabled={page === 1}
+              aria-label="Page précédente"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {page} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => p + 1)}
+              disabled={page === totalPages}
+              aria-label="Page suivante"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         )}
-      </section>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 mt-8">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage(p => p - 1)}
-            disabled={page === 1}
-            aria-label="Page précédente"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Page {page} / {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setPage(p => p + 1)}
-            disabled={page === totalPages}
-            aria-label="Page suivante"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

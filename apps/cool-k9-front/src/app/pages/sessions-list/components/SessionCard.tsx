@@ -24,7 +24,7 @@ export function SessionCard({ session }: SessionCardProps) {
   return (
     <Link to={`/sessions/${session.id}`} className="block">
       <Card className="transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-primary/40 dark:hover:border-primary/60 dark:hover:shadow-[0_4px_20px_hsl(var(--primary)/0.15)]">
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl">{formatDate(session.date)}</CardTitle>
             <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>

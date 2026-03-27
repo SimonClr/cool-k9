@@ -71,9 +71,7 @@ export function Layout() {
                 to="/sessions"
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-primary',
-                  isActive('/sessions')
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
+                  isActive('/sessions') ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
                 Mes séances
@@ -83,9 +81,7 @@ export function Layout() {
                   to="/pricing"
                   className={cn(
                     'text-sm font-medium transition-colors hover:text-primary',
-                    isActive('/pricing')
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
+                    isActive('/pricing') ? 'text-primary' : 'text-muted-foreground'
                   )}
                 >
                   Tarifs
@@ -96,15 +92,31 @@ export function Layout() {
               <div className="flex items-center gap-2 border-l pl-6">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}>
-                      {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={toggleTheme}
+                      aria-label={
+                        theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'
+                      }
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Moon className="h-4 w-4" aria-hidden="true" />
+                      )}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>{theme === 'dark' ? 'Mode clair' : 'Mode sombre'}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" aria-label="Mon profil" onClick={handleNavigateProfile}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Mon profil"
+                      onClick={handleNavigateProfile}
+                    >
                       <UserCircle className="h-5 w-5" aria-hidden="true" />
                     </Button>
                   </TooltipTrigger>
@@ -112,7 +124,13 @@ export function Layout() {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Se déconnecter" className="text-destructive hover:text-destructive">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleLogout}
+                      aria-label="Se déconnecter"
+                      className="text-destructive hover:text-destructive"
+                    >
                       <LogOut className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </TooltipTrigger>
@@ -143,10 +161,21 @@ export function Layout() {
                 onClick={closeMobileMenu}
                 aria-hidden="true"
               ></div>
-              <nav id="mobile-menu" className="fixed top-0 right-0 bottom-0 w-64 bg-background border-l md:hidden flex flex-col" role="dialog" aria-modal="true" aria-label="Menu de navigation">
+              <nav
+                id="mobile-menu"
+                className="fixed top-0 right-0 bottom-0 w-64 bg-background border-l md:hidden flex flex-col"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Menu de navigation"
+              >
                 <div className="flex items-center justify-between h-16 px-6 border-b shrink-0">
                   <img src="/logo.png" alt="Cool K9" className="h-12 w-auto" />
-                  <Button variant="ghost" size="icon" onClick={closeMobileMenu} aria-label="Fermer le menu">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={closeMobileMenu}
+                    aria-label="Fermer le menu"
+                  >
                     <X className="h-5 w-5" aria-hidden="true" />
                   </Button>
                 </div>
@@ -155,9 +184,7 @@ export function Layout() {
                     to="/sessions"
                     className={cn(
                       'text-sm font-medium transition-colors hover:text-primary',
-                      isActive('/sessions')
-                        ? 'text-foreground'
-                        : 'text-muted-foreground'
+                      isActive('/sessions') ? 'text-foreground' : 'text-muted-foreground'
                     )}
                     onClick={closeMobileMenu}
                   >
@@ -168,9 +195,7 @@ export function Layout() {
                       to="/pricing"
                       className={cn(
                         'text-sm font-medium transition-colors hover:text-primary',
-                        isActive('/pricing')
-                          ? 'text-foreground'
-                          : 'text-muted-foreground'
+                        isActive('/pricing') ? 'text-foreground' : 'text-muted-foreground'
                       )}
                       onClick={closeMobileMenu}
                     >
@@ -178,8 +203,16 @@ export function Layout() {
                     </Link>
                   )}
                   <div className="mt-auto pt-4 border-t flex flex-col gap-3">
-                    <Button variant="ghost" className="justify-start gap-2 px-2" onClick={toggleTheme}>
-                      {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
+                    <Button
+                      variant="ghost"
+                      className="justify-start gap-2 px-2"
+                      onClick={toggleTheme}
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Moon className="h-4 w-4" aria-hidden="true" />
+                      )}
                       {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
                     </Button>
                     <Button variant="ghost" className="justify-start gap-2 px-2" asChild>
@@ -188,7 +221,11 @@ export function Layout() {
                         Mon profil
                       </Link>
                     </Button>
-                    <Button variant="ghost" className="justify-start gap-2 px-2 text-destructive hover:text-destructive" onClick={handleLogout}>
+                    <Button
+                      variant="ghost"
+                      className="justify-start gap-2 px-2 text-destructive hover:text-destructive"
+                      onClick={handleLogout}
+                    >
                       <LogOut className="h-4 w-4" aria-hidden="true" />
                       Se déconnecter
                     </Button>
@@ -200,13 +237,19 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto overscroll-none px-4 py-6">
-        <Suspense fallback={
-          <div className="flex items-center justify-center h-full" aria-live="polite" aria-busy="true">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" aria-hidden="true" />
-            <span className="sr-only">Chargement...</span>
-          </div>
-        }>
+      <main className="flex-1 overflow-y-auto overscroll-none px-4 sm:px-8 py-4">
+        <Suspense
+          fallback={
+            <div
+              className="flex items-center justify-center h-full"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" aria-hidden="true" />
+              <span className="sr-only">Chargement...</span>
+            </div>
+          }
+        >
           <Outlet />
         </Suspense>
       </main>
