@@ -9,7 +9,7 @@ export function useDogs() {
   return useQuery({
     queryKey: DOGS_QUERY_KEY(user?.id ?? ''),
     queryFn: DogService.getDogs,
-    enabled: !!user && !user.isAdmin,
+    enabled: !!user,
   });
 }
 
