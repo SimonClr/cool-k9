@@ -17,7 +17,7 @@ export class SessionController {
   @Get()
   getAllSessions(
     @Request() req: AuthenticatedRequest,
-    @Query('exerciseType') exerciseType?: ExerciseType,
+    @Query('exerciseTypes') exerciseTypesRaw?: string,
     @Query('page') page?: string,
     @Query('perPage') perPage?: string,
     @Query('userIds') userIdsRaw?: string,
@@ -26,7 +26,7 @@ export class SessionController {
     return this.sessionService.getAllSessions(
       req.user.userId,
       req.user.role ?? '',
-      exerciseType,
+      exerciseTypesRaw ? (exerciseTypesRaw.split(',').filter(Boolean) as ExerciseType[]) : undefined,
       page ? parseInt(page, 10) : undefined,
       perPage ? parseInt(perPage, 10) : undefined,
       userIdsRaw ? userIdsRaw.split(',').filter(Boolean) : undefined,

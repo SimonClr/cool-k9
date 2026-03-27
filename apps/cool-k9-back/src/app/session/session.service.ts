@@ -32,7 +32,7 @@ export class SessionService {
   async getAllSessions(
     userId: string,
     role: string,
-    exerciseType?: ExerciseType,
+    exerciseTypes?: ExerciseType[],
     page = 1,
     perPage = 20,
     userIds?: string[],
@@ -50,8 +50,8 @@ export class SessionService {
       query = query.overlaps('user_ids', userIds);
     }
 
-    if (exerciseType) {
-      query = query.eq('exercise_type', exerciseType);
+    if (exerciseTypes?.length) {
+      query = query.in('exercise_type', exerciseTypes);
     }
 
     if (dogIds?.length) {

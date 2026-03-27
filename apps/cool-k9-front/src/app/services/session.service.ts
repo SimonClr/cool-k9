@@ -21,7 +21,7 @@ export interface SessionsPage {
 
 export class SessionService {
   static async getSessions(params?: {
-    exerciseType?: ExerciseType;
+    exerciseTypes?: ExerciseType[];
     page?: number;
     perPage?: number;
     userIds?: string[];
@@ -29,7 +29,7 @@ export class SessionService {
   }): Promise<SessionsPage> {
     const query = new URLSearchParams();
 
-    if (params?.exerciseType) query.set('exerciseType', params.exerciseType);
+    if (params?.exerciseTypes?.length) query.set('exerciseTypes', params.exerciseTypes.join(','));
     if (params?.page != null) query.set('page', String(params.page));
     if (params?.perPage != null) query.set('perPage', String(params.perPage));
     if (params?.userIds?.length) query.set('userIds', params.userIds.join(','));

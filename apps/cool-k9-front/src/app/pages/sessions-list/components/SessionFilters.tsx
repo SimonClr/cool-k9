@@ -5,21 +5,31 @@ import { useDogs, useMultiUserDogs } from '@/app/hooks/useDogs';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Dog } from '@models';
+import { Dog, ExerciseType } from '@models';
+import { EXERCISE_TYPE_LABELS } from '@/app/utils/exercise-type';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 
 interface SessionFiltersProps {
   userIds: string[];
   dogIds: string[];
+  exerciseTypes: ExerciseType[];
   onUserIdsChange: (ids: string[]) => void;
   onDogIdsChange: (ids: string[]) => void;
+  onExerciseTypesChange: (types: ExerciseType[]) => void;
 }
+
+const exerciseTypeOptions: MultiSelectOption[] = Object.values(ExerciseType).map(value => ({
+  value,
+  label: EXERCISE_TYPE_LABELS[value]?.label ?? value,
+}));
 
 export function SessionFilters({
   userIds,
   dogIds,
+  exerciseTypes,
   onUserIdsChange,
   onDogIdsChange,
+  onExerciseTypesChange,
 }: SessionFiltersProps) {
   const { user } = useAuth();
 
@@ -72,7 +82,8 @@ export function SessionFilters({
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3">
         {user?.isAdmin && (
           <div className="flex flex-col gap-1.5 flex-1">
             <Label>Utilisateurs</Label>
@@ -117,6 +128,19 @@ export function SessionFilters({
           </div>
         )}
       </div>
+
+      {/* Filtre type de séance */}
+      <div className="flex flex-col gap-1.5">
+        <Label>Type de séance</Label>
+        <MultiSelect
+          options={exerciseTypeOptions}
+          selected={exerciseTypes}
+          onChange={types => onExerciseTypesChange(types as ExerciseType[])}
+          placeholder="Tous les types"
+          searchPlaceholder="Rechercher un type..."
+        />
+      </div>
+    </div>
     </TooltipProvider>
   );
 }

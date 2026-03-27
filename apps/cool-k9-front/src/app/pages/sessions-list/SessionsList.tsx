@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessions } from '../../hooks/useSessions';
+import { ExerciseType } from '@models';
 import { SessionCard } from './components/SessionCard';
 import { SessionFilters } from './components/SessionFilters';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ export function SessionsList() {
   // ── Filtres ───────────────────────────────────────────────────
   const [filterUserIds, setFilterUserIds] = useState<string[]>([]);
   const [filterDogIds, setFilterDogIds] = useState<string[]>([]);
+  const [filterExerciseTypes, setFilterExerciseTypes] = useState<ExerciseType[]>([]);
 
   const handleUserIdsChange = (ids: string[]) => {
     setFilterUserIds(ids);
@@ -27,11 +29,16 @@ export function SessionsList() {
     setPage(1);
   };
 
+  const handleExerciseTypesChange = (types: ExerciseType[]) => {
+    setFilterExerciseTypes(types);
+    setPage(1);
+  };
+
   // ── Pagination ────────────────────────────────────────────────
   const [page, setPage] = useState(1);
 
   // ── Sessions ──────────────────────────────────────────────────
-  const { data, isLoading, isError } = useSessions(undefined, page, filterUserIds, filterDogIds);
+  const { data, isLoading, isError } = useSessions(filterExerciseTypes, page, filterUserIds, filterDogIds);
 
   const sessions = data?.sessions ?? [];
   const totalPages = data ? Math.ceil(data.total / data.perPage) : 1;
@@ -53,8 +60,10 @@ export function SessionsList() {
       <SessionFilters
         userIds={filterUserIds}
         dogIds={filterDogIds}
+        exerciseTypes={filterExerciseTypes}
         onUserIdsChange={handleUserIdsChange}
         onDogIdsChange={handleDogIdsChange}
+        onExerciseTypesChange={handleExerciseTypesChange}
       />
 
       {/* Liste */}
