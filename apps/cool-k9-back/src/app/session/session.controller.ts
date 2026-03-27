@@ -17,9 +17,17 @@ export class SessionController {
   @Get()
   getAllSessions(
     @Request() req: AuthenticatedRequest,
-    @Query('exerciseType') exerciseType?: ExerciseType
+    @Query('exerciseType') exerciseType?: ExerciseType,
+    @Query('page') page?: string,
+    @Query('perPage') perPage?: string,
   ) {
-    return this.sessionService.getAllSessions(req.user.userId, req.user.role ?? '', exerciseType);
+    return this.sessionService.getAllSessions(
+      req.user.userId,
+      req.user.role ?? '',
+      exerciseType,
+      page ? parseInt(page, 10) : undefined,
+      perPage ? parseInt(perPage, 10) : undefined,
+    );
   }
 
   @Post()

@@ -29,10 +29,16 @@ export class SessionService {
     };
   }
 
-  async getAllSessions(userId: string, role: string, exerciseType?: ExerciseType): Promise<Session[]> {
+  async getAllSessions(
+    userId: string,
+    role: string,
+    exerciseType?: ExerciseType,
+    page = 1,
+    perPage = 20,
+  ): Promise<{ sessions: Session[]; total: number; page: number; perPage: number }> {
     let query = this.supabaseService.admin
       .from('sessions')
-      .select('*')
+      .select('*', { count: 'exact' })
       .order('date', { ascending: false })
       .order('created_at', { ascending: false });
 
@@ -44,11 +50,17 @@ export class SessionService {
       query = query.eq('exercise_type', exerciseType);
     }
 
-    const { data, error } = await query;
+    const from = (page - 1) * perPage;
+    const { data, error, count } = await query.range(from, from + perPage - 1);
 
     if (error) throw new Error(error.message);
 
-    return (data ?? []).map(row => this.mapRow(row as Record<string, unknown>));
+    return {
+      sessions: (data ?? []).map(row => this.mapRow(row as Record<string, unknown>)),
+      total: count ?? 0,
+      page,
+      perPage,
+    };
   }
 
   async createSession(dto: import('./create-session.dto').CreateSessionDto): Promise<Session> {

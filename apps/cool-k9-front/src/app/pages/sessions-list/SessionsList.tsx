@@ -1,15 +1,20 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessions } from '../../hooks/useSessions';
 import { SessionCard } from './components/SessionCard';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
-import { AlertCircle, Inbox, Loader2, PlusCircle } from 'lucide-react';
+import { AlertCircle, ChevronLeft, ChevronRight, Inbox, Loader2, PlusCircle } from 'lucide-react';
 import { useAuth } from '@authentication';
 
 export function SessionsList() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: sessions = [], isLoading, isError } = useSessions();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = useSessions(undefined, page);
+
+  const sessions = data?.sessions ?? [];
+  const totalPages = data ? Math.ceil(data.total / data.perPage) : 1;
 
   const handleNewSession = () => navigate('/sessions/new');
 
@@ -79,6 +84,32 @@ export function SessionsList() {
           </div>
         )}
       </section>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-8">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(p => p - 1)}
+            disabled={page === 1}
+            aria-label="Page précédente"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(p => p + 1)}
+            disabled={page === totalPages}
+            aria-label="Page suivante"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

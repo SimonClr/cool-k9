@@ -12,15 +12,26 @@ async function getAuthHeaders(): Promise<HeadersInit> {
     : {};
 }
 
+export interface SessionsPage {
+  sessions: Session[];
+  total: number;
+  page: number;
+  perPage: number;
+}
+
 export class SessionService {
-  static async getSessions(exerciseType?: ExerciseType): Promise<Session[]> {
-    const params = new URLSearchParams();
+  static async getSessions(params?: {
+    exerciseType?: ExerciseType;
+    page?: number;
+    perPage?: number;
+  }): Promise<SessionsPage> {
+    const query = new URLSearchParams();
 
-    if (exerciseType) {
-      params.set('exerciseType', exerciseType);
-    }
+    if (params?.exerciseType) query.set('exerciseType', params.exerciseType);
+    if (params?.page != null) query.set('page', String(params.page));
+    if (params?.perPage != null) query.set('perPage', String(params.perPage));
 
-    const url = params.toString() ? `${API_URL}?${params}` : API_URL;
+    const url = query.toString() ? `${API_URL}?${query}` : API_URL;
 
     const response = await fetch(url, {
       headers: await getAuthHeaders(),
@@ -30,12 +41,15 @@ export class SessionService {
       throw new Error('Failed to fetch sessions');
     }
 
-    const sessions: Session[] = await response.json();
+    const result: SessionsPage = await response.json();
 
-    return sessions.map((session) => ({
-      ...session,
-      date: new Date(session.date),
-    }));
+    return {
+      ...result,
+      sessions: result.sessions.map(session => ({
+        ...session,
+        date: new Date(session.date),
+      })),
+    };
   }
 
   static async getSession(id: string): Promise<Session> {
