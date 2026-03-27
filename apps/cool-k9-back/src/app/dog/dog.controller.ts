@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { DogService } from './dog.service';
 import { CreateDogDto } from './create-dog.dto';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
@@ -9,8 +9,12 @@ export class DogController {
   constructor(private readonly dogService: DogService) {}
 
   @Get()
-  getDogs(@Req() req: { user: { userId: string } }) {
-    return this.dogService.getDogs(req.user.userId);
+  getDogs(
+    @Req() req: { user: { userId: string; role?: string } },
+    @Query('userId') userId?: string,
+  ) {
+    const effectiveUserId = req.user.role === 'admin' && userId ? userId : req.user.userId;
+    return this.dogService.getDogs(effectiveUserId);
   }
 
   @Post()

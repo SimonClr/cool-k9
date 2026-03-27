@@ -28,11 +28,11 @@ export enum ObservationStatus {
 export interface Session {
   id: string;
   date: Date;
-  dogId?: string;
-  dogName: string;
+  dogIds: string[];
+  dogNames: string[];
   exerciseType: ExerciseType;
   duration: number; // in minutes
-  userId: string;
+  userIds: string[];
   location?: string;
   locationLat?: number;
   locationLon?: number;

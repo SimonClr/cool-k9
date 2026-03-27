@@ -36,7 +36,7 @@ export function App() {
       >
         <Route index element={<Navigate to="/sessions" replace />} />
         <Route path="sessions" element={<SessionsList />} />
-        <Route path="sessions/new" element={<AddSessionPage />} />
+        <Route path="sessions/new" element={<AdminRoute><AddSessionPage /></AdminRoute>} />
         <Route path="sessions/:id" element={<SessionDetailPage />} />
         <Route path="pricing" element={<AdminRoute><Pricing /></AdminRoute>} />
         <Route path="profile" element={<ProfilePage />} />

@@ -11,8 +11,9 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 }
 
 export class DogService {
-  static async getDogs(): Promise<Dog[]> {
-    const response = await fetch(API_URL, {
+  static async getDogs(userId?: string): Promise<Dog[]> {
+    const url = userId ? `${API_URL}?userId=${encodeURIComponent(userId)}` : API_URL;
+    const response = await fetch(url, {
       headers: await getAuthHeaders(),
     });
     if (!response.ok) throw new Error('Failed to fetch dogs');

@@ -10,11 +10,11 @@ export class SessionService {
     return {
       id: row['id'] as string,
       date: new Date(row['date'] as string),
-      dogId: (row['dog_id'] as string | null) ?? undefined,
-      dogName: (row['dogs'] as { name: string } | null)?.name ?? '',
+      userIds: (row['user_ids'] as string[]) ?? [],
+      dogIds: (row['dog_ids'] as string[]) ?? [],
+      dogNames: (row['dog_names'] as string[]) ?? [],
       exerciseType: row['exercise_type'] as ExerciseType,
       duration: row['duration'] as number,
-      userId: row['user_id'] as string,
       location: (row['location'] as string | null) ?? undefined,
       locationLat: (row['location_lat'] as number | null) ?? undefined,
       locationLon: (row['location_lon'] as number | null) ?? undefined,
@@ -29,13 +29,16 @@ export class SessionService {
     };
   }
 
-  async getAllSessions(userId: string, exerciseType?: ExerciseType): Promise<Session[]> {
+  async getAllSessions(userId: string, role: string, exerciseType?: ExerciseType): Promise<Session[]> {
     let query = this.supabaseService.admin
       .from('sessions')
-      .select('*, dogs(name)')
-      .eq('user_id', userId)
+      .select('*')
       .order('date', { ascending: false })
       .order('created_at', { ascending: false });
+
+    if (role !== 'admin') {
+      query = query.contains('user_ids', [userId]);
+    }
 
     if (exerciseType) {
       query = query.eq('exercise_type', exerciseType);
@@ -48,13 +51,29 @@ export class SessionService {
     return (data ?? []).map(row => this.mapRow(row as Record<string, unknown>));
   }
 
-  async createSession(userId: string, dto: import('./create-session.dto').CreateSessionDto): Promise<Session> {
+  async createSession(dto: import('./create-session.dto').CreateSessionDto): Promise<Session> {
+    // Fetch dog names for denormalization
+    let dogNames: string[] = [];
+    if (dto.dogIds && dto.dogIds.length > 0) {
+      const { data: dogsData } = await this.supabaseService.admin
+        .from('dogs')
+        .select('id, name')
+        .in('id', dto.dogIds);
+      if (dogsData) {
+        dogNames = dto.dogIds.map(id => {
+          const dog = (dogsData as { id: string; name: string }[]).find(d => d.id === id);
+          return dog?.name ?? '';
+        }).filter(Boolean);
+      }
+    }
+
     const { data, error } = await this.supabaseService.admin
       .from('sessions')
       .insert({
-        user_id: userId,
+        user_ids: dto.userIds,
         date: dto.date,
-        dog_id: dto.dogId ?? null,
+        dog_ids: dto.dogIds ?? [],
+        dog_names: dogNames,
         exercise_type: dto.exerciseType,
         duration: dto.duration,
         location: dto.location ?? null,
@@ -69,20 +88,24 @@ export class SessionService {
         trainer_observations: dto.trainerObservations ?? null,
         observation_status: dto.observationStatus ?? null,
       })
-      .select('*, dogs(name)')
+      .select('*')
       .single();
 
     if (error || !data) throw new Error(error?.message ?? 'Failed to create session');
     return this.mapRow(data as Record<string, unknown>);
   }
 
-  async getSession(userId: string, id: string): Promise<Session> {
-    const { data, error } = await this.supabaseService.admin
+  async getSession(userId: string, role: string, id: string): Promise<Session> {
+    let query = this.supabaseService.admin
       .from('sessions')
-      .select('*, dogs(name)')
-      .eq('id', id)
-      .eq('user_id', userId)
-      .single();
+      .select('*')
+      .eq('id', id);
+
+    if (role !== 'admin') {
+      query = query.contains('user_ids', [userId]);
+    }
+
+    const { data, error } = await query.single();
 
     if (error || !data) throw new NotFoundException();
 

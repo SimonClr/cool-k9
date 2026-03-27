@@ -3,9 +3,10 @@ import { SessionService } from './session.service';
 import { CreateSessionDto } from './create-session.dto';
 import { ExerciseType } from '@models';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
+import { AdminGuard } from '../auth/admin.guard';
 
 interface AuthenticatedRequest extends Request {
-  user: { userId: string; email: string };
+  user: { userId: string; email: string; role?: string };
 }
 
 @Controller('sessions')
@@ -18,15 +19,15 @@ export class SessionController {
     @Request() req: AuthenticatedRequest,
     @Query('exerciseType') exerciseType?: ExerciseType
   ) {
-    return this.sessionService.getAllSessions(req.user.userId, exerciseType);
+    return this.sessionService.getAllSessions(req.user.userId, req.user.role ?? '', exerciseType);
   }
 
   @Post()
+  @UseGuards(AdminGuard)
   createSession(
-    @Request() req: AuthenticatedRequest,
     @Body() dto: CreateSessionDto
   ) {
-    return this.sessionService.createSession(req.user.userId, dto);
+    return this.sessionService.createSession(dto);
   }
 
   @Get(':id')
@@ -34,6 +35,6 @@ export class SessionController {
     @Request() req: AuthenticatedRequest,
     @Param('id') id: string
   ) {
-    return this.sessionService.getSession(req.user.userId, id);
+    return this.sessionService.getSession(req.user.userId, req.user.role ?? '', id);
   }
 }

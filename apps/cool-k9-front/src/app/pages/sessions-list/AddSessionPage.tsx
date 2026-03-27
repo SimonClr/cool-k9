@@ -1,13 +1,15 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Environment, ExerciseType, Weather } from '@models';
 import { useCreateSession } from '../../hooks/useSessions';
-import { useDogs } from '../../hooks/useDogs';
+import { useMultiUserDogs } from '../../hooks/useDogs';
+import { useUsers } from '../../hooks/useUsers';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { MultiSelect } from '@/components/ui/multi-select';
 import {
   Select,
   SelectContent,
@@ -23,6 +25,8 @@ import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { LocationAutocomplete, LocationValue } from '../../components/LocationAutocomplete';
 import { WEATHER_LABELS, ENVIRONMENT_LABELS } from '@/app/utils/session-labels';
+import { Dog } from '@models';
+import type { MultiSelectOption } from '@/components/ui/multi-select';
 
 const EXERCISE_TYPE_LABELS: Record<ExerciseType, string> = {
   [ExerciseType.HUNTING_GAMES]: 'Hunting Games',
@@ -32,7 +36,7 @@ const EXERCISE_TYPE_LABELS: Record<ExerciseType, string> = {
 };
 
 type FieldErrors = {
-  dogId?: string;
+  userIds?: string;
   date?: string;
   duration?: string;
   exerciseType?: string;
@@ -50,17 +54,38 @@ function FieldError({ id, message }: { id: string; message: string }) {
 export function AddSessionPage() {
   const navigate = useNavigate();
   const createSession = useCreateSession();
-  const { data: dogs = [] } = useDogs();
+  const { data: users = [], isLoading: usersLoading } = useUsers();
 
   // Champs requis
-  const [dogId, setDogId] = useState('');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedDogIds, setSelectedDogIds] = useState<string[]>([]);
   const [date, setDate] = useState<Date>(new Date());
   const [dateOpen, setDateOpen] = useState(false);
   const [duration, setDuration] = useState('');
   const [exerciseType, setExerciseType] = useState<ExerciseType | ''>('');
 
-  // Auto-sélection si un seul chien
-  const effectiveDogId = dogId || (dogs.length === 1 ? dogs[0].id : '');
+  // Chiens des utilisateurs sélectionnés
+  const { data: availableDogs, isLoading: dogsLoading } = useMultiUserDogs(selectedUserIds);
+
+  // Auto-sélection des chiens si l'utilisateur n'en a qu'un
+  useEffect(() => {
+    if (dogsLoading || availableDogs.length === 0) return;
+
+    const autoSelected: string[] = [];
+    selectedUserIds.forEach(uid => {
+      const userDogs = availableDogs.filter((d: Dog) => d.userId === uid);
+      if (userDogs.length === 1) {
+        autoSelected.push(userDogs[0].id);
+      }
+    });
+
+    setSelectedDogIds(prev => {
+      // Keep manually selected dogs that are still available, then add auto-selected
+      const stillAvailable = prev.filter(id => availableDogs.some((d: Dog) => d.id === id));
+      const newAuto = autoSelected.filter(id => !stillAvailable.includes(id));
+      return [...stillAvailable, ...newAuto];
+    });
+  }, [availableDogs, dogsLoading, selectedUserIds]);
 
   // Champs optionnels
   const [environment, setEnvironment] = useState<Environment | ''>('');
@@ -74,9 +99,8 @@ export function AddSessionPage() {
 
   const validate = (): boolean => {
     const errors: FieldErrors = {};
-    if (!effectiveDogId) errors.dogId = 'Veuillez sélectionner un chien';
+    if (selectedUserIds.length === 0) errors.userIds = 'Veuillez sélectionner au moins un utilisateur';
     if (!date) errors.date = 'La date est obligatoire';
-
     if (!duration) {
       errors.duration = 'La durée est obligatoire';
     } else {
@@ -96,7 +120,8 @@ export function AddSessionPage() {
     createSession.mutate(
       {
         date: date as unknown as Date,
-        dogId: effectiveDogId || undefined,
+        userIds: selectedUserIds,
+        dogIds: selectedDogIds.length > 0 ? selectedDogIds : undefined,
         exerciseType: exerciseType as ExerciseType,
         duration: parseInt(duration, 10),
         environment: (environment || undefined) as Environment | undefined,
@@ -141,6 +166,23 @@ export function AddSessionPage() {
 
   const handleWeatherChange = (value: string) => setWeather(value as Weather);
 
+  const handleUsersChange = (ids: string[]) => {
+    setSelectedUserIds(ids);
+    if (fieldErrors.userIds) setFieldErrors(p => ({ ...p, userIds: undefined }));
+  };
+
+  const userOptions: MultiSelectOption[] = users.map(u => ({
+    value: u.id,
+    label: `${u.firstName} ${u.lastName}`.trim() || u.email,
+    sublabel: u.email,
+  }));
+
+  const dogOptions: MultiSelectOption[] = availableDogs.map((d: Dog) => ({
+    value: d.id,
+    label: d.name,
+    sublabel: `${d.age} ans`,
+  }));
+
   return (
     <div className="max-w-2xl mx-auto">
       <Card>
@@ -159,34 +201,35 @@ export function AddSessionPage() {
               </div>
             )}
 
-            {/* Chien */}
+            {/* Utilisateurs */}
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="dogId">Chien</Label>
-              <Select
-                value={effectiveDogId}
-                onValueChange={value => {
-                  setDogId(value);
-                  if (fieldErrors.dogId) setFieldErrors(p => ({ ...p, dogId: undefined }));
-                }}
-              >
-                <SelectTrigger
-                  id="dogId"
-                  aria-invalid={!!fieldErrors.dogId}
-                  aria-describedby={fieldErrors.dogId ? 'dogId-error' : undefined}
-                  className={cn(fieldErrors.dogId && 'border-destructive')}
-                >
-                  <SelectValue placeholder="Sélectionner un chien" />
-                </SelectTrigger>
-                <SelectContent>
-                  {dogs.map(dog => (
-                    <SelectItem key={dog.id} value={dog.id}>
-                      {dog.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {fieldErrors.dogId && <FieldError id="dogId-error" message={fieldErrors.dogId} />}
+              <Label>Utilisateurs</Label>
+              <MultiSelect
+                options={userOptions}
+                selected={selectedUserIds}
+                onChange={handleUsersChange}
+                placeholder={usersLoading ? 'Chargement...' : 'Sélectionner des utilisateurs'}
+                searchPlaceholder="Rechercher un utilisateur..."
+                disabled={usersLoading}
+                hasError={!!fieldErrors.userIds}
+              />
+              {fieldErrors.userIds && <FieldError id="userIds-error" message={fieldErrors.userIds} />}
             </div>
+
+            {/* Chiens (affiché après sélection d'au moins un utilisateur) */}
+            {selectedUserIds.length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <Label>Chiens</Label>
+                <MultiSelect
+                  options={dogOptions}
+                  selected={selectedDogIds}
+                  onChange={setSelectedDogIds}
+                  placeholder={dogsLoading ? 'Chargement...' : dogOptions.length === 0 ? 'Aucun chien enregistré' : 'Sélectionner des chiens'}
+                  searchPlaceholder="Rechercher un chien..."
+                  disabled={dogsLoading || dogOptions.length === 0}
+                />
+              </div>
+            )}
 
             {/* Date + Durée */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

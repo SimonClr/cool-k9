@@ -34,7 +34,7 @@ export function SessionCard({ session }: SessionCardProps) {
         <CardContent className="space-y-2">
           <div className="flex items-center gap-3 text-sm">
             <Dog className="h-4 w-4 text-muted-foreground" />
-            <span>{session.dogName}</span>
+            <span>{session.dogNames.join(', ') || '—'}</span>
           </div>
 
           <div className="flex items-center gap-3 text-sm">

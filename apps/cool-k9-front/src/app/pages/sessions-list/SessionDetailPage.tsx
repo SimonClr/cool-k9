@@ -128,7 +128,7 @@ export function SessionDetailPage() {
         <CardContent className="pt-6 space-y-3">
           <div className="flex items-center gap-3 text-sm">
             <Dog className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-            <span className="font-medium">{session.dogName}</span>
+            <span className="font-medium">{session.dogNames.join(', ') || '—'}</span>
           </div>
 
           <div className="flex items-center gap-3 text-sm">

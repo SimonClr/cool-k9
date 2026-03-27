@@ -1,6 +1,6 @@
 import { ExerciseType, Session } from '@models';
 
-export type CreateSessionInput = Omit<Session, 'id' | 'userId' | 'dogName'>;
+export type CreateSessionInput = Omit<Session, 'id' | 'dogNames' | 'dogIds'> & { dogIds?: string[] };
 import { supabase } from '@authentication';
 
 const API_URL = 'http://localhost:3000/api/sessions';

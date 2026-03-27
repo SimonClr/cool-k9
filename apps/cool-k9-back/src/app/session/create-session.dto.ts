@@ -2,7 +2,8 @@ import { Environment, ExerciseType, ObservationStatus, Weather } from '@models';
 
 export class CreateSessionDto {
   date: string;
-  dogId?: string;
+  userIds: string[];
+  dogIds?: string[];
   exerciseType: ExerciseType;
   duration: number;
   location?: string;
