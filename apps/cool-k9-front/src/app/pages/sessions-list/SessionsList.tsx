@@ -89,35 +89,6 @@ export function SessionsList() {
 
   const handleNewSession = () => navigate('/sessions/new');
 
-  // ── Rendu ─────────────────────────────────────────────────────
-  if (isLoading && !data) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <header className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Mes séances</h1>
-        </header>
-        <div aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-2 text-muted-foreground py-12">
-          <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
-          <p>Chargement...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <header className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Mes séances</h1>
-        </header>
-        <div role="alert" className="flex items-center gap-2 text-destructive py-4">
-          <AlertCircle className="h-5 w-5" aria-hidden="true" />
-          <p>Erreur lors du chargement des séances</p>
-        </div>
-      </div>
-    );
-  }
-
   const hasFilters = user?.isAdmin || showDogFilter;
 
   return (
@@ -171,9 +142,15 @@ export function SessionsList() {
 
       {/* Liste */}
       <section className="flex flex-col gap-4">
-        {isLoading ? (
-          <div className="flex items-center justify-center gap-2 text-muted-foreground py-12">
+        {isError ? (
+          <div role="alert" className="flex items-center gap-2 text-destructive py-4">
+            <AlertCircle className="h-5 w-5" aria-hidden="true" />
+            <p>Erreur lors du chargement des séances</p>
+          </div>
+        ) : isLoading ? (
+          <div aria-live="polite" aria-busy="true" className="flex items-center justify-center gap-2 text-muted-foreground py-12">
             <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
+            <p>Chargement...</p>
           </div>
         ) : (
           <>
