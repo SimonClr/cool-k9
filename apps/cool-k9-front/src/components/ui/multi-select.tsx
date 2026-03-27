@@ -105,13 +105,13 @@ export function MultiSelect({
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
               selectedOptions.map(opt => (
-                <Badge key={opt.value} variant="secondary" className="gap-1 pr-1">
-                  {opt.label}
+                <Badge key={opt.value} variant="secondary" className="gap-1 pr-1 max-w-[160px]">
+                  <span className="truncate">{opt.label}</span>
                   <span
                     role="button"
                     aria-label={`Retirer ${opt.label}`}
                     onClick={e => remove(e, opt.value)}
-                    className="rounded-sm hover:bg-muted cursor-pointer"
+                    className="rounded-sm hover:bg-muted cursor-pointer shrink-0"
                   >
                     <X className="h-3 w-3" />
                   </span>

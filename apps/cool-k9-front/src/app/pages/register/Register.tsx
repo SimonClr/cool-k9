@@ -116,6 +116,7 @@ export function Register() {
                   id="firstName"
                   name="firstName"
                   type="text"
+                  maxLength={40}
                   value={firstName}
                   onChange={e => {
                     setFirstName(e.target.value);
@@ -140,6 +141,7 @@ export function Register() {
                   id="lastName"
                   name="lastName"
                   type="text"
+                  maxLength={30}
                   ref={lastNameRef}
                   value={lastName}
                   onChange={e => {

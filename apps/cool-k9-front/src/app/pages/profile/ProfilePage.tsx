@@ -51,6 +51,7 @@ export function ProfilePage() {
               <Label htmlFor="firstName">Prénom</Label>
               <Input
                 id="firstName"
+                maxLength={40}
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
                 autoComplete="given-name"
@@ -60,6 +61,7 @@ export function ProfilePage() {
               <Label htmlFor="lastName">Nom</Label>
               <Input
                 id="lastName"
+                maxLength={30}
                 value={lastName}
                 onChange={e => setLastName(e.target.value)}
                 autoComplete="family-name"
