@@ -6,12 +6,11 @@ export interface ExerciseTypeData {
 }
 
 export const EXERCISE_TYPE_LABELS: Record<ExerciseType, ExerciseTypeData> = {
-  [ExerciseType.HUNTING_GAMES]: { label: 'Hunting Games', variant: 'warning' },
-  [ExerciseType.NOSEWORK]:      { label: 'Nosework',      variant: 'default' },
-  [ExerciseType.PISTAGE]:       { label: 'Pistage',       variant: 'success' },
-  [ExerciseType.MANTRAILING]:   { label: 'Mantrailing',   variant: 'secondary' },
+  [ExerciseType.EDUCATION]:          { label: 'Éducation',           variant: 'default'   },
+  [ExerciseType.RECHERCHE_MATIERE]:  { label: 'Recherche de matière', variant: 'warning'   },
+  [ExerciseType.RECHERCHE_PERSONNE]: { label: 'Recherche de personne', variant: 'success'  },
 };
 
 export function getExerciseTypeData(type: ExerciseType): ExerciseTypeData {
-  return EXERCISE_TYPE_LABELS[type];
+  return EXERCISE_TYPE_LABELS[type] ?? { label: type, variant: 'secondary' };
 }

@@ -29,10 +29,9 @@ import { Dog } from '@models';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 
 const EXERCISE_TYPE_LABELS: Record<ExerciseType, string> = {
-  [ExerciseType.HUNTING_GAMES]: 'Hunting Games',
-  [ExerciseType.NOSEWORK]: 'Nosework',
-  [ExerciseType.PISTAGE]: 'Pistage',
-  [ExerciseType.MANTRAILING]: 'Mantrailing',
+  [ExerciseType.EDUCATION]: 'Éducation',
+  [ExerciseType.RECHERCHE_MATIERE]: 'Recherche de matière',
+  [ExerciseType.RECHERCHE_PERSONNE]: 'Recherche de personne',
 };
 
 type FieldErrors = {
