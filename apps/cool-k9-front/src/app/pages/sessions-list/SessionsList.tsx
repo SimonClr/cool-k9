@@ -47,7 +47,7 @@ export function SessionsList() {
 
   return (
     <div>
-      <header className="flex flex-col sm:flex-row sm:items-end gap-4 mb-6">
+      <header className="flex flex-col sm:flex-row sm:items-end sm:gap-20 gap-4 mb-6">
         <SessionFilters
           userIds={filterUserIds}
           dogIds={filterDogIds}
