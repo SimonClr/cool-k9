@@ -105,9 +105,9 @@ export function SessionsList() {
 
       {/* Filtres */}
       {hasFilters && (
-        <div className="flex flex-col gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           {user?.isAdmin && (
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 flex-1">
               <Label>Utilisateurs</Label>
               <MultiSelect
                 options={userOptions}
@@ -125,7 +125,7 @@ export function SessionsList() {
           )}
 
           {showDogFilter && (
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 flex-1">
               <Label>Chiens</Label>
               <MultiSelect
                 options={dogOptions}
