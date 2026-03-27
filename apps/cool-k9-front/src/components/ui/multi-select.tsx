@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronDown, X } from 'lucide-react';
+import { Check, ChevronDown, Loader2, X } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,16 @@ interface MultiSelectProps {
   disabled?: boolean;
   className?: string;
   hasError?: boolean;
+  /** If provided, search is server-side: called on every input change, client-side filter disabled */
+  onSearchChange?: (term: string) => void;
+  /** Show a loading spinner at the bottom of the list */
+  isLoading?: boolean;
+  /** Show a "Charger plus" button at the bottom */
+  hasMore?: boolean;
+  /** Called when the user clicks "Charger plus" */
+  onLoadMore?: () => void;
+  /** Called when the popover opens/closes */
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function MultiSelect({
@@ -31,13 +41,32 @@ export function MultiSelect({
   disabled = false,
   className,
   hasError = false,
+  onSearchChange,
+  isLoading = false,
+  hasMore = false,
+  onLoadMore,
+  onOpenChange,
 }: MultiSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 
-  const filtered = options.filter(opt =>
-    `${opt.label} ${opt.sublabel ?? ''}`.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (!next) setSearch('');
+    onOpenChange?.(next);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    onSearchChange?.(value);
+  };
+
+  // If server-side search is active, skip client-side filtering
+  const filtered = onSearchChange
+    ? options
+    : options.filter(opt =>
+        `${opt.label} ${opt.sublabel ?? ''}`.toLowerCase().includes(search.toLowerCase())
+      );
 
   const toggle = (value: string) => {
     onChange(
@@ -52,10 +81,12 @@ export function MultiSelect({
     onChange(selected.filter(v => v !== value));
   };
 
-  const selectedOptions = selected.map(v => options.find(o => o.value === v)).filter(Boolean) as MultiSelectOption[];
+  const selectedOptions = selected
+    .map(v => options.find(o => o.value === v))
+    .filter(Boolean) as MultiSelectOption[];
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -101,13 +132,13 @@ export function MultiSelect({
           <Input
             placeholder={searchPlaceholder}
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => handleSearchChange(e.target.value)}
             className="h-8"
             autoFocus
           />
         </div>
         <ul className="max-h-56 overflow-y-auto py-1" role="listbox" aria-multiselectable="true">
-          {filtered.length === 0 ? (
+          {filtered.length === 0 && !isLoading ? (
             <li className="px-3 py-2 text-sm text-muted-foreground">Aucun résultat</li>
           ) : (
             filtered.map(opt => {
@@ -130,6 +161,24 @@ export function MultiSelect({
             })
           )}
         </ul>
+
+        {isLoading && (
+          <div className="flex justify-center items-center py-2 border-t">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          </div>
+        )}
+
+        {hasMore && !isLoading && (
+          <div className="border-t p-1">
+            <button
+              type="button"
+              onClick={onLoadMore}
+              className="w-full text-xs text-muted-foreground hover:text-foreground py-1.5 hover:bg-accent rounded-sm transition-colors"
+            >
+              Charger plus
+            </button>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );

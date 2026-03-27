@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Environment, ExerciseType, Weather } from '@models';
 import { useCreateSession } from '../../hooks/useSessions';
 import { useMultiUserDogs } from '../../hooks/useDogs';
-import { useUsers } from '../../hooks/useUsers';
+import { useUserSearch } from '../../hooks/useUsers';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,7 +54,31 @@ function FieldError({ id, message }: { id: string; message: string }) {
 export function AddSessionPage() {
   const navigate = useNavigate();
   const createSession = useCreateSession();
-  const { data: users = [], isLoading: usersLoading } = useUsers();
+
+  // Users search state
+  const [usersOpen, setUsersOpen] = useState(false);
+  const [usersSearch, setUsersSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(usersSearch), 300);
+    return () => clearTimeout(t);
+  }, [usersSearch]);
+
+  const {
+    data: usersPages,
+    isLoading: usersLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useUserSearch(debouncedSearch, usersOpen);
+
+  const userOptions: MultiSelectOption[] = (usersPages?.pages ?? [])
+    .flatMap(p => p.users)
+    .map(u => ({
+      value: u.id,
+      label: `${u.firstName} ${u.lastName}`.trim() || u.email,
+      sublabel: u.email,
+    }));
 
   // Champs requis
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -171,12 +195,6 @@ export function AddSessionPage() {
     if (fieldErrors.userIds) setFieldErrors(p => ({ ...p, userIds: undefined }));
   };
 
-  const userOptions: MultiSelectOption[] = users.map(u => ({
-    value: u.id,
-    label: `${u.firstName} ${u.lastName}`.trim() || u.email,
-    sublabel: u.email,
-  }));
-
   const dogOptions: MultiSelectOption[] = availableDogs.map((d: Dog) => ({
     value: d.id,
     label: d.name,
@@ -208,10 +226,14 @@ export function AddSessionPage() {
                 options={userOptions}
                 selected={selectedUserIds}
                 onChange={handleUsersChange}
-                placeholder={usersLoading ? 'Chargement...' : 'Sélectionner des utilisateurs'}
+                placeholder="Sélectionner des utilisateurs"
                 searchPlaceholder="Rechercher un utilisateur..."
-                disabled={usersLoading}
                 hasError={!!fieldErrors.userIds}
+                onSearchChange={setUsersSearch}
+                isLoading={usersLoading}
+                hasMore={hasNextPage}
+                onLoadMore={() => fetchNextPage()}
+                onOpenChange={setUsersOpen}
               />
               {fieldErrors.userIds && <FieldError id="userIds-error" message={fieldErrors.userIds} />}
             </div>
