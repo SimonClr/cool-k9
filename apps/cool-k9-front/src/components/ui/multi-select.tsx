@@ -119,6 +119,16 @@ export function MultiSelect({
               ))
             )}
           </span>
+          {selectedOptions.length > 0 && (
+            <span
+              role="button"
+              aria-label="Tout effacer"
+              onClick={e => { e.stopPropagation(); onChange([]); }}
+              className="shrink-0 rounded-sm hover:bg-muted cursor-pointer text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </span>
+          )}
           <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
         </button>
       </PopoverTrigger>
