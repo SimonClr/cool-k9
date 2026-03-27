@@ -77,8 +77,6 @@ export function SessionFilters({
     sublabel: `${d.age} ans`,
   }));
 
-  const hasFilters = user?.isAdmin || showDogFilter;
-  if (!hasFilters) return null;
 
   return (
     <TooltipProvider>
