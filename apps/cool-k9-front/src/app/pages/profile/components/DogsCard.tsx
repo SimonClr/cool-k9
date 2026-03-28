@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useDogs, useCreateDog, useUpdateDog } from '@/app/hooks/useDogs';
-import { type CardHandle } from './profile.types';
+import { type CardHandle } from '../models/profile.types';
 
 type DogRow = {
   id?: string;

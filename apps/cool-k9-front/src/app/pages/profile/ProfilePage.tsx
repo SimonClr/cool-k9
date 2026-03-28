@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { UserProfileCard } from './components/UserProfileCard';
 import { DogsCard } from './components/DogsCard';
-import { type CardHandle } from './components/profile.types';
+import { type CardHandle } from './models/profile.types';
 
 export function ProfilePage() {
   const profileRef = useRef<CardHandle>(null);

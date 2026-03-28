@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { SessionFormFields } from './SessionFormFields';
-import { OBSERVATION_STATUS_LABELS, OBSERVATION_STATUS_VARIANTS } from './session-form.types';
+import { OBSERVATION_STATUS_LABELS, OBSERVATION_STATUS_VARIANTS } from '../models/session-form.types';
 import { type LocationValue } from '@/app/components/LocationAutocomplete';
 import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '@/app/utils/session-labels';
 import { getExerciseTypeData } from '@/app/utils/exercise-type'; // ─── SectionCard ──────────────────────────────────────────────────────────────

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { SessionFormFields } from './SessionFormFields';
-import { type FieldErrors } from './session-form.types';
+import { type FieldErrors } from '../models/session-form.types';
 import { type LocationValue } from '@/app/components/LocationAutocomplete';
 
 export function CreateSessionForm() {
