@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Environment, ObservationStatus, Session } from '@models';
 import { useUpdateSession } from '@/app/hooks/useSessions';
@@ -58,14 +58,7 @@ export function UserSessionView({ session }: { session: Session }) {
   const canEditOwnerObs = session.userIds.length === 1;
   const showTrainerObservations = session.observationStatus !== ObservationStatus.WAITING_OWNER;
 
-  const [ownerObservations, setOwnerObservations] = useState('');
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    if (initialized) return;
-    setOwnerObservations(session.ownerObservations ?? '');
-    setInitialized(true);
-  }, [session, initialized]);
+  const [ownerObservations, setOwnerObservations] = useState(session.ownerObservations ?? '');
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

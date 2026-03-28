@@ -38,42 +38,25 @@ export function AdminSessionForm({ session }: { session: Session }) {
     fetchNextPage,
   } = useUserSearch(debouncedSearch, usersOpen);
 
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [selectedDogIds, setSelectedDogIds] = useState<string[]>([]);
-  const [date, setDate] = useState<Date>(new Date());
+  // session est garanti non-null ici (le parent attend isLoading=false avant de rendre ce composant)
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>(session.userIds);
+  const [selectedDogIds, setSelectedDogIds] = useState<string[]>(session.dogIds);
+  const [date, setDate] = useState<Date>(new Date(session.date));
   const [dateOpen, setDateOpen] = useState(false);
-  const [duration, setDuration] = useState('');
-  const [exerciseType, setExerciseType] = useState<ExerciseType | ''>('');
-  const [environment, setEnvironment] = useState<Environment | ''>('');
-  const [weather, setWeather] = useState<Weather | ''>('');
+  const [duration, setDuration] = useState(String(session.duration));
+  const [exerciseType, setExerciseType] = useState<ExerciseType | ''>(session.exerciseType ?? '');
+  const [environment, setEnvironment] = useState<Environment | ''>(session.environment ?? '');
+  const [weather, setWeather] = useState<Weather | ''>(session.weather ?? '');
   const [location, setLocation] = useState<{ display: string; coords: LocationValue | null }>({
-    display: '',
+    display: session.location ?? '',
     coords: null,
   });
-  const [route, setRoute] = useState('');
-  const [previousObjectives, setPreviousObjectives] = useState('');
-  const [trainerObservations, setTrainerObservations] = useState('');
-  const [nextObjectives, setNextObjectives] = useState('');
-  const [initialized, setInitialized] = useState(false);
+  const [route, setRoute] = useState(session.route ?? '');
+  const [previousObjectives, setPreviousObjectives] = useState(session.previousObjectives ?? '');
+  const [trainerObservations, setTrainerObservations] = useState(session.trainerObservations ?? '');
+  const [nextObjectives, setNextObjectives] = useState(session.nextObjectives ?? '');
 
   const { data: availableDogs, isLoading: dogsLoading } = useMultiUserDogs(selectedUserIds);
-
-  useEffect(() => {
-    if (initialized) return;
-    setSelectedUserIds(session.userIds);
-    setSelectedDogIds(session.dogIds);
-    setDate(new Date(session.date));
-    setDuration(String(session.duration));
-    setExerciseType(session.exerciseType);
-    setEnvironment(session.environment ?? '');
-    setWeather(session.weather ?? '');
-    setLocation({ display: session.location ?? '', coords: null });
-    setRoute(session.route ?? '');
-    setPreviousObjectives(session.previousObjectives ?? '');
-    setTrainerObservations(session.trainerObservations ?? '');
-    setNextObjectives(session.nextObjectives ?? '');
-    setInitialized(true);
-  }, [session, initialized]);
 
   const searchedOptions: MultiSelectOption[] = (usersPages?.pages ?? [])
     .flatMap(p => p.users)
@@ -140,6 +123,21 @@ export function AdminSessionForm({ session }: { session: Session }) {
       month: 'long',
       year: 'numeric',
     }).format(d);
+
+  const sort = (arr: string[]) => [...arr].sort().join(',');
+  const isDirty =
+    sort(selectedUserIds) !== sort(session.userIds) ||
+    sort(selectedDogIds) !== sort(session.dogIds) ||
+    date.toISOString().slice(0, 10) !== new Date(session.date).toISOString().slice(0, 10) ||
+    duration !== String(session.duration) ||
+    exerciseType !== (session.exerciseType ?? '') ||
+    environment !== (session.environment ?? '') ||
+    weather !== (session.weather ?? '') ||
+    location.display.trim() !== (session.location ?? '') ||
+    route.trim() !== (session.route ?? '') ||
+    previousObjectives.trim() !== (session.previousObjectives ?? '') ||
+    trainerObservations.trim() !== (session.trainerObservations ?? '') ||
+    nextObjectives.trim() !== (session.nextObjectives ?? '');
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -223,7 +221,7 @@ export function AdminSessionForm({ session }: { session: Session }) {
             <Button
               type="submit"
               className="flex-1"
-              disabled={updateSession.isPending}
+              disabled={updateSession.isPending || !isDirty}
               aria-busy={updateSession.isPending}
             >
               {updateSession.isPending ? (

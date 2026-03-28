@@ -211,7 +211,7 @@ export function CreateSessionForm() {
             <Button
               type="submit"
               className="flex-1"
-              disabled={createSession.isPending}
+              disabled={createSession.isPending || selectedUserIds.length === 0 || !duration || !exerciseType}
               aria-busy={createSession.isPending}
             >
               {createSession.isPending ? (
