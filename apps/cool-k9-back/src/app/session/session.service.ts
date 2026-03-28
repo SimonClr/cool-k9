@@ -6,13 +6,15 @@ import { SupabaseService } from '../supabase/supabase.service';
 export class SessionService {
   constructor(private readonly supabaseService: SupabaseService) {}
 
-  private mapRow(row: Record<string, unknown>): Session {
+  private mapRow(row: Record<string, unknown>, userMap?: Map<string, string>): Session {
+    const userIds = (row['user_ids'] as string[]) ?? [];
     return {
       id: row['id'] as string,
       date: new Date(row['date'] as string),
-      userIds: (row['user_ids'] as string[]) ?? [],
+      userIds,
       dogIds: (row['dog_ids'] as string[]) ?? [],
       dogNames: (row['dog_names'] as string[]) ?? [],
+      userNames: userMap ? userIds.map(id => userMap.get(id) ?? id) : undefined,
       exerciseType: row['exercise_type'] as ExerciseType,
       duration: row['duration'] as number,
       location: (row['location'] as string | null) ?? undefined,
@@ -27,6 +29,19 @@ export class SessionService {
       trainerObservations: (row['trainer_observations'] as string | null) ?? undefined,
       observationStatus: (row['observation_status'] as ObservationStatus | null) ?? undefined,
     };
+  }
+
+  private async buildUserMap(userIds: string[]): Promise<Map<string, string>> {
+    if (!userIds.length) return new Map();
+    const { data } = await this.supabaseService.admin.auth.admin.listUsers({ perPage: 500 });
+    const map = new Map<string, string>();
+    for (const u of data?.users ?? []) {
+      if (!userIds.includes(u.id)) continue;
+      const first = (u.user_metadata?.['first_name'] as string) ?? '';
+      const last = (u.user_metadata?.['last_name'] as string) ?? '';
+      map.set(u.id, `${first} ${last}`.trim() || u.email || u.id);
+    }
+    return map;
   }
 
   async getAllSessions(
@@ -63,8 +78,12 @@ export class SessionService {
 
     if (error) throw new Error(error.message);
 
+    const rows = (data ?? []) as Record<string, unknown>[];
+    const allUserIds = [...new Set(rows.flatMap(r => (r['user_ids'] as string[]) ?? []))];
+    const userMap = await this.buildUserMap(allUserIds);
+
     return {
-      sessions: (data ?? []).map(row => this.mapRow(row as Record<string, unknown>)),
+      sessions: rows.map(row => this.mapRow(row, userMap)),
       total: count ?? 0,
       page,
       perPage,
@@ -129,6 +148,9 @@ export class SessionService {
 
     if (error || !data) throw new NotFoundException();
 
-    return this.mapRow(data as Record<string, unknown>);
+    const row = data as Record<string, unknown>;
+    const userIds = (row['user_ids'] as string[]) ?? [];
+    const userMap = await this.buildUserMap(userIds);
+    return this.mapRow(row, userMap);
   }
 }

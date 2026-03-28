@@ -17,7 +17,9 @@ import {
   MessageSquare,
   Target,
   Thermometer,
+  User,
 } from 'lucide-react';
+import { useAuth } from '@authentication';
 
 
 const OBSERVATION_STATUS_LABELS: Record<string, string> = {
@@ -60,6 +62,7 @@ function SectionCard({
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: session, isLoading, isError } = useSession(id!);
 
   const formatDateLong = (date: Date) =>
@@ -130,6 +133,13 @@ export function SessionDetailPage() {
             <Dog className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
             <span className="font-medium">{session.dogNames.join(', ') || '—'}</span>
           </div>
+
+          {user?.isAdmin && session.userNames && session.userNames.length > 0 && (
+            <div className="flex items-center gap-3 text-sm">
+              <User className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+              <span>{session.userNames.join(', ')}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-3 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />

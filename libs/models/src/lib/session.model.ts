@@ -29,6 +29,7 @@ export interface Session {
   date: Date;
   dogIds: string[];
   dogNames: string[];
+  userNames?: string[];
   exerciseType: ExerciseType;
   duration: number; // in minutes
   userIds: string[];

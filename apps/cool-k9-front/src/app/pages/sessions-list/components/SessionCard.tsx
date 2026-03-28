@@ -3,14 +3,16 @@ import { Session } from '@models';
 import { getExerciseTypeData } from '@/app/utils/exercise-type';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Dog, MapPin, Thermometer } from 'lucide-react';
+import { Clock, Dog, MapPin, Thermometer, User } from 'lucide-react';
 import { WEATHER_LABELS } from '@/app/utils/session-labels';
+import { useAuth } from '@authentication';
 
 interface SessionCardProps {
   session: Session;
 }
 
 export function SessionCard({ session }: SessionCardProps) {
+  const { user } = useAuth();
   const exerciseTypeData = getExerciseTypeData(session.exerciseType);
 
   const formatDate = (date: Date) => {
@@ -36,6 +38,13 @@ export function SessionCard({ session }: SessionCardProps) {
             <Dog className="h-4 w-4 text-muted-foreground" />
             <span>{session.dogNames.join(', ') || '—'}</span>
           </div>
+
+          {user?.isAdmin && session.userNames && session.userNames.length > 0 && (
+            <div className="flex items-center gap-3 text-sm">
+              <User className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span>{session.userNames.join(', ')}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-3 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground" />
