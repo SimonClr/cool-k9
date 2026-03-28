@@ -83,7 +83,7 @@ export function SessionFilters({
 
   return (
     <TooltipProvider>
-      <div className={cn('flex flex-col sm:flex-row gap-3', className)}>
+      <div className={cn('rounded-lg border bg-card shadow-sm p-3 flex flex-col sm:flex-row gap-3', className)}>
         {user?.isAdmin && (
           <div className="flex flex-col gap-1.5 flex-1">
             <Label>Utilisateurs</Label>

@@ -6,8 +6,9 @@ import { SessionCard } from './components/SessionCard';
 import { SessionFilters } from './components/SessionFilters';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
-import { AlertCircle, ChevronLeft, ChevronRight, Inbox, Loader2, PlusCircle } from 'lucide-react';
+import { AlertCircle, ChevronDown, ChevronLeft, ChevronRight, Inbox, Loader2, PlusCircle, SlidersHorizontal } from 'lucide-react';
 import { useAuth } from '@authentication';
+import { cn } from '@/lib/utils';
 
 export function SessionsList() {
   const navigate = useNavigate();
@@ -34,6 +35,10 @@ export function SessionsList() {
     setPage(1);
   };
 
+  // ── Accordéon filtres (mobile) ────────────────────────────────
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const activeFiltersCount = filterUserIds.length + filterDogIds.length + filterExerciseTypes.length;
+
   // ── Pagination ────────────────────────────────────────────────
   const [page, setPage] = useState(1);
 
@@ -46,24 +51,89 @@ export function SessionsList() {
   const handleNewSession = () => navigate('/sessions/new');
 
   return (
-    <div>
-      <header className="flex flex-col sm:flex-row sm:items-end sm:gap-20 gap-4 mb-6">
-        <SessionFilters
-          userIds={filterUserIds}
-          dogIds={filterDogIds}
-          exerciseTypes={filterExerciseTypes}
-          onUserIdsChange={handleUserIdsChange}
-          onDogIdsChange={handleDogIdsChange}
-          onExerciseTypesChange={handleExerciseTypesChange}
-          className="flex-1"
+    <div className="pb-20 sm:pb-0">
+      {/* FAB mobile */}
+      {user?.isAdmin && (
+        <Button
+          onClick={handleNewSession}
+          size="icon"
+          className="sm:hidden fixed bottom-6 right-4 z-20 h-14 w-14 rounded-full shadow-lg"
+          aria-label="Nouvelle séance"
+          style={{ bottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }}
+        >
+          <PlusCircle className="h-6 w-6" aria-hidden="true" />
+        </Button>
+      )}
+
+      <header className="sticky top-0 z-10 -mx-4 sm:-mx-8 -mt-4 px-4 sm:px-8 pt-4 pb-8 mb-3 relative">
+        {/* Couche blur + dégradé — s'étend vers le haut pour couvrir le gap du padding de main */}
+        <div
+          className="absolute inset-x-0 bottom-0 bg-background/20 backdrop-blur-[6px] -z-10"
+          style={{
+            top: '-1rem',
+            maskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
+          }}
         />
 
-        {user?.isAdmin && (
-          <Button onClick={handleNewSession} className="shrink-0">
-            <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
-            Nouvelle séance
-          </Button>
-        )}
+        {/* Desktop : filtres + bouton sur la même ligne */}
+        <div className="hidden sm:flex items-center gap-4">
+          <SessionFilters
+            userIds={filterUserIds}
+            dogIds={filterDogIds}
+            exerciseTypes={filterExerciseTypes}
+            onUserIdsChange={handleUserIdsChange}
+            onDogIdsChange={handleDogIdsChange}
+            onExerciseTypesChange={handleExerciseTypesChange}
+            className="flex-1"
+          />
+          {user?.isAdmin && (
+            <Button onClick={handleNewSession} className="shrink-0">
+              <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
+              Nouvelle séance
+            </Button>
+          )}
+        </div>
+
+        {/* Mobile : accordéon */}
+        <div className="sm:hidden">
+          <button
+            onClick={() => setFiltersOpen(o => !o)}
+            className="flex w-full items-center justify-between rounded-lg border bg-card px-3 py-2 text-sm shadow-sm"
+          >
+            <span className="flex items-center gap-2 text-muted-foreground">
+              <SlidersHorizontal className="h-4 w-4" />
+              Filtres
+              {activeFiltersCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-medium text-primary-foreground">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </span>
+            <ChevronDown
+              className={cn('h-4 w-4 text-muted-foreground transition-transform duration-300', filtersOpen && 'rotate-180')}
+            />
+          </button>
+
+          <div
+            className={cn(
+              'overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out',
+              filtersOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0',
+            )}
+          >
+            <div className="pt-2">
+              <SessionFilters
+                userIds={filterUserIds}
+                dogIds={filterDogIds}
+                exerciseTypes={filterExerciseTypes}
+                onUserIdsChange={handleUserIdsChange}
+                onDogIdsChange={handleDogIdsChange}
+                onExerciseTypesChange={handleExerciseTypesChange}
+              />
+            </div>
+          </div>
+        </div>
+
       </header>
 
       <div className="max-w-4xl mx-auto">
