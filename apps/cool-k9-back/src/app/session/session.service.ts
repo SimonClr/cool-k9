@@ -82,8 +82,18 @@ export class SessionService {
     const allUserIds = [...new Set(rows.flatMap(r => (r['user_ids'] as string[]) ?? []))];
     const userMap = await this.buildUserMap(allUserIds);
 
+    const sessions = rows.map(row => {
+      const session = this.mapRow(row, userMap);
+      // Masquer les observations du dresseur si l'utilisateur est propriétaire
+      // et n'a pas encore soumis ses propres observations
+      if (role !== 'admin' && session.observationStatus === ObservationStatus.WAITING_OWNER) {
+        session.trainerObservations = undefined;
+      }
+      return session;
+    });
+
     return {
-      sessions: rows.map(row => this.mapRow(row, userMap)),
+      sessions,
       total: count ?? 0,
       page,
       perPage,
@@ -106,6 +116,18 @@ export class SessionService {
       }
     }
 
+    // Déterminer automatiquement le statut initial si non fourni
+    let observationStatus = dto.observationStatus;
+    if (!observationStatus) {
+      if (dto.trainerObservations) {
+        observationStatus = ObservationStatus.WAITING_OWNER;
+      } else if (dto.ownerObservations) {
+        observationStatus = ObservationStatus.WAITING_TRAINER;
+      } else {
+        observationStatus = ObservationStatus.WAITING_OWNER;
+      }
+    }
+
     const { data, error } = await this.supabaseService.admin
       .from('sessions')
       .insert({
@@ -125,7 +147,7 @@ export class SessionService {
         next_objectives: dto.nextObjectives ?? null,
         owner_observations: dto.ownerObservations ?? null,
         trainer_observations: dto.trainerObservations ?? null,
-        observation_status: dto.observationStatus ?? null,
+        observation_status: observationStatus,
       })
       .select('*')
       .single();
@@ -151,11 +173,23 @@ export class SessionService {
     const { data: existing, error: checkError } = await checkQuery.single();
     if (checkError || !existing) throw new NotFoundException();
 
+    const existingRow = existing as Record<string, unknown>;
     let updatePayload: Record<string, unknown>;
 
     if (role !== 'admin') {
       // Non-admin: only ownerObservations
       updatePayload = { owner_observations: dto.ownerObservations ?? null };
+
+      // Gérer la transition automatique du statut lorsque le propriétaire soumet ses observations
+      const hasTrainerObservations = !!existingRow['trainer_observations'];
+      const wasWaitingOwner = existingRow['observation_status'] === ObservationStatus.WAITING_OWNER;
+      const isSubmittingObservations = dto.ownerObservations !== undefined && dto.ownerObservations !== null;
+
+      if (isSubmittingObservations && wasWaitingOwner) {
+        updatePayload['observation_status'] = hasTrainerObservations
+          ? ObservationStatus.COMPLETE
+          : ObservationStatus.WAITING_TRAINER;
+      }
     } else {
       // Admin: all fields except ownerObservations
       updatePayload = {};
@@ -226,6 +260,14 @@ export class SessionService {
     const row = data as Record<string, unknown>;
     const userIds = (row['user_ids'] as string[]) ?? [];
     const userMap = await this.buildUserMap(userIds);
-    return this.mapRow(row, userMap);
+    const session = this.mapRow(row, userMap);
+
+    // Masquer les observations du dresseur si l'utilisateur est propriétaire
+    // et n'a pas encore soumis ses propres observations
+    if (role !== 'admin' && session.observationStatus === ObservationStatus.WAITING_OWNER) {
+      session.trainerObservations = undefined;
+    }
+
+    return session;
   }
 }
