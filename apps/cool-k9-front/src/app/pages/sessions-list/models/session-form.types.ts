@@ -6,8 +6,8 @@ export type FieldErrors = {
 };
 
 export const OBSERVATION_STATUS_LABELS: Record<string, string> = {
-  WAITING_OWNER: 'En attente propriétaire',
-  WAITING_TRAINER: 'En attente dresseur',
+  WAITING_OWNER: 'En attente client',
+  WAITING_TRAINER: 'En attente Cool-K9',
   COMPLETE: 'Complète',
 };
 

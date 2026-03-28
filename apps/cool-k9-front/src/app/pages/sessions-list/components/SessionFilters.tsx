@@ -36,7 +36,7 @@ export function SessionFilters({
 }: SessionFiltersProps) {
   const { user } = useAuth();
 
-  // ── Filtre utilisateurs (admin) ───────────────────────────────
+  // ── Filtre clients (admin) ───────────────────────────────
   const [usersOpen, setUsersOpen] = useState(false);
   const [usersSearch, setUsersSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -90,13 +90,13 @@ export function SessionFilters({
       >
         {user?.isAdmin && (
           <div className="flex flex-col gap-1.5 flex-1">
-            <Label>Utilisateurs</Label>
+            <Label>Clients</Label>
             <MultiSelect
               options={userOptions}
               selected={userIds}
               onChange={onUserIdsChange}
-              placeholder="Tous les utilisateurs"
-              searchPlaceholder="Rechercher un utilisateur..."
+              placeholder="Tous les clients"
+              searchPlaceholder="Rechercher un client..."
               onSearchChange={setUsersSearch}
               isLoading={usersLoading}
               hasMore={hasNextPage}
@@ -123,7 +123,7 @@ export function SessionFilters({
                 </span>
               </TooltipTrigger>
               {dogDisabled && (
-                <TooltipContent>Sélectionnez un utilisateur pour filtrer par chien</TooltipContent>
+                <TooltipContent>Sélectionnez un client pour filtrer par chien</TooltipContent>
               )}
             </Tooltip>
           </div>

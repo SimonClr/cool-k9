@@ -139,16 +139,16 @@ export function SessionFormFields({
 }: SessionFormFieldsProps) {
   return (
     <div className="flex flex-col gap-5">
-      {/* Utilisateurs + Chiens */}
+      {/* Clients + Chiens */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}>
-          <Label>Utilisateurs</Label>
+          <Label>Clients</Label>
           <MultiSelect
             options={userOptions}
             selected={selectedUserIds}
             onChange={onUsersChange}
-            placeholder="Sélectionner des utilisateurs"
-            searchPlaceholder="Rechercher un utilisateur..."
+            placeholder="Sélectionner des clients"
+            searchPlaceholder="Rechercher un client..."
             hasError={!!userFieldError}
             onSearchChange={onUsersSearchChange}
             isLoading={usersLoading}
@@ -326,11 +326,11 @@ export function SessionFormFields({
         />
       </div>
 
-      {/* Observations propriétaire + dresseur */}
+      {/* Observations client + Cool-K9 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {isEditMode && (
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ownerObservations">Observations propriétaire</Label>
+            <Label htmlFor="ownerObservations">Observations client</Label>
             <Textarea
               id="ownerObservations"
               value={ownerObservationsReadOnly ?? ''}
@@ -343,10 +343,10 @@ export function SessionFormFields({
         )}
 
         <div className={cn('flex flex-col gap-1.5', !isEditMode && 'sm:col-span-2')}>
-          <Label htmlFor="trainerObservations">Observations dresseur</Label>
+          <Label htmlFor="trainerObservations">Observations Cool-K9</Label>
           <Textarea
             id="trainerObservations"
-            placeholder="Observations du dresseur..."
+            placeholder="Observations Cool-K9..."
             value={trainerObservations}
             onChange={e => onTrainerObservationsChange(e.target.value)}
           />

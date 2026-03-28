@@ -149,7 +149,7 @@ export function UserSessionView({ session }: { session: Session }) {
           </SectionCard>
         )}
 
-        {/* Observations dresseur + propriétaire — fusionnées dans une seule card */}
+        {/* Observations Cool-K9 + client — fusionnées dans une seule card */}
         {((showTrainerObservations && !!session.trainerObservations) ||
           canEditOwnerObs ||
           !!session.ownerObservations) && (
@@ -162,7 +162,7 @@ export function UserSessionView({ session }: { session: Session }) {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Dresseur en premier */}
+                {/* Cool-K9 en premier */}
                 {showTrainerObservations && session.trainerObservations && (
                   <div
                     className={cn(
@@ -170,13 +170,13 @@ export function UserSessionView({ session }: { session: Session }) {
                       !(canEditOwnerObs || !!session.ownerObservations) && 'sm:col-span-2'
                     )}
                   >
-                    <p className="text-sm font-medium">Dresseur</p>
+                    <p className="text-sm font-medium">Cool-K9</p>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                       {session.trainerObservations}
                     </p>
                   </div>
                 )}
-                {/* Propriétaire */}
+                {/* Client */}
                 {(canEditOwnerObs || !!session.ownerObservations) && (
                   <div
                     className={cn(
@@ -184,7 +184,7 @@ export function UserSessionView({ session }: { session: Session }) {
                       !(showTrainerObservations && !!session.trainerObservations) && 'sm:col-span-2'
                     )}
                   >
-                    <p className="text-sm font-medium">Propriétaire</p>
+                    <p className="text-sm font-medium">Client</p>
                     {canEditOwnerObs ? (
                       <Textarea
                         id="ownerObservations"

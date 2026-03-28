@@ -78,7 +78,7 @@ export function CreateSessionForm() {
   const validate = (): boolean => {
     const errors: FieldErrors = {};
     if (selectedUserIds.length === 0)
-      errors.userIds = 'Veuillez sélectionner au moins un utilisateur';
+      errors.userIds = 'Veuillez sélectionner au moins un client';
     if (!date) errors.date = 'La date est obligatoire';
     if (!duration) {
       errors.duration = 'La durée est obligatoire';
