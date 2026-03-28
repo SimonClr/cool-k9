@@ -5,8 +5,23 @@ import { ExerciseType } from '@models';
 import { SessionCard } from './components/SessionCard';
 import { SessionFilters } from './components/SessionFilters';
 import { Button } from '@/components/ui/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia } from '@/components/ui/empty';
-import { AlertCircle, ChevronDown, ChevronLeft, ChevronRight, Inbox, Loader2, PlusCircle, SlidersHorizontal } from 'lucide-react';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+} from '@/components/ui/empty';
+import {
+  AlertCircle,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Inbox,
+  Loader2,
+  PlusCircle,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { useAuth } from '@authentication';
 import { cn } from '@/lib/utils';
 
@@ -37,13 +52,19 @@ export function SessionsList() {
 
   // ── Accordéon filtres (mobile) ────────────────────────────────
   const [filtersOpen, setFiltersOpen] = useState(true);
-  const activeFiltersCount = filterUserIds.length + filterDogIds.length + filterExerciseTypes.length;
+  const activeFiltersCount =
+    filterUserIds.length + filterDogIds.length + filterExerciseTypes.length;
 
   // ── Pagination ────────────────────────────────────────────────
   const [page, setPage] = useState(1);
 
   // ── Sessions ──────────────────────────────────────────────────
-  const { data, isLoading, isError } = useSessions(filterExerciseTypes, page, filterUserIds, filterDogIds);
+  const { data, isLoading, isError } = useSessions(
+    filterExerciseTypes,
+    page,
+    filterUserIds,
+    filterDogIds
+  );
 
   const sessions = data?.sessions ?? [];
   const totalPages = data ? Math.ceil(data.total / data.perPage) : 1;
@@ -65,7 +86,7 @@ export function SessionsList() {
         </Button>
       )}
 
-      <header className="sticky top-0 z-10 -mx-4 sm:-mx-8 -mt-4 px-4 sm:px-8 pt-4 pb-8 mb-3 relative">
+      <header className="sticky top-0 z-10 -mx-4 sm:-mx-8 -mt-4 px-4 sm:px-8 pt-4 pb-8 mb-3">
         {/* Couche blur + dégradé — s'étend vers le haut pour couvrir le gap du padding de main */}
         <div
           className="absolute inset-x-0 bottom-0 bg-background/20 backdrop-blur-[6px] -z-10"
@@ -111,14 +132,17 @@ export function SessionsList() {
               )}
             </span>
             <ChevronDown
-              className={cn('h-4 w-4 text-muted-foreground transition-transform duration-300', filtersOpen && 'rotate-180')}
+              className={cn(
+                'h-4 w-4 text-muted-foreground transition-transform duration-300',
+                filtersOpen && 'rotate-180'
+              )}
             />
           </button>
 
           <div
             className={cn(
               'overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out',
-              filtersOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0',
+              filtersOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
             )}
           >
             <div className="pt-2">
@@ -133,7 +157,6 @@ export function SessionsList() {
             </div>
           </div>
         </div>
-
       </header>
 
       <div className="max-w-4xl mx-auto">

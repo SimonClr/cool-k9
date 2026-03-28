@@ -3,12 +3,12 @@ import { useAuth } from '@authentication';
 import { useUserSearch } from '@/app/hooks/useUsers';
 import { useDogs, useMultiUserDogs } from '@/app/hooks/useDogs';
 import { Label } from '@/components/ui/label';
+import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Dog, ExerciseType } from '@models';
 import { EXERCISE_TYPE_LABELS } from '@/app/utils/exercise-type';
-import type { MultiSelectOption } from '@/components/ui/multi-select';
 
 interface SessionFiltersProps {
   userIds: string[];
@@ -63,7 +63,7 @@ export function SessionFilters({
 
   // ── Filtre chiens ─────────────────────────────────────────────
   const { data: adminDogs, isLoading: adminDogsLoading } = useMultiUserDogs(
-    user?.isAdmin ? userIds : [],
+    user?.isAdmin ? userIds : []
   );
   const { data: ownDogs } = useDogs();
 
@@ -80,10 +80,14 @@ export function SessionFilters({
     sublabel: `${d.age} ans`,
   }));
 
-
   return (
     <TooltipProvider>
-      <div className={cn('rounded-lg border bg-card shadow-sm p-3 flex flex-col sm:flex-row gap-3', className)}>
+      <div
+        className={cn(
+          'rounded-lg border bg-card shadow-sm p-3 flex flex-col sm:flex-row gap-3',
+          className
+        )}
+      >
         {user?.isAdmin && (
           <div className="flex flex-col gap-1.5 flex-1">
             <Label>Utilisateurs</Label>
@@ -119,9 +123,7 @@ export function SessionFilters({
                 </span>
               </TooltipTrigger>
               {dogDisabled && (
-                <TooltipContent>
-                  Sélectionnez un utilisateur pour filtrer par chien
-                </TooltipContent>
+                <TooltipContent>Sélectionnez un utilisateur pour filtrer par chien</TooltipContent>
               )}
             </Tooltip>
           </div>

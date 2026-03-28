@@ -64,7 +64,6 @@ export function SessionCard({ session }: SessionCardProps) {
               <span>{WEATHER_LABELS[session.weather]}</span>
             </div>
           )}
-
         </CardContent>
       </Card>
     </Link>
