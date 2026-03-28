@@ -1,49 +1,34 @@
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@authentication';
-import { toast } from 'sonner';
+import { type CardHandle } from './profile.types';
 
-export function UserProfileCard() {
+export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
+  function UserProfileCard({ onDirtyChange }, ref) {
   const { user, updateProfile } = useAuth();
 
   const [firstName, setFirstName] = useState(user?.firstName ?? '');
   const [lastName, setLastName] = useState(user?.lastName ?? '');
-  const [saving, setSaving] = useState(false);
 
   const isDirty =
     firstName.trim() !== (user?.firstName ?? '') || lastName.trim() !== (user?.lastName ?? '');
+  const canSave = isDirty && firstName.trim() !== '' && lastName.trim() !== '';
 
-  const handleSave = async () => {
-    if (!firstName.trim() || !lastName.trim()) return;
-    setSaving(true);
-    try {
+  useEffect(() => { onDirtyChange?.(); }, [isDirty]);
+
+  useImperativeHandle(ref, () => ({
+    isDirty,
+    canSave,
+    save: async () => {
       await updateProfile(firstName.trim(), lastName.trim());
-      toast.success('Profil mis à jour avec succès');
-    } catch {
-      toast.error('Une erreur est survenue. Veuillez réessayer.');
-    } finally {
-      setSaving(false);
-    }
-  };
+    },
+  }), [isDirty, canSave, firstName, lastName]);
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Mon profil</CardTitle>
-        <Button
-          size="sm"
-          onClick={handleSave}
-          disabled={saving || !isDirty || !firstName.trim() || !lastName.trim()}
-        >
-          {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-          Enregistrer
-        </Button>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-4 pt-6">
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="firstName">Prénom</Label>
@@ -73,4 +58,4 @@ export function UserProfileCard() {
       </CardContent>
     </Card>
   );
-}
+});

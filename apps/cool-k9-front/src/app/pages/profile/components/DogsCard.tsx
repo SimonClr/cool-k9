@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { Dog, Loader2, Plus, CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,11 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useDogs, useCreateDog, useUpdateDog } from '@/app/hooks/useDogs';
+import { type CardHandle } from './profile.types';
 
 type DogRow = {
   id?: string;
@@ -19,14 +19,14 @@ type DogRow = {
   isNew: boolean;
 };
 
-export function DogsCard() {
+export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
+  function DogsCard({ onDirtyChange }, ref) {
   const { data: dogs, isLoading } = useDogs();
   const createDog = useCreateDog();
   const updateDog = useUpdateDog();
 
   const [dogRows, setDogRows] = useState<DogRow[]>([]);
   const [originalRows, setOriginalRows] = useState<DogRow[]>([]);
-  const [saving, setSaving] = useState(false);
   const [openDateIndex, setOpenDateIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -49,15 +49,15 @@ export function DogsCard() {
 
   const canSave = isDirty && dogRows.every(row => row.name.trim() !== '' && row.birthDate !== '');
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
+  useEffect(() => { onDirtyChange?.(); }, [isDirty]);
+
+  useImperativeHandle(ref, () => ({
+    isDirty,
+    canSave,
+    save: async () => {
       for (const row of dogRows) {
         if (row.isNew) {
-          await createDog.mutateAsync({
-            name: row.name.trim(),
-            birthDate: new Date(row.birthDate),
-          });
+          await createDog.mutateAsync({ name: row.name.trim(), birthDate: new Date(row.birthDate) });
         } else {
           const orig = originalRows.find(r => r.id === row.id);
           if (orig && (orig.name !== row.name || orig.birthDate !== row.birthDate)) {
@@ -69,13 +69,8 @@ export function DogsCard() {
           }
         }
       }
-      toast.success('Modifications enregistrées !');
-    } catch {
-      toast.error('Une erreur est survenue. Veuillez réessayer.');
-    } finally {
-      setSaving(false);
-    }
-  };
+    },
+  }), [isDirty, canSave, dogRows, originalRows]);
 
   const updateRowName = (index: number, value: string) => {
     setDogRows(prev => prev.map((row, i) => (i === index ? { ...row, name: value } : row)));
@@ -93,12 +88,8 @@ export function DogsCard() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle>Mes chiens</CardTitle>
-        <Button size="sm" onClick={handleSave} disabled={saving || !canSave}>
-          {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-          Enregistrer
-        </Button>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -147,9 +138,7 @@ export function DogsCard() {
                         <Calendar
                           mode="single"
                           selected={row.birthDate ? new Date(row.birthDate) : undefined}
-                          onSelect={d => {
-                            if (d) updateRowDate(i, d);
-                          }}
+                          onSelect={d => { if (d) updateRowDate(i, d); }}
                           locale={fr}
                           captionLayout="dropdown"
                           startMonth={new Date(new Date().getFullYear() - 25, 0)}
@@ -178,4 +167,4 @@ export function DogsCard() {
       </CardContent>
     </Card>
   );
-}
+});
