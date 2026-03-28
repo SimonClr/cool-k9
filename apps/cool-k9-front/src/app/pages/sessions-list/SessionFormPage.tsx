@@ -10,7 +10,7 @@ export function SessionFormPage() {
   const isEditMode = !!id;
 
   return (
-    <div className="container mx-auto max-w-2xl">
+    <div className="container mx-auto max-w-3xl">
       <Button
         variant="ghost"
         className="mb-6 -ml-2 gap-2 text-muted-foreground hover:text-foreground"

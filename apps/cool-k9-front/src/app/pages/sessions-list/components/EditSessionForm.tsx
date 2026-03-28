@@ -237,19 +237,22 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
   if (isAdmin) {
     return (
       <form onSubmit={handleAdminSubmit} className="flex flex-col gap-6">
-        <div className="flex flex-wrap gap-2">
-          <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
-          {session.observationStatus && (
-            <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
-              {OBSERVATION_STATUS_LABELS[session.observationStatus]}
-            </Badge>
-          )}
-        </div>
-
         <Card>
           <CardHeader>
-            <CardTitle>Modifier la séance</CardTitle>
-            <CardDescription className="capitalize">{formatDateLong(session.date)}</CardDescription>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <CardTitle>Modifier la séance</CardTitle>
+                <CardDescription className="capitalize mt-1">{formatDateLong(session.date)}</CardDescription>
+              </div>
+              <div className="flex flex-wrap gap-2 shrink-0">
+                <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
+                {session.observationStatus && (
+                  <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
+                    {OBSERVATION_STATUS_LABELS[session.observationStatus]}
+                  </Badge>
+                )}
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {apiError && (

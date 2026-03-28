@@ -6,7 +6,8 @@ import { useMultiUserDogs } from '@/app/hooks/useDogs';
 import { useUserSearch } from '@/app/hooks/useUsers';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { SessionFormFields } from './SessionFormFields';
 import { type FieldErrors } from '../models/session-form.types';
@@ -54,11 +55,9 @@ export function CreateSessionForm() {
   });
   const [route, setRoute] = useState('');
   const [previousObjectives, setPreviousObjectives] = useState('');
-  const [ownerObservations, setOwnerObservations] = useState('');
   const [trainerObservations, setTrainerObservations] = useState('');
   const [nextObjectives, setNextObjectives] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [apiError, setApiError] = useState<string | null>(null);
 
   const { data: availableDogs, isLoading: dogsLoading } = useMultiUserDogs(selectedUserIds);
 
@@ -95,7 +94,6 @@ export function CreateSessionForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setApiError(null);
     createSession.mutate(
       {
         date: date as unknown as Date,
@@ -113,13 +111,15 @@ export function CreateSessionForm() {
         locationLon: location.coords?.lon,
         route: route.trim() || undefined,
         previousObjectives: previousObjectives.trim() || undefined,
-        ownerObservations: ownerObservations.trim() || undefined,
         trainerObservations: trainerObservations.trim() || undefined,
         nextObjectives: nextObjectives.trim() || undefined,
       },
       {
-        onSuccess: () => navigate('/sessions', { replace: true }),
-        onError: () => setApiError('Erreur lors de la création de la séance. Veuillez réessayer.'),
+        onSuccess: () => {
+          toast.success('Séance créée avec succès !');
+          navigate('/sessions', { replace: true });
+        },
+        onError: () => toast.error('Erreur lors de la création de la séance. Veuillez réessayer.'),
       }
     );
   };
@@ -138,13 +138,6 @@ export function CreateSessionForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {apiError && (
-            <div role="alert" className="flex items-center gap-2 text-destructive text-sm">
-              <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span>{apiError}</span>
-            </div>
-          )}
-
           <SessionFormFields
             userOptions={userOptions}
             selectedUserIds={selectedUserIds}
@@ -199,8 +192,6 @@ export function CreateSessionForm() {
             onRouteChange={setRoute}
             previousObjectives={previousObjectives}
             onPreviousObjectivesChange={setPreviousObjectives}
-            ownerObservations={ownerObservations}
-            onOwnerObservationsChange={setOwnerObservations}
             trainerObservations={trainerObservations}
             onTrainerObservationsChange={setTrainerObservations}
             nextObjectives={nextObjectives}

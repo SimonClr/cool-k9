@@ -85,8 +85,6 @@ export interface SessionFormFieldsProps {
   previousObjectives: string;
   onPreviousObjectivesChange: (v: string) => void;
   ownerObservationsReadOnly?: string | null;
-  ownerObservations?: string;
-  onOwnerObservationsChange?: (v: string) => void;
   trainerObservations: string;
   onTrainerObservationsChange: (v: string) => void;
   nextObjectives: string;
@@ -133,8 +131,6 @@ export function SessionFormFields({
   previousObjectives,
   onPreviousObjectivesChange,
   ownerObservationsReadOnly,
-  ownerObservations,
-  onOwnerObservationsChange,
   trainerObservations,
   onTrainerObservationsChange,
   nextObjectives,
@@ -143,45 +139,46 @@ export function SessionFormFields({
 }: SessionFormFieldsProps) {
   return (
     <div className="flex flex-col gap-5">
-      {/* Utilisateurs */}
-      <div className="flex flex-col gap-1.5">
-        <Label>Utilisateurs</Label>
-        <MultiSelect
-          options={userOptions}
-          selected={selectedUserIds}
-          onChange={onUsersChange}
-          placeholder="Sélectionner des utilisateurs"
-          searchPlaceholder="Rechercher un utilisateur..."
-          hasError={!!userFieldError}
-          onSearchChange={onUsersSearchChange}
-          isLoading={usersLoading}
-          hasMore={hasNextPage}
-          onLoadMore={onFetchNextPage}
-          onOpenChange={onUsersOpenChange}
-        />
-        {userFieldError && <FieldError id="userIds-error" message={userFieldError} />}
-      </div>
-
-      {/* Chiens */}
-      {selectedUserIds.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <Label>Chiens</Label>
+      {/* Utilisateurs + Chiens */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}>
+          <Label>Utilisateurs</Label>
           <MultiSelect
-            options={dogOptions}
-            selected={selectedDogIds}
-            onChange={onDogsChange}
-            placeholder={
-              dogsLoading
-                ? 'Chargement...'
-                : dogOptions.length === 0
-                  ? 'Aucun chien enregistré'
-                  : 'Sélectionner des chiens'
-            }
-            searchPlaceholder="Rechercher un chien..."
-            disabled={dogsLoading || dogOptions.length === 0}
+            options={userOptions}
+            selected={selectedUserIds}
+            onChange={onUsersChange}
+            placeholder="Sélectionner des utilisateurs"
+            searchPlaceholder="Rechercher un utilisateur..."
+            hasError={!!userFieldError}
+            onSearchChange={onUsersSearchChange}
+            isLoading={usersLoading}
+            hasMore={hasNextPage}
+            onLoadMore={onFetchNextPage}
+            onOpenChange={onUsersOpenChange}
           />
+          {userFieldError && <FieldError id="userIds-error" message={userFieldError} />}
         </div>
-      )}
+
+        {selectedUserIds.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <Label>Chiens</Label>
+            <MultiSelect
+              options={dogOptions}
+              selected={selectedDogIds}
+              onChange={onDogsChange}
+              placeholder={
+                dogsLoading
+                  ? 'Chargement...'
+                  : dogOptions.length === 0
+                    ? 'Aucun chien enregistré'
+                    : 'Sélectionner des chiens'
+              }
+              searchPlaceholder="Rechercher un chien..."
+              disabled={dogsLoading || dogOptions.length === 0}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Date + Durée */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -329,40 +326,31 @@ export function SessionFormFields({
         />
       </div>
 
-      {/* Observations propriétaire */}
-      {isEditMode ? (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="ownerObservations">Observations propriétaire</Label>
-          <Textarea
-            id="ownerObservations"
-            value={ownerObservationsReadOnly ?? ''}
-            readOnly
-            disabled
-            placeholder="Aucune observation"
-            className="resize-none text-muted-foreground"
-          />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="ownerObservations">Observations propriétaire</Label>
-          <Textarea
-            id="ownerObservations"
-            placeholder="Observations du propriétaire après la séance..."
-            value={ownerObservations ?? ''}
-            onChange={e => onOwnerObservationsChange?.(e.target.value)}
-          />
-        </div>
-      )}
+      {/* Observations propriétaire + dresseur */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {isEditMode && (
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="ownerObservations">Observations propriétaire</Label>
+            <Textarea
+              id="ownerObservations"
+              value={ownerObservationsReadOnly ?? ''}
+              readOnly
+              disabled
+              placeholder="Aucune observation"
+              className="resize-none text-muted-foreground"
+            />
+          </div>
+        )}
 
-      {/* Observations dresseur */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="trainerObservations">Observations dresseur</Label>
-        <Textarea
-          id="trainerObservations"
-          placeholder="Observations du dresseur..."
-          value={trainerObservations}
-          onChange={e => onTrainerObservationsChange(e.target.value)}
-        />
+        <div className={cn('flex flex-col gap-1.5', !isEditMode && 'sm:col-span-2')}>
+          <Label htmlFor="trainerObservations">Observations dresseur</Label>
+          <Textarea
+            id="trainerObservations"
+            placeholder="Observations du dresseur..."
+            value={trainerObservations}
+            onChange={e => onTrainerObservationsChange(e.target.value)}
+          />
+        </div>
       </div>
 
       {/* Objectifs prochaine séance */}
