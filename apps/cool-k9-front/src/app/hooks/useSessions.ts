@@ -47,3 +47,15 @@ export function useCreateSession() {
     },
   });
 }
+
+export function useUpdateSession(id: string) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: (dto: Partial<CreateSessionInput>) => SessionService.updateSession(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY(user?.id ?? '', id) });
+      queryClient.invalidateQueries({ queryKey: ['sessions', user?.id ?? ''] });
+    },
+  });
+}

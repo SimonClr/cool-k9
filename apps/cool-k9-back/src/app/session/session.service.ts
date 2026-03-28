@@ -134,6 +134,81 @@ export class SessionService {
     return this.mapRow(data as Record<string, unknown>);
   }
 
+  async updateSession(
+    userId: string,
+    role: string,
+    id: string,
+    dto: import('./update-session.dto').UpdateSessionDto,
+  ): Promise<Session> {
+    // Verify access
+    let checkQuery = this.supabaseService.admin
+      .from('sessions')
+      .select('*')
+      .eq('id', id);
+    if (role !== 'admin') {
+      checkQuery = checkQuery.contains('user_ids', [userId]);
+    }
+    const { data: existing, error: checkError } = await checkQuery.single();
+    if (checkError || !existing) throw new NotFoundException();
+
+    let updatePayload: Record<string, unknown>;
+
+    if (role !== 'admin') {
+      // Non-admin: only ownerObservations
+      updatePayload = { owner_observations: dto.ownerObservations ?? null };
+    } else {
+      // Admin: all fields except ownerObservations
+      updatePayload = {};
+      if (dto.date !== undefined) updatePayload['date'] = dto.date;
+      if (dto.userIds !== undefined) updatePayload['user_ids'] = dto.userIds;
+      if (dto.exerciseType !== undefined) updatePayload['exercise_type'] = dto.exerciseType;
+      if (dto.duration !== undefined) updatePayload['duration'] = dto.duration;
+      if ('location' in dto) updatePayload['location'] = dto.location ?? null;
+      if ('locationLat' in dto) updatePayload['location_lat'] = dto.locationLat ?? null;
+      if ('locationLon' in dto) updatePayload['location_lon'] = dto.locationLon ?? null;
+      if ('environment' in dto) updatePayload['environment'] = dto.environment ?? null;
+      if ('weather' in dto) updatePayload['weather'] = dto.weather ?? null;
+      if ('route' in dto) updatePayload['route'] = dto.route ?? null;
+      if ('previousObjectives' in dto) updatePayload['previous_objectives'] = dto.previousObjectives ?? null;
+      if ('nextObjectives' in dto) updatePayload['next_objectives'] = dto.nextObjectives ?? null;
+      if ('trainerObservations' in dto) updatePayload['trainer_observations'] = dto.trainerObservations ?? null;
+      if ('observationStatus' in dto) updatePayload['observation_status'] = dto.observationStatus ?? null;
+
+      // Update dog_names if dogIds changed
+      if (dto.dogIds !== undefined) {
+        updatePayload['dog_ids'] = dto.dogIds;
+        let dogNames: string[] = [];
+        if (dto.dogIds.length > 0) {
+          const { data: dogsData } = await this.supabaseService.admin
+            .from('dogs')
+            .select('id, name')
+            .in('id', dto.dogIds);
+          if (dogsData) {
+            dogNames = dto.dogIds.map(did => {
+              const dog = (dogsData as { id: string; name: string }[]).find(d => d.id === did);
+              return dog?.name ?? '';
+            }).filter(Boolean);
+          }
+        }
+        updatePayload['dog_names'] = dogNames;
+      }
+    }
+
+    const { data, error } = await this.supabaseService.admin
+      .from('sessions')
+      .update(updatePayload)
+      .eq('id', id)
+      .select('*')
+      .single();
+
+    if (error || !data) throw new Error(error?.message ?? 'Failed to update session');
+
+    const row = data as Record<string, unknown>;
+    const userIds = (row['user_ids'] as string[]) ?? [];
+    const userMap = await this.buildUserMap(userIds);
+    return this.mapRow(row, userMap);
+  }
+
   async getSession(userId: string, role: string, id: string): Promise<Session> {
     let query = this.supabaseService.admin
       .from('sessions')

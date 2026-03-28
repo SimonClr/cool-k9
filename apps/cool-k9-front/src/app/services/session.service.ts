@@ -69,6 +69,21 @@ export class SessionService {
     return { ...session, date: new Date(session.date) };
   }
 
+  static async updateSession(id: string, dto: Partial<CreateSessionInput>): Promise<Session> {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'PATCH',
+      headers: { ...(await getAuthHeaders()), 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update session');
+    }
+
+    const session: Session = await response.json();
+    return { ...session, date: new Date(session.date) };
+  }
+
   static async createSession(dto: CreateSessionInput): Promise<Session> {
     const response = await fetch(API_URL, {
       method: 'POST',

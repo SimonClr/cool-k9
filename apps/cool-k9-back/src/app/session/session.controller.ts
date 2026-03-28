@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { CreateSessionDto } from './create-session.dto';
+import { UpdateSessionDto } from './update-session.dto';
 import { ExerciseType } from '@models';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
@@ -40,6 +41,15 @@ export class SessionController {
     @Body() dto: CreateSessionDto
   ) {
     return this.sessionService.createSession(dto);
+  }
+
+  @Patch(':id')
+  updateSession(
+    @Request() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: UpdateSessionDto,
+  ) {
+    return this.sessionService.updateSession(req.user.userId, req.user.role ?? '', id, dto);
   }
 
   @Get(':id')

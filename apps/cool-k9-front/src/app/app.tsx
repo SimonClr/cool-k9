@@ -9,8 +9,7 @@ const SessionsList = lazy(() => import('./pages/sessions-list/SessionsList').the
 const Pricing = lazy(() => import('./pages/pricing/Pricing').then(m => ({ default: m.Pricing })));
 const Register = lazy(() => import('./pages/register/Register').then(m => ({ default: m.Register })));
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage').then(m => ({ default: m.ProfilePage })));
-const SessionDetailPage = lazy(() => import('./pages/sessions-list/SessionDetailPage').then(m => ({ default: m.SessionDetailPage })));
-const AddSessionPage = lazy(() => import('./pages/sessions-list/AddSessionPage').then(m => ({ default: m.AddSessionPage })));
+const SessionFormPage = lazy(() => import('./pages/sessions-list/SessionFormPage').then(m => ({ default: m.SessionFormPage })));
 
 function PageLoader() {
   return (
@@ -36,8 +35,8 @@ export function App() {
       >
         <Route index element={<Navigate to="/sessions" replace />} />
         <Route path="sessions" element={<SessionsList />} />
-        <Route path="sessions/new" element={<AdminRoute><AddSessionPage /></AdminRoute>} />
-        <Route path="sessions/:id" element={<SessionDetailPage />} />
+        <Route path="sessions/new" element={<AdminRoute><SessionFormPage /></AdminRoute>} />
+        <Route path="sessions/:id" element={<SessionFormPage />} />
         <Route path="pricing" element={<AdminRoute><Pricing /></AdminRoute>} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
