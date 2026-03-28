@@ -325,7 +325,18 @@ function SessionFormFields({
         )}
       </div>
 
-      {/* Environnement + Météo */}
+      {/* Lieu */}
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="location">Lieu</Label>
+        <LocationAutocomplete
+          id="location"
+          value={locationDisplay}
+          onChange={(coords, displayName) => onLocationChange(coords, displayName)}
+          placeholder="Parc de la Tête d'Or, Lyon"
+        />
+      </div>
+
+      {/* Environnement + Météo (Météo visible uniquement si extérieur) */}
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="environment">Environnement</Label>
@@ -361,27 +372,18 @@ function SessionFormFields({
         )}
       </div>
 
-      {/* Lieu */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="location">Lieu</Label>
-        <LocationAutocomplete
-          id="location"
-          value={locationDisplay}
-          onChange={(coords, displayName) => onLocationChange(coords, displayName)}
-          placeholder="Parc de la Tête d'Or, Lyon"
-        />
-      </div>
-
-      {/* Parcours */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="route">Parcours</Label>
-        <Textarea
-          id="route"
-          placeholder="Description du parcours..."
-          value={route}
-          onChange={e => onRouteChange(e.target.value)}
-        />
-      </div>
+      {/* Parcours — visible uniquement si extérieur */}
+      {environment === Environment.OUTDOOR && (
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="route">Parcours</Label>
+          <Textarea
+            id="route"
+            placeholder="Description du parcours..."
+            value={route}
+            onChange={e => onRouteChange(e.target.value)}
+          />
+        </div>
+      )}
 
       {/* Objectifs séance précédente */}
       <div className="flex flex-col gap-1.5">
@@ -1000,7 +1002,7 @@ function EditSessionForm({ sessionId }: { sessionId: string }) {
 
       {/* Sections texte */}
       <div className="space-y-4">
-        {session.route && (
+        {session.route && session.environment === Environment.OUTDOOR && (
           <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
             {session.route}
           </SectionCard>
