@@ -10,6 +10,10 @@ async function getAuthHeaders(): Promise<HeadersInit> {
   return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
 }
 
+function mapDog(d: Dog): Dog {
+  return { ...d, birthDate: new Date(d.birthDate), createdAt: new Date(d.createdAt) };
+}
+
 export class DogService {
   static async getDogs(userId?: string): Promise<Dog[]> {
     const url = userId ? `${API_URL}?userId=${encodeURIComponent(userId)}` : API_URL;
@@ -18,20 +22,34 @@ export class DogService {
     });
     if (!response.ok) throw new Error('Failed to fetch dogs');
     const dogs: Dog[] = await response.json();
-    return dogs.map(d => ({ ...d, createdAt: new Date(d.createdAt) }));
+    return dogs.map(mapDog);
   }
 
-  static async createDog(name: string, age: number): Promise<Dog> {
+  static async createDog(name: string, birthDate: Date): Promise<Dog> {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(await getAuthHeaders()),
       },
-      body: JSON.stringify({ name, age }),
+      body: JSON.stringify({ name, birthDate: birthDate.toISOString().split('T')[0] }),
     });
     if (!response.ok) throw new Error('Failed to create dog');
     const dog: Dog = await response.json();
-    return { ...dog, createdAt: new Date(dog.createdAt) };
+    return mapDog(dog);
+  }
+
+  static async updateDog(id: string, name: string, birthDate: Date): Promise<Dog> {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(await getAuthHeaders()),
+      },
+      body: JSON.stringify({ name, birthDate: birthDate.toISOString().split('T')[0] }),
+    });
+    if (!response.ok) throw new Error('Failed to update dog');
+    const dog: Dog = await response.json();
+    return mapDog(dog);
   }
 }

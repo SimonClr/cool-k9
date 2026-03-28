@@ -77,7 +77,7 @@ export function SessionFilters({
   const dogOptions: MultiSelectOption[] = availableDogs.map(d => ({
     value: d.id,
     label: d.name,
-    sublabel: `${d.age} ans`,
+    sublabel: `${Math.floor((Date.now() - new Date(d.birthDate).getTime()) / (365.25 * 24 * 3600 * 1000))} ans`,
   }));
 
   return (

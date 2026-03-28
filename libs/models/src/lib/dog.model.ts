@@ -1,7 +1,7 @@
 export interface Dog {
   id: string;
   name: string;
-  age: number;
+  birthDate: Date;
   userId: string;
   createdAt: Date;
 }

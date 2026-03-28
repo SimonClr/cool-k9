@@ -1,4 +1,4 @@
 export class CreateDogDto {
   name: string;
-  age: number;
+  birthDate: string;
 }

@@ -33,8 +33,20 @@ export function useCreateDog() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: ({ name, age }: { name: string; age: number }) =>
-      DogService.createDog(name, age),
+    mutationFn: ({ name, birthDate }: { name: string; birthDate: Date }) =>
+      DogService.createDog(name, birthDate),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: DOGS_QUERY_KEY(user?.id ?? '') });
+    },
+  });
+}
+
+export function useUpdateDog() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: ({ id, name, birthDate }: { id: string; name: string; birthDate: Date }) =>
+      DogService.updateDog(id, name, birthDate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DOGS_QUERY_KEY(user?.id ?? '') });
     },

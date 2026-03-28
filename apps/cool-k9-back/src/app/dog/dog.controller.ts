@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { DogService } from './dog.service';
 import { CreateDogDto } from './create-dog.dto';
+import { UpdateDogDto } from './update-dog.dto';
 import { SupabaseAuthGuard } from '../auth/supabase-auth.guard';
 
 @Controller('dogs')
@@ -23,5 +24,14 @@ export class DogController {
     @Body() dto: CreateDogDto,
   ) {
     return this.dogService.createDog(req.user.userId, dto);
+  }
+
+  @Patch(':id')
+  updateDog(
+    @Req() req: { user: { userId: string } },
+    @Param('id') id: string,
+    @Body() dto: UpdateDogDto,
+  ) {
+    return this.dogService.updateDog(req.user.userId, id, dto);
   }
 }

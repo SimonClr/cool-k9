@@ -7,12 +7,10 @@ import { Loader2, Menu, X, Sun, Moon, LogOut, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth, useTheme } from '@authentication';
 
-import { AddDogModal } from './AddDogModal';
 import { useDogs } from '../hooks/useDogs';
 
 export function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [addDogOpen, setAddDogOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user } = useAuth();
@@ -20,10 +18,10 @@ export function Layout() {
   const { theme, toggleTheme } = useTheme();
   const { data: dogs, isLoading: dogsLoading } = useDogs();
 
-  // Auto-open modal on first login (no dogs yet)
+  // Redirect to profile on first login (no dogs yet)
   useEffect(() => {
-    if (!dogsLoading && dogs && dogs.length === 0) {
-      setAddDogOpen(true);
+    if (!dogsLoading && dogs && dogs.length === 0 && location.pathname !== '/profile') {
+      navigate('/profile', { replace: true });
     }
   }, [dogsLoading, dogs]);
 
@@ -254,7 +252,6 @@ export function Layout() {
         </Suspense>
       </main>
 
-      <AddDogModal open={addDogOpen} onOpenChange={setAddDogOpen} />
     </div>
   );
 }
