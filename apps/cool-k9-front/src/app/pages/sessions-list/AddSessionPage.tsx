@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { AlertCircle, CalendarIcon, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -197,6 +197,14 @@ export function AddSessionPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <Button
+        variant="ghost"
+        className="mb-6 -ml-2 gap-2 text-muted-foreground hover:text-foreground"
+        onClick={handleBack}
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Mes séances
+      </Button>
       <Card>
         <CardHeader>
           <CardTitle>Nouvelle séance</CardTitle>
