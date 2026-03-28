@@ -69,11 +69,7 @@ export function MultiSelect({
       );
 
   const toggle = (value: string) => {
-    onChange(
-      selected.includes(value)
-        ? selected.filter(v => v !== value)
-        : [...selected, value]
-    );
+    onChange(selected.includes(value) ? selected.filter(v => v !== value) : [...selected, value]);
   };
 
   const remove = (e: React.MouseEvent, value: string) => {
@@ -105,7 +101,7 @@ export function MultiSelect({
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
               selectedOptions.map(opt => (
-                <Badge key={opt.value} variant="default" className="gap-1 pr-1 max-w-[160px]">
+                <Badge key={opt.value} variant="secondary" className="gap-1 pr-1 max-w-[160px]">
                   <span className="truncate">{opt.label}</span>
                   <span
                     role="button"
@@ -123,7 +119,10 @@ export function MultiSelect({
             <span
               role="button"
               aria-label="Tout effacer"
-              onClick={e => { e.stopPropagation(); onChange([]); }}
+              onClick={e => {
+                e.stopPropagation();
+                onChange([]);
+              }}
               className="shrink-0 rounded-sm hover:bg-muted cursor-pointer text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
@@ -161,7 +160,9 @@ export function MultiSelect({
                   onClick={() => toggle(opt.value)}
                   className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground select-none"
                 >
-                  <Check className={cn('h-4 w-4 shrink-0', isSelected ? 'opacity-100' : 'opacity-0')} />
+                  <Check
+                    className={cn('h-4 w-4 shrink-0', isSelected ? 'opacity-100' : 'opacity-0')}
+                  />
                   <span className="flex-1 truncate">{opt.label}</span>
                   {opt.sublabel && (
                     <span className="text-xs text-muted-foreground truncate">{opt.sublabel}</span>
