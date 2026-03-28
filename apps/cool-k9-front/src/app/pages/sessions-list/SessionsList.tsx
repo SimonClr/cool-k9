@@ -86,7 +86,7 @@ export function SessionsList() {
         </Button>
       )}
 
-      <header className="sticky top-0 z-10 -mx-4 sm:-mx-8 -mt-4 px-4 sm:px-8 pt-4 pb-8 mb-3">
+      <header className="sticky top-0 z-10 -mx-4 sm:-mx-8 -mt-4 px-4 sm:px-8 pb-8 mb-3">
         {/* Couche blur + dégradé — s'étend vers le haut pour couvrir le gap du padding de main */}
         <div
           className="absolute inset-x-0 bottom-0 bg-background/20 backdrop-blur-[6px] -z-10"
