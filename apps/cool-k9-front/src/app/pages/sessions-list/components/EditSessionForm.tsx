@@ -14,17 +14,19 @@ import {
   Clock,
   Cloud,
   Dog,
-  FileText,
   Loader2,
   MapPin,
   MessageSquare,
   Target,
   Thermometer,
-  User,
 } from 'lucide-react';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
+import { cn } from '@/lib/utils';
 import { SessionFormFields } from './SessionFormFields';
-import { OBSERVATION_STATUS_LABELS, OBSERVATION_STATUS_VARIANTS } from '../models/session-form.types';
+import {
+  OBSERVATION_STATUS_LABELS,
+  OBSERVATION_STATUS_VARIANTS,
+} from '../models/session-form.types';
 import { type LocationValue } from '@/app/components/LocationAutocomplete';
 import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '@/app/utils/session-labels';
 import { getExerciseTypeData } from '@/app/utils/exercise-type'; // ─── SectionCard ──────────────────────────────────────────────────────────────
@@ -245,7 +247,9 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <CardTitle>Modifier la séance</CardTitle>
-                <CardDescription className="capitalize mt-1">{formatDateLong(session.date)}</CardDescription>
+                <CardDescription className="capitalize mt-1">
+                  {formatDateLong(session.date)}
+                </CardDescription>
               </div>
               <div className="flex flex-wrap gap-2 shrink-0">
                 <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
@@ -361,10 +365,6 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
             <span className="font-medium">{session.dogNames.join(', ') || '—'}</span>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <User className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-            <span>{session.userNames?.join(', ') || '—'}</span>
-          </div>
-          <div className="flex items-center gap-3 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
             <span>{session.duration} min</span>
           </div>
@@ -390,12 +390,6 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
       </Card>
 
       <div className="space-y-4">
-        {session.route && session.environment === Environment.OUTDOOR && (
-          <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
-            {session.route}
-          </SectionCard>
-        )}
-
         {session.previousObjectives && (
           <SectionCard
             icon={<Target className="h-4 w-4" aria-hidden="true" />}
@@ -405,42 +399,66 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
           </SectionCard>
         )}
 
-        {canEditOwnerObs ? (
+        {session.route && session.environment === Environment.OUTDOOR && (
+          <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
+            {session.route}
+          </SectionCard>
+        )}
+
+        {/* Observations dresseur + propriétaire — fusionnées dans une seule card */}
+        {((showTrainerObservations && !!session.trainerObservations) ||
+          canEditOwnerObs ||
+          !!session.ownerObservations) && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base font-semibold">
                 <MessageSquare className="h-4 w-4" aria-hidden="true" />
-                Observations propriétaire
+                Observations
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Textarea
-                id="ownerObservations"
-                placeholder="Vos observations après la séance..."
-                value={ownerObservations}
-                onChange={e => setOwnerObservations(e.target.value)}
-                className="min-h-[100px]"
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Dresseur en premier */}
+                {showTrainerObservations && session.trainerObservations && (
+                  <div
+                    className={cn(
+                      'flex flex-col gap-1.5',
+                      !(canEditOwnerObs || !!session.ownerObservations) && 'sm:col-span-2'
+                    )}
+                  >
+                    <p className="text-sm font-medium">Dresseur</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {session.trainerObservations}
+                    </p>
+                  </div>
+                )}
+                {/* Propriétaire */}
+                {(canEditOwnerObs || !!session.ownerObservations) && (
+                  <div
+                    className={cn(
+                      'flex flex-col gap-1.5',
+                      !(showTrainerObservations && !!session.trainerObservations) && 'sm:col-span-2'
+                    )}
+                  >
+                    <p className="text-sm font-medium">Propriétaire</p>
+                    {canEditOwnerObs ? (
+                      <Textarea
+                        id="ownerObservations"
+                        placeholder="Vos observations après la séance..."
+                        value={ownerObservations}
+                        onChange={e => setOwnerObservations(e.target.value)}
+                        className="min-h-[100px]"
+                      />
+                    ) : (
+                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                        {session.ownerObservations}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
-        ) : (
-          session.ownerObservations && (
-            <SectionCard
-              icon={<MessageSquare className="h-4 w-4" aria-hidden="true" />}
-              title="Observations propriétaire"
-            >
-              {session.ownerObservations}
-            </SectionCard>
-          )
-        )}
-
-        {showTrainerObservations && session.trainerObservations && (
-          <SectionCard
-            icon={<FileText className="h-4 w-4" aria-hidden="true" />}
-            title="Observations dresseur"
-          >
-            {session.trainerObservations}
-          </SectionCard>
         )}
 
         {session.nextObjectives && (
@@ -467,7 +485,10 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
           <Button
             type="submit"
             className="flex-1"
-            disabled={updateSession.isPending}
+            disabled={
+              updateSession.isPending ||
+              ownerObservations.trim() === (session.ownerObservations ?? '').trim()
+            }
             aria-busy={updateSession.isPending}
           >
             {updateSession.isPending ? (
