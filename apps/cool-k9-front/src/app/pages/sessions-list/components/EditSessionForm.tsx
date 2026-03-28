@@ -9,8 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 import {
-  AlertCircle,
   Clock,
   Cloud,
   Dog,
@@ -119,7 +119,6 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
   const [nextObjectives, setNextObjectives] = useState('');
   const [ownerObservations, setOwnerObservations] = useState('');
   const [initialized, setInitialized] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
 
   const { data: availableDogs, isLoading: dogsLoading } = useMultiUserDogs(
     isAdmin ? selectedUserIds : []
@@ -151,7 +150,6 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
 
   const handleAdminSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setApiError(null);
     updateSession.mutate(
       {
         date: date as unknown as Date,
@@ -173,22 +171,27 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
         nextObjectives: nextObjectives.trim() || null,
       } as Parameters<typeof updateSession.mutate>[0],
       {
-        onSuccess: () => navigate('/sessions', { replace: true }),
-        onError: () => setApiError('Erreur lors de la mise à jour. Veuillez réessayer.'),
+        onSuccess: () => {
+          toast.success('Séance mise à jour avec succès !');
+          navigate('/sessions', { replace: true });
+        },
+        onError: () => toast.error('Erreur lors de la mise à jour. Veuillez réessayer.'),
       }
     );
   };
 
   const handleUserSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setApiError(null);
     updateSession.mutate(
       { ownerObservations: ownerObservations.trim() || null } as Parameters<
         typeof updateSession.mutate
       >[0],
       {
-        onSuccess: () => navigate('/sessions', { replace: true }),
-        onError: () => setApiError('Erreur lors de la mise à jour. Veuillez réessayer.'),
+        onSuccess: () => {
+          toast.success('Observations enregistrées !');
+          navigate('/sessions', { replace: true });
+        },
+        onError: () => toast.error('Erreur lors de la mise à jour. Veuillez réessayer.'),
       }
     );
   };
@@ -255,13 +258,6 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            {apiError && (
-              <div role="alert" className="flex items-center gap-2 text-destructive text-sm mb-5">
-                <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>{apiError}</span>
-              </div>
-            )}
-
             <SessionFormFields
               userOptions={userOptions}
               selectedUserIds={selectedUserIds}
@@ -357,13 +353,6 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
           </div>
         </div>
       </header>
-
-      {apiError && (
-        <div role="alert" className="flex items-center gap-2 text-destructive text-sm">
-          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-          <span>{apiError}</span>
-        </div>
-      )}
 
       <Card>
         <CardContent className="pt-6 space-y-3">
