@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Loader2, Menu, X, Sun, Moon, LogOut, UserCircle } from 'lucide-react';
+import { Loader2, LogOut, Menu, Moon, Sun, UserCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth, useTheme } from '@authentication';
 
@@ -235,7 +235,7 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto overscroll-none px-4 sm:px-8 py-4">
+      <main className="flex-1 overflow-y-auto overscroll-none px-4 sm:px-4 py-4">
         <Suspense
           fallback={
             <div
@@ -251,7 +251,6 @@ export function Layout() {
           <Outlet />
         </Suspense>
       </main>
-
     </div>
   );
 }
