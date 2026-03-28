@@ -6,7 +6,8 @@ export interface ExerciseTypeData {
 }
 
 export const EXERCISE_TYPE_LABELS: Record<ExerciseType, ExerciseTypeData> = {
-  [ExerciseType.EDUCATION]:          { label: 'Éducation',           variant: 'default'   },
+  [ExerciseType.INITIATION]:         { label: 'Initiation',           variant: 'info'      },
+  [ExerciseType.EDUCATION]:          { label: 'Éducation',            variant: 'default'   },
   [ExerciseType.RECHERCHE_MATIERE]:  { label: 'Recherche de matière', variant: 'warning'   },
   [ExerciseType.RECHERCHE_PERSONNE]: { label: 'Recherche de personne', variant: 'success'  },
 };

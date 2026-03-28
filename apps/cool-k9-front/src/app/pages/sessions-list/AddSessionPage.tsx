@@ -25,14 +25,9 @@ import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { LocationAutocomplete, LocationValue } from '../../components/LocationAutocomplete';
 import { WEATHER_LABELS, ENVIRONMENT_LABELS } from '@/app/utils/session-labels';
+import { EXERCISE_TYPE_LABELS } from '@/app/utils/exercise-type';
 import { Dog } from '@models';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
-
-const EXERCISE_TYPE_LABELS: Record<ExerciseType, string> = {
-  [ExerciseType.EDUCATION]: 'Éducation',
-  [ExerciseType.RECHERCHE_MATIERE]: 'Recherche de matière',
-  [ExerciseType.RECHERCHE_PERSONNE]: 'Recherche de personne',
-};
 
 type FieldErrors = {
   userIds?: string;
@@ -323,9 +318,9 @@ export function AddSessionPage() {
                   <SelectValue placeholder="Sélectionner un type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(EXERCISE_TYPE_LABELS).map(([value, label]) => (
+                  {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
                     <SelectItem key={value} value={value}>
-                      {label}
+                      {data.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
