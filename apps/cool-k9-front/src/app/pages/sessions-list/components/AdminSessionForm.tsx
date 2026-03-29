@@ -16,6 +16,7 @@ import {
   OBSERVATION_STATUS_VARIANTS,
 } from '../models/session-form.types';
 import { type LocationValue } from '@/app/components/LocationAutocomplete';
+import { formatDateShort } from '@/app/utils/date-format';
 
 export function AdminSessionForm({ session }: { session: Session }) {
   const navigate = useNavigate();
@@ -112,13 +113,6 @@ export function AdminSessionForm({ session }: { session: Session }) {
       }
     );
   };
-
-  const formatDateShort = (d: Date) =>
-    new Intl.DateTimeFormat('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(d);
 
   const sort = (arr: string[]) => [...arr].sort().join(',');
   const isDirty =

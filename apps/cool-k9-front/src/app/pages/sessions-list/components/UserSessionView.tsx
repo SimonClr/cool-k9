@@ -24,6 +24,7 @@ import {
 import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '@/app/utils/session-labels';
 import { getExerciseTypeData } from '@/app/utils/exercise-type';
 import { SectionCard } from './SectionCard';
+import { formatDateShort } from '@/app/utils/date-format';
 
 // ─── UserSessionView ──────────────────────────────────────────────────────────
 
@@ -54,18 +55,10 @@ export function UserSessionView({ session }: { session: Session }) {
 
   const exerciseTypeData = getExerciseTypeData(session.exerciseType);
 
-  const formatDateLong = (d: Date) =>
-    new Intl.DateTimeFormat('fr-FR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(d);
-
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <SectionCard
-        title={<h1 className="text-2xl font-bold capitalize">{formatDateLong(session.date)}</h1>}
+        title={<h1 className="text-2xl font-bold">Séance du {formatDateShort(session.date)}</h1>}
         headerAction={
           <div className="flex flex-wrap gap-2">
             <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>

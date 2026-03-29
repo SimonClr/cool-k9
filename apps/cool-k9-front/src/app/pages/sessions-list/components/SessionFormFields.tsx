@@ -14,14 +14,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { AlertCircle, CalendarIcon, MessageSquare, Target } from 'lucide-react';
+import { AlertCircle, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { LocationAutocomplete, LocationValue } from '@/app/components/LocationAutocomplete';
 import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '@/app/utils/session-labels';
 import { EXERCISE_TYPE_LABELS } from '@/app/utils/exercise-type';
-import { SectionCard } from './SectionCard';
 
 // ─── FieldError ───────────────────────────────────────────────────────────────
 
@@ -327,10 +326,8 @@ export function SessionFormFields({
       )}
 
       {/* Observations */}
-      <SectionCard
-        icon={<MessageSquare className="h-4 w-4" aria-hidden="true" />}
-        title="Observations"
-      >
+      <div className={cn('flex flex-col', isEditMode ? 'gap-3' : 'gap-1.5')}>
+        <h3 className="text-sm font-medium">Observations</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {isEditMode && (
             <div className="flex flex-col gap-1.5">
@@ -356,10 +353,11 @@ export function SessionFormFields({
             />
           </div>
         </div>
-      </SectionCard>
+      </div>
 
       {/* Objectifs */}
-      <SectionCard icon={<Target className="h-4 w-4" aria-hidden="true" />} title="Objectifs">
+      <div className="flex flex-col gap-3">
+        <h3 className="text-sm font-medium">Objectifs</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="previousObjectives">Séance</Label>
@@ -381,7 +379,7 @@ export function SessionFormFields({
             />
           </div>
         </div>
-      </SectionCard>
+      </div>
     </div>
   );
 }
