@@ -9,6 +9,7 @@ export interface MultiSelectOption {
   value: string;
   label: string;
   sublabel?: string;
+  variant?: 'default' | 'secondary' | 'success' | 'warning' | 'info' | 'error' | 'destructive' | 'outline';
 }
 
 interface MultiSelectProps {
@@ -101,7 +102,7 @@ export function MultiSelect({
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
               selectedOptions.map(opt => (
-                <Badge key={opt.value} variant="secondary" className="gap-1 pr-1 max-w-[160px]">
+                <Badge key={opt.value} variant={opt.variant ?? 'secondary'} className="gap-1 pr-1 max-w-[160px]">
                   <span className="truncate">{opt.label}</span>
                   <span
                     role="button"
@@ -163,9 +164,22 @@ export function MultiSelect({
                   <Check
                     className={cn('h-4 w-4 shrink-0', isSelected ? 'opacity-100' : 'opacity-0')}
                   />
-                  <span className="flex-1 truncate">{opt.label}</span>
-                  {opt.sublabel && (
-                    <span className="text-xs text-muted-foreground truncate">{opt.sublabel}</span>
+                  {opt.variant ? (
+                    <div className="flex-1 flex items-center gap-2 min-w-0">
+                      <Badge variant={opt.variant}>
+                        {opt.label}
+                      </Badge>
+                      {opt.sublabel && (
+                        <span className="text-xs text-muted-foreground truncate">{opt.sublabel}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <span className="flex-1 truncate">{opt.label}</span>
+                      {opt.sublabel && (
+                        <span className="text-xs text-muted-foreground truncate">{opt.sublabel}</span>
+                      )}
+                    </>
                   )}
                 </li>
               );

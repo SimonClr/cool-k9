@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertCircle, CalendarIcon } from 'lucide-react';
@@ -241,12 +242,18 @@ export function SessionFormFields({
             aria-describedby={exerciseTypeFieldError ? 'exerciseType-error' : undefined}
             className={cn(exerciseTypeFieldError && 'border-destructive')}
           >
-            <SelectValue placeholder="Sélectionner un type" />
+            <SelectValue placeholder="Sélectionner un type">
+              {exerciseType && EXERCISE_TYPE_LABELS[exerciseType as ExerciseType] && (
+                <Badge variant={EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].variant}>
+                  {EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].label}
+                </Badge>
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
               <SelectItem key={value} value={value}>
-                {data.label}
+                <Badge variant={data.variant}>{data.label}</Badge>
               </SelectItem>
             ))}
           </SelectContent>

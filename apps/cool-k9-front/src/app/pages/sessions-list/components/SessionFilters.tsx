@@ -23,6 +23,7 @@ interface SessionFiltersProps {
 const exerciseTypeOptions: MultiSelectOption[] = Object.values(ExerciseType).map(value => ({
   value,
   label: EXERCISE_TYPE_LABELS[value]?.label ?? value,
+  variant: EXERCISE_TYPE_LABELS[value]?.variant ?? 'secondary',
 }));
 
 export function SessionFilters({
