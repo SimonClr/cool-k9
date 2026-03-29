@@ -13,7 +13,7 @@ export function SessionFormPage() {
     <div className="container mx-auto max-w-3xl">
       <Button
         variant="ghost"
-        className="mb-6 -ml-2 gap-2 text-muted-foreground hover:text-foreground"
+        className="mb-2 -ml-2 gap-2 text-muted-foreground hover:text-foreground"
         onClick={() => navigate(-1)}
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />

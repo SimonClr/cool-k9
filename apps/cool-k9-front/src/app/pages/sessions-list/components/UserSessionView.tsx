@@ -138,81 +138,105 @@ export function UserSessionView({ session }: { session: Session }) {
         </SectionCard>
       )}
 
-      <div className="space-y-4">
-        {session.previousObjectives && (
-          <SectionCard
-            icon={<Target className="h-4 w-4" aria-hidden="true" />}
-            title="Objectifs séance précédente"
-          >
-            {session.previousObjectives}
-          </SectionCard>
-        )}
-
-        {/* Observations Cool-K9 + client — fusionnées dans une seule card */}
-        {((showTrainerObservations && !!session.trainerObservations) ||
-          canEditOwnerObs ||
-          !!session.ownerObservations) && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                <MessageSquare className="h-4 w-4" aria-hidden="true" />
-                Observations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Cool-K9 en premier */}
-                {showTrainerObservations && session.trainerObservations && (
-                  <div
-                    className={cn(
-                      'flex flex-col gap-1.5',
-                      !(canEditOwnerObs || !!session.ownerObservations) && 'sm:col-span-2'
-                    )}
-                  >
-                    <p className="text-sm font-medium">Cool-K9</p>
+      {/* Observations Cool-K9 + client — fusionnées dans une seule card */}
+      {((showTrainerObservations && !!session.trainerObservations) ||
+        canEditOwnerObs ||
+        !!session.ownerObservations) && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base font-semibold">
+              <MessageSquare className="h-4 w-4" aria-hidden="true" />
+              Observations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Cool-K9 en premier */}
+              {showTrainerObservations && session.trainerObservations && (
+                <div
+                  className={cn(
+                    'flex flex-col gap-1.5',
+                    !(canEditOwnerObs || !!session.ownerObservations) && 'sm:col-span-2'
+                  )}
+                >
+                  <p className="text-sm font-medium">Cool-K9</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {session.trainerObservations}
+                  </p>
+                </div>
+              )}
+              {/* Client */}
+              {(canEditOwnerObs || !!session.ownerObservations) && (
+                <div
+                  className={cn(
+                    'flex flex-col gap-1.5',
+                    !(showTrainerObservations && !!session.trainerObservations) && 'sm:col-span-2'
+                  )}
+                >
+                  <p className="text-sm font-medium">Client</p>
+                  {canEditOwnerObs ? (
+                    <Textarea
+                      id="ownerObservations"
+                      placeholder="Vos observations après la séance..."
+                      value={ownerObservations}
+                      onChange={e => setOwnerObservations(e.target.value)}
+                      className="min-h-[100px]"
+                    />
+                  ) : (
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {session.trainerObservations}
+                      {session.ownerObservations}
                     </p>
-                  </div>
-                )}
-                {/* Client */}
-                {(canEditOwnerObs || !!session.ownerObservations) && (
-                  <div
-                    className={cn(
-                      'flex flex-col gap-1.5',
-                      !(showTrainerObservations && !!session.trainerObservations) && 'sm:col-span-2'
-                    )}
-                  >
-                    <p className="text-sm font-medium">Client</p>
-                    {canEditOwnerObs ? (
-                      <Textarea
-                        id="ownerObservations"
-                        placeholder="Vos observations après la séance..."
-                        value={ownerObservations}
-                        onChange={e => setOwnerObservations(e.target.value)}
-                        className="min-h-[100px]"
-                      />
-                    ) : (
-                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                        {session.ownerObservations}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  )}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        {session.nextObjectives && (
-          <SectionCard
-            icon={<Target className="h-4 w-4" aria-hidden="true" />}
-            title="Objectifs prochaine séance"
-          >
-            {session.nextObjectives}
-          </SectionCard>
-        )}
-      </div>
+      {/* Objectifs — fusionnés dans une seule card */}
+      {(session.previousObjectives || session.nextObjectives) && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base font-semibold">
+              <Target className="h-4 w-4" aria-hidden="true" />
+              Objectifs
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Séance courante */}
+              {session.previousObjectives && (
+                <div
+                  className={cn(
+                    'flex flex-col gap-1.5',
+                    !session.nextObjectives && 'sm:col-span-2'
+                  )}
+                >
+                  <p className="text-sm font-medium">Séance</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {session.previousObjectives}
+                  </p>
+                </div>
+              )}
+              {/* Prochaine séance */}
+              {session.nextObjectives && (
+                <div
+                  className={cn(
+                    'flex flex-col gap-1.5',
+                    !session.previousObjectives && 'sm:col-span-2'
+                  )}
+                >
+                  <p className="text-sm font-medium">Prochaine séance</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {session.nextObjectives}
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {canEditOwnerObs && (
         <div className="flex gap-3 mt-2">

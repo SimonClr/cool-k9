@@ -142,7 +142,9 @@ export function SessionFormFields({
     <div className="flex flex-col gap-5">
       {/* Clients + Chiens */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}>
+        <div
+          className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}
+        >
           <Label>Clients</Label>
           <MultiSelect
             options={userOptions}
@@ -323,53 +325,60 @@ export function SessionFormFields({
         </div>
       )}
 
-      {/* Objectifs séance précédente */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="previousObjectives">Objectifs séance précédente</Label>
-        <Textarea
-          id="previousObjectives"
-          placeholder="Objectifs de la séance précédente..."
-          value={previousObjectives}
-          onChange={e => onPreviousObjectivesChange(e.target.value)}
-        />
-      </div>
+      {/* Observations */}
+      <div className={cn('flex flex-col', isEditMode ? 'gap-3' : 'gap-1.5')}>
+        <h3 className="text-sm font-medium">Observations</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {isEditMode && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="ownerObservations">Client</Label>
+              <Textarea
+                id="ownerObservations"
+                value={ownerObservationsReadOnly ?? ''}
+                readOnly
+                disabled
+                placeholder="Aucune observation"
+                className="resize-none text-muted-foreground"
+              />
+            </div>
+          )}
 
-      {/* Observations client + Cool-K9 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {isEditMode && (
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ownerObservations">Observations client</Label>
+          <div className={cn('flex flex-col gap-1.5', !isEditMode && 'sm:col-span-2')}>
+            {isEditMode && <Label htmlFor="trainerObservations">Cool-K9</Label>}
             <Textarea
-              id="ownerObservations"
-              value={ownerObservationsReadOnly ?? ''}
-              readOnly
-              disabled
-              placeholder="Aucune observation"
-              className="resize-none text-muted-foreground"
+              id="trainerObservations"
+              placeholder="Observations Cool-K9..."
+              value={trainerObservations}
+              onChange={e => onTrainerObservationsChange(e.target.value)}
             />
           </div>
-        )}
-
-        <div className={cn('flex flex-col gap-1.5', !isEditMode && 'sm:col-span-2')}>
-          <Label htmlFor="trainerObservations">Observations Cool-K9</Label>
-          <Textarea
-            id="trainerObservations"
-            placeholder="Observations Cool-K9..."
-            value={trainerObservations}
-            onChange={e => onTrainerObservationsChange(e.target.value)}
-          />
         </div>
       </div>
 
-      {/* Objectifs prochaine séance */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="nextObjectives">Objectifs prochaine séance</Label>
-        <Textarea
-          id="nextObjectives"
-          placeholder="Objectifs à atteindre lors de la prochaine séance..."
-          value={nextObjectives}
-          onChange={e => onNextObjectivesChange(e.target.value)}
-        />
+      {/* Objectifs */}
+      <div className="flex flex-col gap-3">
+        <h3 className="text-sm font-medium">Objectifs</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="previousObjectives">Séance</Label>
+            <Textarea
+              id="previousObjectives"
+              placeholder="Objectifs de la séance..."
+              value={previousObjectives}
+              onChange={e => onPreviousObjectivesChange(e.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="nextObjectives">Prochaine séance</Label>
+            <Textarea
+              id="nextObjectives"
+              placeholder="Objectifs de la prochaine séance..."
+              value={nextObjectives}
+              onChange={e => onNextObjectivesChange(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
