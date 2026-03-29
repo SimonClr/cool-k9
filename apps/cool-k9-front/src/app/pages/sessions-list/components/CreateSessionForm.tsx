@@ -4,7 +4,7 @@ import { Dog as DogModel, Environment, ExerciseType, Weather } from '@models';
 import { useCreateSession } from '@/app/hooks/useSessions';
 import { useMultiUserDogs } from '@/app/hooks/useDogs';
 import { useUserSearch } from '@/app/hooks/useUsers';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -134,7 +134,6 @@ export function CreateSessionForm() {
     <Card>
       <CardHeader>
         <CardTitle>Nouvelle séance</CardTitle>
-        <CardDescription>Renseignez les informations de la séance d'entraînement</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">

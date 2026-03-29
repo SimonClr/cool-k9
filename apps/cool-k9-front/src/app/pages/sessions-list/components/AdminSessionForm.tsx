@@ -4,7 +4,7 @@ import { Dog as DogModel, Environment, ExerciseType, Session, Weather } from '@m
 import { useUpdateSession } from '@/app/hooks/useSessions';
 import { useMultiUserDogs } from '@/app/hooks/useDogs';
 import { useUserSearch } from '@/app/hooks/useUsers';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -16,7 +16,6 @@ import {
   OBSERVATION_STATUS_VARIANTS,
 } from '../models/session-form.types';
 import { type LocationValue } from '@/app/components/LocationAutocomplete';
-import { getExerciseTypeData } from '@/app/utils/exercise-type';
 
 export function AdminSessionForm({ session }: { session: Session }) {
   const navigate = useNavigate();
@@ -114,11 +113,8 @@ export function AdminSessionForm({ session }: { session: Session }) {
     );
   };
 
-  const exerciseTypeData = getExerciseTypeData(session.exerciseType);
-
-  const formatDateLong = (d: Date) =>
+  const formatDateShort = (d: Date) =>
     new Intl.DateTimeFormat('fr-FR', {
-      weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -144,14 +140,8 @@ export function AdminSessionForm({ session }: { session: Session }) {
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <CardTitle>Modifier la séance</CardTitle>
-              <CardDescription className="capitalize mt-1">
-                {formatDateLong(session.date)}
-              </CardDescription>
-            </div>
+            <CardTitle>Séance du {formatDateShort(session.date)}</CardTitle>
             <div className="flex flex-wrap gap-2 shrink-0">
-              <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
               {session.observationStatus && (
                 <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
                   {OBSERVATION_STATUS_LABELS[session.observationStatus]}
