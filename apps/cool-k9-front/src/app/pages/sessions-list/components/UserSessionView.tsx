@@ -2,7 +2,6 @@ import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Environment, ObservationStatus, Session } from '@models';
 import { useUpdateSession } from '@/app/hooks/useSessions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -24,30 +23,7 @@ import {
 } from '../models/session-form.types';
 import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '@/app/utils/session-labels';
 import { getExerciseTypeData } from '@/app/utils/exercise-type';
-
-function SectionCard({
-  icon,
-  title,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          {icon}
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{children}</p>
-      </CardContent>
-    </Card>
-  );
-}
+import { SectionCard } from './SectionCard';
 
 // ─── UserSessionView ──────────────────────────────────────────────────────────
 
@@ -88,53 +64,52 @@ export function UserSessionView({ session }: { session: Session }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <Card>
-        <CardHeader className="p-6 pb-3">
-          <div className="flex flex-wrap items-start justify-between">
-            <h1 className="text-2xl font-bold capitalize">{formatDateLong(session.date)}</h1>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
-              {session.observationStatus && (
-                <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
-                  {OBSERVATION_STATUS_LABELS[session.observationStatus]}
-                </Badge>
-              )}
-            </div>
+      <SectionCard
+        title={<h1 className="text-2xl font-bold capitalize">{formatDateLong(session.date)}</h1>}
+        headerAction={
+          <div className="flex flex-wrap gap-2">
+            <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
+            {session.observationStatus && (
+              <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
+                {OBSERVATION_STATUS_LABELS[session.observationStatus]}
+              </Badge>
+            )}
           </div>
-        </CardHeader>
-        <CardContent className=" space-y-3">
+        }
+        headerClassName="p-6 pb-3"
+        contentClassName="space-y-3"
+      >
+        <div className="flex items-center gap-3 text-sm">
+          <Dog className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+          <span className="font-medium">{session.dogNames.join(', ') || '—'}</span>
+        </div>
+        <div className="flex items-center gap-3 text-sm">
+          <Clock className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+          <span>{session.duration} min</span>
+        </div>
+        {session.location && (
           <div className="flex items-center gap-3 text-sm">
-            <Dog className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-            <span className="font-medium">{session.dogNames.join(', ') || '—'}</span>
+            <MapPin className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+            <span>{session.location}</span>
           </div>
+        )}
+        {session.environment && (
           <div className="flex items-center gap-3 text-sm">
-            <Clock className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-            <span>{session.duration} min</span>
+            <Cloud className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+            <span>{ENVIRONMENT_LABELS[session.environment]}</span>
           </div>
-          {session.location && (
-            <div className="flex items-center gap-3 text-sm">
-              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-              <span>{session.location}</span>
-            </div>
-          )}
-          {session.environment && (
-            <div className="flex items-center gap-3 text-sm">
-              <Cloud className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-              <span>{ENVIRONMENT_LABELS[session.environment]}</span>
-            </div>
-          )}
-          {session.environment === Environment.OUTDOOR && session.weather && (
-            <div className="flex items-center gap-3 text-sm">
-              <Thermometer className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
-              <span>{WEATHER_LABELS[session.weather]}</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        )}
+        {session.environment === Environment.OUTDOOR && session.weather && (
+          <div className="flex items-center gap-3 text-sm">
+            <Thermometer className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
+            <span>{WEATHER_LABELS[session.weather]}</span>
+          </div>
+        )}
+      </SectionCard>
 
       {session.route && session.environment === Environment.OUTDOOR && (
         <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
-          {session.route}
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{session.route}</p>
         </SectionCard>
       )}
 
@@ -142,100 +117,87 @@ export function UserSessionView({ session }: { session: Session }) {
       {((showTrainerObservations && !!session.trainerObservations) ||
         canEditOwnerObs ||
         !!session.ownerObservations) && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base font-semibold">
-              <MessageSquare className="h-4 w-4" aria-hidden="true" />
-              Observations
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Cool-K9 en premier */}
-              {showTrainerObservations && session.trainerObservations && (
-                <div
-                  className={cn(
-                    'flex flex-col gap-1.5',
-                    !(canEditOwnerObs || !!session.ownerObservations) && 'sm:col-span-2'
-                  )}
-                >
-                  <p className="text-sm font-medium">Cool-K9</p>
+        <SectionCard
+          icon={<MessageSquare className="h-4 w-4" aria-hidden="true" />}
+          title="Observations"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Cool-K9 en premier */}
+            {showTrainerObservations && session.trainerObservations && (
+              <div
+                className={cn(
+                  'flex flex-col gap-1.5',
+                  !(canEditOwnerObs || !!session.ownerObservations) && 'sm:col-span-2'
+                )}
+              >
+                <p className="text-sm font-medium">Cool-K9</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {session.trainerObservations}
+                </p>
+              </div>
+            )}
+            {/* Client */}
+            {(canEditOwnerObs || !!session.ownerObservations) && (
+              <div
+                className={cn(
+                  'flex flex-col gap-1.5',
+                  !(showTrainerObservations && !!session.trainerObservations) && 'sm:col-span-2'
+                )}
+              >
+                <p className="text-sm font-medium">Client</p>
+                {canEditOwnerObs ? (
+                  <Textarea
+                    id="ownerObservations"
+                    placeholder="Vos observations après la séance..."
+                    value={ownerObservations}
+                    onChange={e => setOwnerObservations(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                ) : (
                   <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {session.trainerObservations}
+                    {session.ownerObservations}
                   </p>
-                </div>
-              )}
-              {/* Client */}
-              {(canEditOwnerObs || !!session.ownerObservations) && (
-                <div
-                  className={cn(
-                    'flex flex-col gap-1.5',
-                    !(showTrainerObservations && !!session.trainerObservations) && 'sm:col-span-2'
-                  )}
-                >
-                  <p className="text-sm font-medium">Client</p>
-                  {canEditOwnerObs ? (
-                    <Textarea
-                      id="ownerObservations"
-                      placeholder="Vos observations après la séance..."
-                      value={ownerObservations}
-                      onChange={e => setOwnerObservations(e.target.value)}
-                      className="min-h-[100px]"
-                    />
-                  ) : (
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {session.ownerObservations}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                )}
+              </div>
+            )}
+          </div>
+        </SectionCard>
       )}
 
       {/* Objectifs — fusionnés dans une seule card */}
       {(session.previousObjectives || session.nextObjectives) && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base font-semibold">
-              <Target className="h-4 w-4" aria-hidden="true" />
-              Objectifs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Séance courante */}
-              {session.previousObjectives && (
-                <div
-                  className={cn(
-                    'flex flex-col gap-1.5',
-                    !session.nextObjectives && 'sm:col-span-2'
-                  )}
-                >
-                  <p className="text-sm font-medium">Séance</p>
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {session.previousObjectives}
-                  </p>
-                </div>
-              )}
-              {/* Prochaine séance */}
-              {session.nextObjectives && (
-                <div
-                  className={cn(
-                    'flex flex-col gap-1.5',
-                    !session.previousObjectives && 'sm:col-span-2'
-                  )}
-                >
-                  <p className="text-sm font-medium">Prochaine séance</p>
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {session.nextObjectives}
-                  </p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <SectionCard icon={<Target className="h-4 w-4" aria-hidden="true" />} title="Objectifs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Séance courante */}
+            {session.previousObjectives && (
+              <div
+                className={cn(
+                  'flex flex-col gap-1.5',
+                  !session.nextObjectives && 'sm:col-span-2'
+                )}
+              >
+                <p className="text-sm font-medium">Séance</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {session.previousObjectives}
+                </p>
+              </div>
+            )}
+            {/* Prochaine séance */}
+            {session.nextObjectives && (
+              <div
+                className={cn(
+                  'flex flex-col gap-1.5',
+                  !session.previousObjectives && 'sm:col-span-2'
+                )}
+              >
+                <p className="text-sm font-medium">Prochaine séance</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {session.nextObjectives}
+                </p>
+              </div>
+            )}
+          </div>
+        </SectionCard>
       )}
 
       {canEditOwnerObs && (
