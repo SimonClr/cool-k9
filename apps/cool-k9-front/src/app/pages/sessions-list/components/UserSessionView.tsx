@@ -87,23 +87,22 @@ export function UserSessionView({ session }: { session: Session }) {
     }).format(d);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <header>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold capitalize">{formatDateLong(session.date)}</h1>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
-            {session.observationStatus && (
-              <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
-                {OBSERVATION_STATUS_LABELS[session.observationStatus]}
-              </Badge>
-            )}
-          </div>
-        </div>
-      </header>
-
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <Card>
-        <CardContent className="pt-6 space-y-3">
+        <CardHeader className="p-6 pb-3">
+          <div className="flex flex-wrap items-start justify-between">
+            <h1 className="text-2xl font-bold capitalize">{formatDateLong(session.date)}</h1>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant={exerciseTypeData.variant}>{exerciseTypeData.label}</Badge>
+              {session.observationStatus && (
+                <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
+                  {OBSERVATION_STATUS_LABELS[session.observationStatus]}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className=" space-y-3">
           <div className="flex items-center gap-3 text-sm">
             <Dog className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden="true" />
             <span className="font-medium">{session.dogNames.join(', ') || '—'}</span>
@@ -133,6 +132,12 @@ export function UserSessionView({ session }: { session: Session }) {
         </CardContent>
       </Card>
 
+      {session.route && session.environment === Environment.OUTDOOR && (
+        <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
+          {session.route}
+        </SectionCard>
+      )}
+
       <div className="space-y-4">
         {session.previousObjectives && (
           <SectionCard
@@ -140,12 +145,6 @@ export function UserSessionView({ session }: { session: Session }) {
             title="Objectifs séance précédente"
           >
             {session.previousObjectives}
-          </SectionCard>
-        )}
-
-        {session.route && session.environment === Environment.OUTDOOR && (
-          <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
-            {session.route}
           </SectionCard>
         )}
 
