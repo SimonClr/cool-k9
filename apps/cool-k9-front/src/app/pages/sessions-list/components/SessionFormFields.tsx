@@ -188,10 +188,11 @@ export function SessionFormFields({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
+                size="sm"
                 aria-invalid={!!dateFieldError}
                 aria-describedby={dateFieldError ? 'date-error' : undefined}
                 className={cn(
-                  'justify-start text-left font-normal',
+                  'justify-start text-left font-normal bg-transparent shadow-sm',
                   !date && 'text-muted-foreground',
                   dateFieldError && 'border-destructive'
                 )}
