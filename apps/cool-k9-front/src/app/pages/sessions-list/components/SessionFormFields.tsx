@@ -14,13 +14,14 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { AlertCircle, CalendarIcon } from 'lucide-react';
+import { AlertCircle, CalendarIcon, Info, MapPin, MessageSquare, Target } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { LocationAutocomplete, LocationValue } from '@/app/components/LocationAutocomplete';
 import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '@/app/utils/session-labels';
 import { EXERCISE_TYPE_LABELS } from '@/app/utils/exercise-type';
+import { SectionCard } from './SectionCard';
 
 // ─── FieldError ───────────────────────────────────────────────────────────────
 
@@ -36,6 +37,9 @@ export function FieldError({ id, message }: { id: string; message: string }) {
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 export interface SessionFormFieldsProps {
+  // Header action for the first section
+  infoHeaderAction?: React.ReactNode;
+
   // Users
   userOptions: MultiSelectOption[];
   selectedUserIds: string[];
@@ -97,6 +101,7 @@ export interface SessionFormFieldsProps {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function SessionFormFields({
+  infoHeaderAction,
   userOptions,
   selectedUserIds,
   onUsersChange,
@@ -139,169 +144,161 @@ export function SessionFormFields({
   isEditMode = false,
 }: SessionFormFieldsProps) {
   return (
-    <div className="flex flex-col gap-5">
-      {/* Clients + Chiens */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div
-          className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}
-        >
-          <Label>Clients</Label>
-          <MultiSelect
-            options={userOptions}
-            selected={selectedUserIds}
-            onChange={onUsersChange}
-            placeholder="Sélectionner des clients"
-            searchPlaceholder="Rechercher un client..."
-            hasError={!!userFieldError}
-            onSearchChange={onUsersSearchChange}
-            isLoading={usersLoading}
-            hasMore={hasNextPage}
-            onLoadMore={onFetchNextPage}
-            onOpenChange={onUsersOpenChange}
-          />
-          {userFieldError && <FieldError id="userIds-error" message={userFieldError} />}
-        </div>
+    <div className="flex flex-col gap-2">
+      {/* Section: Informations générales */}
+      <SectionCard
+        icon={<Info className="h-4 w-4" aria-hidden="true" />}
+        title="Informations générales"
+        headerAction={infoHeaderAction}
+      >
+        <div className="flex flex-col gap-4">
 
-        {selectedUserIds.length > 0 && (
-          <div className="flex flex-col gap-1.5">
-            <Label>Chiens</Label>
-            <MultiSelect
-              options={dogOptions}
-              selected={selectedDogIds}
-              onChange={onDogsChange}
-              placeholder={
-                dogsLoading
-                  ? 'Chargement...'
-                  : dogOptions.length === 0
-                    ? 'Aucun chien enregistré'
-                    : 'Sélectionner des chiens'
-              }
-              searchPlaceholder="Rechercher un chien..."
-              disabled={dogsLoading || dogOptions.length === 0}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Date + Durée */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1.5">
-          <Label>Date</Label>
-          <Popover open={dateOpen} onOpenChange={onDateOpenChange}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                aria-invalid={!!dateFieldError}
-                aria-describedby={dateFieldError ? 'date-error' : undefined}
-                className={cn(
-                  'justify-start text-left font-normal bg-transparent shadow-sm',
-                  !date && 'text-muted-foreground',
-                  dateFieldError && 'border-destructive'
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                {date ? format(date, 'PPP', { locale: fr }) : 'Choisir une date'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={onDateSelect}
-                locale={fr}
-                classNames={{ root: 'w-full' }}
-              />
-            </PopoverContent>
-          </Popover>
-          {dateFieldError && <FieldError id="date-error" message={dateFieldError} />}
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="duration">Durée (min)</Label>
-          <Input
-            id="duration"
-            type="number"
-            min={1}
-            placeholder="60"
-            value={duration}
-            onChange={e => onDurationChange(e.target.value)}
-            aria-invalid={!!durationFieldError}
-            aria-describedby={durationFieldError ? 'duration-error' : undefined}
-            className={durationFieldError ? 'border-destructive' : ''}
-          />
-          {durationFieldError && <FieldError id="duration-error" message={durationFieldError} />}
-        </div>
-      </div>
-
-      {/* Type de séance */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="exerciseType">Type de séance</Label>
-        <Select value={exerciseType} onValueChange={onExerciseTypeChange}>
-          <SelectTrigger
-            id="exerciseType"
-            aria-invalid={!!exerciseTypeFieldError}
-            aria-describedby={exerciseTypeFieldError ? 'exerciseType-error' : undefined}
-            className={cn(exerciseTypeFieldError && 'border-destructive')}
+        {/* Clients + Chiens */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div
+            className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}
           >
-            <SelectValue placeholder="Sélectionner un type">
-              {exerciseType && EXERCISE_TYPE_LABELS[exerciseType as ExerciseType] && (
-                <Badge variant={EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].variant}>
-                  {EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].label}
-                </Badge>
-              )}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
-              <SelectItem key={value} value={value}>
-                <Badge variant={data.variant}>{data.label}</Badge>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {exerciseTypeFieldError && (
-          <FieldError id="exerciseType-error" message={exerciseTypeFieldError} />
-        )}
-      </div>
+            <Label>Clients</Label>
+            <MultiSelect
+              options={userOptions}
+              selected={selectedUserIds}
+              onChange={onUsersChange}
+              placeholder="Sélectionner des clients"
+              searchPlaceholder="Rechercher un client..."
+              hasError={!!userFieldError}
+              onSearchChange={onUsersSearchChange}
+              isLoading={usersLoading}
+              hasMore={hasNextPage}
+              onLoadMore={onFetchNextPage}
+              onOpenChange={onUsersOpenChange}
+            />
+            {userFieldError && <FieldError id="userIds-error" message={userFieldError} />}
+          </div>
 
-      {/* Lieu */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="location">Lieu</Label>
-        <LocationAutocomplete
-          id="location"
-          value={locationDisplay}
-          onChange={(coords, displayName) => onLocationChange(coords, displayName)}
-          placeholder="Parc de la Tête d'Or, Lyon"
-        />
-      </div>
+          {selectedUserIds.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <Label>Chiens</Label>
+              <MultiSelect
+                options={dogOptions}
+                selected={selectedDogIds}
+                onChange={onDogsChange}
+                placeholder={
+                  dogsLoading
+                    ? 'Chargement...'
+                    : dogOptions.length === 0
+                      ? 'Aucun chien enregistré'
+                      : 'Sélectionner des chiens'
+                }
+                searchPlaceholder="Rechercher un chien..."
+                disabled={dogsLoading || dogOptions.length === 0}
+              />
+            </div>
+          )}
+        </div>
 
-      {/* Environnement + Météo (Météo visible uniquement si extérieur) */}
-      <div className="grid grid-cols-2 gap-4">
+        {/* Date + Durée */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Label>Date</Label>
+            <Popover open={dateOpen} onOpenChange={onDateOpenChange}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-invalid={!!dateFieldError}
+                  aria-describedby={dateFieldError ? 'date-error' : undefined}
+                  className={cn(
+                    'justify-start text-left font-normal bg-transparent shadow-sm',
+                    !date && 'text-muted-foreground',
+                    dateFieldError && 'border-destructive'
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {date ? format(date, 'PPP', { locale: fr }) : 'Choisir une date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={onDateSelect}
+                  locale={fr}
+                  classNames={{ root: 'w-full' }}
+                />
+              </PopoverContent>
+            </Popover>
+            {dateFieldError && <FieldError id="date-error" message={dateFieldError} />}
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="duration">Durée (min)</Label>
+            <Input
+              id="duration"
+              type="number"
+              min={1}
+              placeholder="60"
+              value={duration}
+              onChange={e => onDurationChange(e.target.value)}
+              aria-invalid={!!durationFieldError}
+              aria-describedby={durationFieldError ? 'duration-error' : undefined}
+              className={durationFieldError ? 'border-destructive' : ''}
+            />
+            {durationFieldError && <FieldError id="duration-error" message={durationFieldError} />}
+          </div>
+        </div>
+
+        {/* Type de séance */}
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="environment">Environnement</Label>
-          <Select value={environment} onValueChange={onEnvironmentChange}>
-            <SelectTrigger id="environment">
-              <SelectValue placeholder="— Non défini —" />
+          <Label htmlFor="exerciseType">Type de séance</Label>
+          <Select value={exerciseType} onValueChange={onExerciseTypeChange}>
+            <SelectTrigger
+              id="exerciseType"
+              aria-invalid={!!exerciseTypeFieldError}
+              aria-describedby={exerciseTypeFieldError ? 'exerciseType-error' : undefined}
+              className={cn(exerciseTypeFieldError && 'border-destructive')}
+            >
+              <SelectValue placeholder="Sélectionner un type">
+                {exerciseType && EXERCISE_TYPE_LABELS[exerciseType as ExerciseType] && (
+                  <Badge variant={EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].variant}>
+                    {EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].label}
+                  </Badge>
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(ENVIRONMENT_LABELS).map(([value, label]) => (
+              {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
                 <SelectItem key={value} value={value}>
-                  {label}
+                  <Badge variant={data.variant}>{data.label}</Badge>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {exerciseTypeFieldError && (
+            <FieldError id="exerciseType-error" message={exerciseTypeFieldError} />
+          )}
         </div>
-        {environment === Environment.OUTDOOR && (
+
+        {/* Lieu */}
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="location">Lieu</Label>
+          <LocationAutocomplete
+            id="location"
+            value={locationDisplay}
+            onChange={(coords, displayName) => onLocationChange(coords, displayName)}
+            placeholder="Parc de la Tête d'Or, Lyon"
+          />
+        </div>
+
+        {/* Environnement + Météo */}
+        <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="weather">Météo</Label>
-            <Select value={weather} onValueChange={onWeatherChange}>
-              <SelectTrigger id="weather">
+            <Label htmlFor="environment">Environnement</Label>
+            <Select value={environment} onValueChange={onEnvironmentChange}>
+              <SelectTrigger id="environment">
                 <SelectValue placeholder="— Non défini —" />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(WEATHER_LABELS).map(([value, label]) => (
+                {Object.entries(ENVIRONMENT_LABELS).map(([value, label]) => (
                   <SelectItem key={value} value={value}>
                     {label}
                   </SelectItem>
@@ -309,25 +306,41 @@ export function SessionFormFields({
               </SelectContent>
             </Select>
           </div>
-        )}
-      </div>
+          {environment === Environment.OUTDOOR && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="weather">Météo</Label>
+              <Select value={weather} onValueChange={onWeatherChange}>
+                <SelectTrigger id="weather">
+                  <SelectValue placeholder="— Non défini —" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(WEATHER_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+        </div>
+      </SectionCard>
 
-      {/* Parcours — visible uniquement si extérieur */}
+      {/* Section: Parcours */}
       {environment === Environment.OUTDOOR && (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="route">Parcours</Label>
+        <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
           <Textarea
             id="route"
             placeholder="Description du parcours..."
             value={route}
             onChange={e => onRouteChange(e.target.value)}
           />
-        </div>
+        </SectionCard>
       )}
 
-      {/* Observations */}
-      <div className={cn('flex flex-col', isEditMode ? 'gap-3' : 'gap-1.5')}>
-        <h3 className="text-sm font-medium">Observations</h3>
+      {/* Section: Observations */}
+      <SectionCard icon={<MessageSquare className="h-4 w-4" aria-hidden="true" />} title="Observations">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {isEditMode && (
             <div className="flex flex-col gap-1.5">
@@ -353,11 +366,10 @@ export function SessionFormFields({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Objectifs */}
-      <div className="flex flex-col gap-3">
-        <h3 className="text-sm font-medium">Objectifs</h3>
+      {/* Section: Objectifs */}
+      <SectionCard icon={<Target className="h-4 w-4" aria-hidden="true" />} title="Objectifs">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="previousObjectives">Séance</Label>
@@ -379,7 +391,7 @@ export function SessionFormFields({
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
     </div>
   );
 }

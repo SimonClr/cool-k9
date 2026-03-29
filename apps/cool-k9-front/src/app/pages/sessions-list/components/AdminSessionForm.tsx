@@ -4,7 +4,6 @@ import { Dog as DogModel, Environment, ExerciseType, Session, Weather } from '@m
 import { useUpdateSession } from '@/app/hooks/useSessions';
 import { useMultiUserDogs } from '@/app/hooks/useDogs';
 import { useUserSearch } from '@/app/hooks/useUsers';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -16,7 +15,6 @@ import {
   OBSERVATION_STATUS_VARIANTS,
 } from '../models/session-form.types';
 import { type LocationValue } from '@/app/components/LocationAutocomplete';
-import { formatDateShort } from '@/app/utils/date-format';
 
 export function AdminSessionForm({ session }: { session: Session }) {
   const navigate = useNavigate();
@@ -130,87 +128,76 @@ export function AdminSessionForm({ session }: { session: Session }) {
     nextObjectives.trim() !== (session.nextObjectives ?? '');
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3">
-            <CardTitle>Séance du {formatDateShort(session.date)}</CardTitle>
-            <div className="flex flex-wrap gap-2 shrink-0">
-              {session.observationStatus && (
-                <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
-                  {OBSERVATION_STATUS_LABELS[session.observationStatus]}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <SessionFormFields
-            userOptions={userOptions}
-            selectedUserIds={selectedUserIds}
-            onUsersChange={setSelectedUserIds}
-            usersLoading={usersLoading}
-            hasNextPage={hasNextPage}
-            onFetchNextPage={() => fetchNextPage()}
-            onUsersSearchChange={setUsersSearch}
-            onUsersOpenChange={setUsersOpen}
-            dogOptions={dogOptions}
-            selectedDogIds={selectedDogIds}
-            onDogsChange={setSelectedDogIds}
-            dogsLoading={dogsLoading}
-            date={date}
-            dateOpen={dateOpen}
-            onDateOpenChange={setDateOpen}
-            onDateSelect={d => {
-              if (d) {
-                setDate(d);
-                setDateOpen(false);
-              }
-            }}
-            duration={duration}
-            onDurationChange={setDuration}
-            exerciseType={exerciseType}
-            onExerciseTypeChange={v => setExerciseType(v as ExerciseType)}
-            environment={environment}
-            onEnvironmentChange={v => {
-              setEnvironment(v as Environment);
-              if (v !== Environment.OUTDOOR) setWeather('');
-            }}
-            weather={weather}
-            onWeatherChange={v => setWeather(v as Weather)}
-            locationDisplay={location.display}
-            onLocationChange={(coords, display) => setLocation({ display, coords })}
-            route={route}
-            onRouteChange={setRoute}
-            previousObjectives={previousObjectives}
-            onPreviousObjectivesChange={setPreviousObjectives}
-            ownerObservationsReadOnly={session.ownerObservations}
-            trainerObservations={trainerObservations}
-            onTrainerObservationsChange={setTrainerObservations}
-            nextObjectives={nextObjectives}
-            onNextObjectivesChange={setNextObjectives}
-            isEditMode
-          />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <SessionFormFields
+        infoHeaderAction={
+          session.observationStatus && (
+            <Badge variant={OBSERVATION_STATUS_VARIANTS[session.observationStatus]}>
+              {OBSERVATION_STATUS_LABELS[session.observationStatus]}
+            </Badge>
+          )
+        }
+        userOptions={userOptions}
+        selectedUserIds={selectedUserIds}
+        onUsersChange={setSelectedUserIds}
+        usersLoading={usersLoading}
+        hasNextPage={hasNextPage}
+        onFetchNextPage={() => fetchNextPage()}
+        onUsersSearchChange={setUsersSearch}
+        onUsersOpenChange={setUsersOpen}
+        dogOptions={dogOptions}
+        selectedDogIds={selectedDogIds}
+        onDogsChange={setSelectedDogIds}
+        dogsLoading={dogsLoading}
+        date={date}
+        dateOpen={dateOpen}
+        onDateOpenChange={setDateOpen}
+        onDateSelect={d => {
+          if (d) {
+            setDate(d);
+            setDateOpen(false);
+          }
+        }}
+        duration={duration}
+        onDurationChange={setDuration}
+        exerciseType={exerciseType}
+        onExerciseTypeChange={v => setExerciseType(v as ExerciseType)}
+        environment={environment}
+        onEnvironmentChange={v => {
+          setEnvironment(v as Environment);
+          if (v !== Environment.OUTDOOR) setWeather('');
+        }}
+        weather={weather}
+        onWeatherChange={v => setWeather(v as Weather)}
+        locationDisplay={location.display}
+        onLocationChange={(coords, display) => setLocation({ display, coords })}
+        route={route}
+        onRouteChange={setRoute}
+        previousObjectives={previousObjectives}
+        onPreviousObjectivesChange={setPreviousObjectives}
+        ownerObservationsReadOnly={session.ownerObservations}
+        trainerObservations={trainerObservations}
+        onTrainerObservationsChange={setTrainerObservations}
+        nextObjectives={nextObjectives}
+        onNextObjectivesChange={setNextObjectives}
+        isEditMode
+      />
 
-          <div className="flex gap-3 mt-6">
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={updateSession.isPending || !isDirty}
-              aria-busy={updateSession.isPending}
-            >
-              {updateSession.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  Enregistrement...
-                </>
-              ) : (
-                'Enregistrer'
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Button
+        type="submit"
+        className="flex-1"
+        disabled={updateSession.isPending || !isDirty}
+        aria-busy={updateSession.isPending}
+      >
+        {updateSession.isPending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            Enregistrement...
+          </>
+        ) : (
+          'Enregistrer'
+        )}
+      </Button>
     </form>
   );
 }

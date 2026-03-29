@@ -4,7 +4,6 @@ import { Dog as DogModel, Environment, ExerciseType, Weather } from '@models';
 import { useCreateSession } from '@/app/hooks/useSessions';
 import { useMultiUserDogs } from '@/app/hooks/useDogs';
 import { useUserSearch } from '@/app/hooks/useUsers';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -130,96 +129,83 @@ export function CreateSessionForm() {
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Nouvelle séance</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <SessionFormFields
-            userOptions={userOptions}
-            selectedUserIds={selectedUserIds}
-            onUsersChange={ids => {
-              setSelectedUserIds(ids);
-              if (fieldErrors.userIds) setFieldErrors(p => ({ ...p, userIds: undefined }));
-            }}
-            usersLoading={usersLoading}
-            hasNextPage={hasNextPage}
-            onFetchNextPage={() => fetchNextPage()}
-            onUsersSearchChange={setUsersSearch}
-            onUsersOpenChange={setUsersOpen}
-            userFieldError={fieldErrors.userIds}
-            dogOptions={dogOptions}
-            selectedDogIds={selectedDogIds}
-            onDogsChange={setSelectedDogIds}
-            dogsLoading={dogsLoading}
-            date={date}
-            dateOpen={dateOpen}
-            onDateOpenChange={setDateOpen}
-            onDateSelect={d => {
-              if (d) {
-                setDate(d);
-                setDateOpen(false);
-                if (fieldErrors.date) setFieldErrors(p => ({ ...p, date: undefined }));
-              }
-            }}
-            dateFieldError={fieldErrors.date}
-            duration={duration}
-            onDurationChange={v => {
-              setDuration(v);
-              if (fieldErrors.duration) setFieldErrors(p => ({ ...p, duration: undefined }));
-            }}
-            durationFieldError={fieldErrors.duration}
-            exerciseType={exerciseType}
-            onExerciseTypeChange={v => {
-              setExerciseType(v as ExerciseType);
-              if (fieldErrors.exerciseType)
-                setFieldErrors(p => ({ ...p, exerciseType: undefined }));
-            }}
-            exerciseTypeFieldError={fieldErrors.exerciseType}
-            environment={environment}
-            onEnvironmentChange={v => {
-              setEnvironment(v as Environment);
-              if (v !== Environment.OUTDOOR) setWeather('');
-            }}
-            weather={weather}
-            onWeatherChange={v => setWeather(v as Weather)}
-            locationDisplay={location.display}
-            onLocationChange={(coords, display) => setLocation({ display, coords })}
-            route={route}
-            onRouteChange={setRoute}
-            previousObjectives={previousObjectives}
-            onPreviousObjectivesChange={setPreviousObjectives}
-            trainerObservations={trainerObservations}
-            onTrainerObservationsChange={setTrainerObservations}
-            nextObjectives={nextObjectives}
-            onNextObjectivesChange={setNextObjectives}
-          />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <SessionFormFields
+        userOptions={userOptions}
+        selectedUserIds={selectedUserIds}
+        onUsersChange={ids => {
+          setSelectedUserIds(ids);
+          if (fieldErrors.userIds) setFieldErrors(p => ({ ...p, userIds: undefined }));
+        }}
+        usersLoading={usersLoading}
+        hasNextPage={hasNextPage}
+        onFetchNextPage={() => fetchNextPage()}
+        onUsersSearchChange={setUsersSearch}
+        onUsersOpenChange={setUsersOpen}
+        userFieldError={fieldErrors.userIds}
+        dogOptions={dogOptions}
+        selectedDogIds={selectedDogIds}
+        onDogsChange={setSelectedDogIds}
+        dogsLoading={dogsLoading}
+        date={date}
+        dateOpen={dateOpen}
+        onDateOpenChange={setDateOpen}
+        onDateSelect={d => {
+          if (d) {
+            setDate(d);
+            setDateOpen(false);
+            if (fieldErrors.date) setFieldErrors(p => ({ ...p, date: undefined }));
+          }
+        }}
+        dateFieldError={fieldErrors.date}
+        duration={duration}
+        onDurationChange={v => {
+          setDuration(v);
+          if (fieldErrors.duration) setFieldErrors(p => ({ ...p, duration: undefined }));
+        }}
+        durationFieldError={fieldErrors.duration}
+        exerciseType={exerciseType}
+        onExerciseTypeChange={v => {
+          setExerciseType(v as ExerciseType);
+          if (fieldErrors.exerciseType) setFieldErrors(p => ({ ...p, exerciseType: undefined }));
+        }}
+        exerciseTypeFieldError={fieldErrors.exerciseType}
+        environment={environment}
+        onEnvironmentChange={v => {
+          setEnvironment(v as Environment);
+          if (v !== Environment.OUTDOOR) setWeather('');
+        }}
+        weather={weather}
+        onWeatherChange={v => setWeather(v as Weather)}
+        locationDisplay={location.display}
+        onLocationChange={(coords, display) => setLocation({ display, coords })}
+        route={route}
+        onRouteChange={setRoute}
+        previousObjectives={previousObjectives}
+        onPreviousObjectivesChange={setPreviousObjectives}
+        trainerObservations={trainerObservations}
+        onTrainerObservationsChange={setTrainerObservations}
+        nextObjectives={nextObjectives}
+        onNextObjectivesChange={setNextObjectives}
+      />
 
-          <div className="flex gap-3 mt-2">
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={
-                createSession.isPending ||
-                selectedUserIds.length === 0 ||
-                !duration ||
-                !exerciseType
-              }
-              aria-busy={createSession.isPending}
-            >
-              {createSession.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  Création...
-                </>
-              ) : (
-                'Créer la séance'
-              )}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+      <Button
+        type="submit"
+        className="flex-1"
+        disabled={
+          createSession.isPending || selectedUserIds.length === 0 || !duration || !exerciseType
+        }
+        aria-busy={createSession.isPending}
+      >
+        {createSession.isPending ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            Création...
+          </>
+        ) : (
+          'Créer la séance'
+        )}
+      </Button>
+    </form>
   );
 }
