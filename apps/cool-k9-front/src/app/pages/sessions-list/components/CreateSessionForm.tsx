@@ -77,8 +77,7 @@ export function CreateSessionForm() {
 
   const validate = (): boolean => {
     const errors: FieldErrors = {};
-    if (selectedUserIds.length === 0)
-      errors.userIds = 'Veuillez sélectionner au moins un client';
+    if (selectedUserIds.length === 0) errors.userIds = 'Veuillez sélectionner au moins un client';
     if (!date) errors.date = 'La date est obligatoire';
     if (!duration) {
       errors.duration = 'La durée est obligatoire';
@@ -199,18 +198,14 @@ export function CreateSessionForm() {
 
           <div className="flex gap-3 mt-2">
             <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => navigate(-1)}
-              disabled={createSession.isPending}
-            >
-              Annuler
-            </Button>
-            <Button
               type="submit"
               className="flex-1"
-              disabled={createSession.isPending || selectedUserIds.length === 0 || !duration || !exerciseType}
+              disabled={
+                createSession.isPending ||
+                selectedUserIds.length === 0 ||
+                !duration ||
+                !exerciseType
+              }
               aria-busy={createSession.isPending}
             >
               {createSession.isPending ? (

@@ -171,10 +171,7 @@ export function UserSessionView({ session }: { session: Session }) {
             {/* Séance courante */}
             {session.previousObjectives && (
               <div
-                className={cn(
-                  'flex flex-col gap-1.5',
-                  !session.nextObjectives && 'sm:col-span-2'
-                )}
+                className={cn('flex flex-col gap-1.5', !session.nextObjectives && 'sm:col-span-2')}
               >
                 <p className="text-sm font-medium">Séance</p>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -202,15 +199,6 @@ export function UserSessionView({ session }: { session: Session }) {
 
       {canEditOwnerObs && (
         <div className="flex gap-3 mt-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={() => navigate(-1)}
-            disabled={updateSession.isPending}
-          >
-            Annuler
-          </Button>
           <Button
             type="submit"
             className="flex-1"

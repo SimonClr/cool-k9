@@ -200,15 +200,6 @@ export function AdminSessionForm({ session }: { session: Session }) {
 
           <div className="flex gap-3 mt-6">
             <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => navigate(-1)}
-              disabled={updateSession.isPending}
-            >
-              Annuler
-            </Button>
-            <Button
               type="submit"
               className="flex-1"
               disabled={updateSession.isPending || !isDirty}
