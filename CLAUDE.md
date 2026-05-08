@@ -22,30 +22,46 @@
 - Tailwind CSS v4 avec utility classes pour le styling ([doc](https://tailwindcss.com/))
 - shadcn/ui pour les composants UI ([doc](https://ui.shadcn.com/)) — importer depuis `@/components/ui` et utiliser l'utilitaire `cn()` pour merger les classes
 
-## Architecture feature-based
+## Architecture feature-based (frontend)
 
-- `/features/<feature>/` — tout ce qui appartient à une feature : pages, composants, hooks, services, api, store, types, utils
-- `/components/ui/` — composants UI partagés par 2+ features
-- `/components/layout/` — infrastructure de navigation et layout
-- `/providers/` — providers React app-level montés une seule fois
-- `/hooks/` — hooks partagés par 2+ features
-- `/constants/` — constantes globales et configuration runtime
-- `/utils/` (racine) — fonctions pures partagées par toute l'app
-- Si un fichier n'est utilisé que par une seule feature, il vit dans cette feature — rien de feature-spécifique à la racine
+- `app/features/<feature>/` — tout ce qui appartient à une feature
+- `app/layout/` — composants de navigation et layout global
+- `app/constants/` — constantes globales (ex: `api.ts` pour `API_BASE_URL`)
+- `app/utils/` — fonctions pures partagées par toute l'app
+- `components/ui/` — composants shadcn/ui partagés
+- Si un fichier n'est utilisé que par une seule feature, il vit dans cette feature
 
-## Structure d'une feature
+## Structure d'une feature (frontend)
 
 ```
 features/<feature>/
   index.ts               ← API publique de la feature
-  <Feature>.tsx          ← composant principal
-  components/            ← composants propres à la feature
-  hooks/                 ← hooks propres à la feature
-  services/              ← logique métier (appels API transformés)
-  api/                   ← appels réseau bruts
-  store/                 ← store de la feature
+  pages/
+    <Feature>.tsx        ← page principale
+    components/          ← composants propres à la feature
+  hooks/                 ← hooks React Query de la feature
+  services/              ← appels API de la feature
   types/                 ← types propres à la feature (un fichier par notion)
   utils/                 ← fonctions pures propres à la feature
+```
+
+## Architecture modulaire (backend NestJS)
+
+- `app/features/<feature>/` — un module NestJS par feature métier
+- `app/auth/` — module d'infrastructure pour l'authentification (guards)
+- `app/supabase/` — module d'infrastructure pour l'accès à la base de données
+- `app.module.ts` importe uniquement les feature modules et les modules d'infrastructure
+
+## Structure d'un module backend
+
+```
+features/<feature>/
+  <feature>.module.ts    ← module NestJS (imports, controllers, providers)
+  <feature>.controller.ts
+  <feature>.service.ts
+  dto/
+    create-<feature>.dto.ts
+    update-<feature>.dto.ts
 ```
 
 ## Index files
