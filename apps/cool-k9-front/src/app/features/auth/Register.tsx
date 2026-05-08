@@ -1,14 +1,15 @@
 import { FormEvent, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@authentication';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 export function Register() {
   const { register, isLoading, error } = useAuth();
+  const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -16,7 +17,6 @@ export function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ firstName?: string; lastName?: string; email?: string; password?: string; confirmPassword?: string }>({});
-  const [success, setSuccess] = useState(false);
 
   const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -41,7 +41,7 @@ export function Register() {
 
     try {
       await register(email, password, firstName, lastName);
-      setSuccess(true);
+      navigate('/sessions', { replace: true });
     } catch {
       // error is already set in auth context
     }
@@ -66,33 +66,6 @@ export function Register() {
   const handleConfirmPasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent); }
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <Card className="w-full max-w-sm">
-          <CardHeader className="text-center">
-            <picture>
-                <source srcSet="/logo.webp" type="image/webp" />
-                <img src="/logo.png" alt="Cool K9" className="h-32 w-auto mx-auto mb-2" width="128" height="128" />
-              </picture>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center gap-4 text-center">
-            <CheckCircle2 className="h-12 w-12 text-primary" />
-            <div>
-              <p className="font-semibold">Compte créé avec succès !</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Un email de confirmation vous a été envoyé. Vérifiez votre boîte mail pour activer votre compte.
-              </p>
-            </div>
-            <Link to="/login" className="text-sm text-primary hover:underline">
-              Retour à la connexion
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
