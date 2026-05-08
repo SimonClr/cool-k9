@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@authentication';
 import { type CardHandle } from '../models/profile.model';
 
-export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
+export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boolean) => void }>(
   function UserProfileCard({ onDirtyChange }, ref) {
   const { user, updateProfile } = useAuth();
 
@@ -16,7 +16,7 @@ export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: () => vo
     firstName.trim() !== (user?.firstName ?? '') || lastName.trim() !== (user?.lastName ?? '');
   const canSave = isDirty && firstName.trim() !== '' && lastName.trim() !== '';
 
-  useEffect(() => { onDirtyChange?.(); }, [isDirty]);
+  useEffect(() => { onDirtyChange?.(isDirty); }, [isDirty]);
 
   useImperativeHandle(ref, () => ({
     isDirty,

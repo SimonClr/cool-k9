@@ -2,19 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-interface NominatimResult {
-  place_id: number;
-  display_name: string;
-  lat: string;
-  lon: string;
-}
-
-export interface LocationValue {
-  name: string;
-  lat: number;
-  lon: number;
-}
+import { type LocationValue } from '../models/location.model';
+import { useLocationSearch } from '../hooks/useLocationSearch';
 
 interface LocationAutocompleteProps {
   id?: string;
@@ -32,9 +21,7 @@ export function LocationAutocomplete({
   className,
 }: LocationAutocompleteProps) {
   const [query, setQuery] = useState(value);
-  const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
-  const [open, setOpen] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { suggestions, open, setOpen, search, clear } = useLocationSearch();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,35 +36,11 @@ export function LocationAutocomplete({
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
-
-  const search = (q: string) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (q.trim().length < 3) {
-      setSuggestions([]);
-      setOpen(false);
-      return;
-    }
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5&addressdetails=0`,
-          { headers: { 'Accept-Language': 'fr', 'User-Agent': 'cool-k9-app' } }
-        );
-        const data: NominatimResult[] = await res.json();
-        setSuggestions(data);
-        setOpen(data.length > 0);
-      } catch {
-        setSuggestions([]);
-        setOpen(false);
-      }
-    }, 400);
-  };
+  }, [setOpen]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value;
     setQuery(q);
-    // Free text input → no coordinates yet
     onChange(null, q);
     search(q);
   };
@@ -86,21 +49,19 @@ export function LocationAutocomplete({
     if (suggestions.length > 0) setOpen(true);
   };
 
-  const createSuggestionMouseDownHandler = (result: NominatimResult) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    handleSelect(result);
-  };
-
-  const handleSelect = (result: NominatimResult) => {
+  const handleSelect = (result: { place_id: number; display_name: string; lat: string; lon: string }) => {
     const short = result.display_name.split(',').slice(0, 2).join(',').trim();
     setQuery(short);
-    onChange(
-      { name: short, lat: parseFloat(result.lat), lon: parseFloat(result.lon) },
-      short
-    );
-    setSuggestions([]);
-    setOpen(false);
+    onChange({ name: short, lat: parseFloat(result.lat), lon: parseFloat(result.lon) }, short);
+    clear();
   };
+
+  const createMouseDownHandler =
+    (result: { place_id: number; display_name: string; lat: string; lon: string }) =>
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      handleSelect(result);
+    };
 
   return (
     <div ref={containerRef} className="relative">
@@ -125,7 +86,7 @@ export function LocationAutocomplete({
               <li
                 key={result.place_id}
                 className="px-3 py-2.5 cursor-pointer hover:bg-accent hover:text-accent-foreground border-b last:border-b-0"
-                onMouseDown={createSuggestionMouseDownHandler(result)}
+                onMouseDown={createMouseDownHandler(result)}
               >
                 <p className="text-sm font-medium leading-tight">{primary}</p>
                 {secondary && (

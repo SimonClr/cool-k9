@@ -19,7 +19,7 @@ type DogRow = {
   isNew: boolean;
 };
 
-export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
+export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boolean) => void }>(
   function DogsCard({ onDirtyChange }, ref) {
   const { data: dogs, isLoading } = useDogs();
   const createDog = useCreateDog();
@@ -49,7 +49,7 @@ export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
 
   const canSave = isDirty && dogRows.every(row => row.name.trim() !== '' && row.birthDate !== '');
 
-  useEffect(() => { onDirtyChange?.(); }, [isDirty, canSave]);
+  useEffect(() => { onDirtyChange?.(isDirty); }, [isDirty]);
 
   useImperativeHandle(ref, () => ({
     isDirty,

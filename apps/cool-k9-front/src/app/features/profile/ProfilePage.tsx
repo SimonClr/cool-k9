@@ -10,12 +10,13 @@ export function ProfilePage() {
   const profileRef = useRef<CardHandle>(null);
   const dogsRef = useRef<CardHandle>(null);
   const [saving, setSaving] = useState(false);
-  const [, forceUpdate] = useState(0);
+  const [profileDirty, setProfileDirty] = useState(false);
+  const [dogsDirty, setDogsDirty] = useState(false);
 
-  const isDirty = (profileRef.current?.isDirty || dogsRef.current?.isDirty) ?? false;
+  const isDirty = profileDirty || dogsDirty;
   const canSave =
-    (!profileRef.current?.isDirty || (profileRef.current?.canSave ?? true)) &&
-    (!dogsRef.current?.isDirty || (dogsRef.current?.canSave ?? true)) &&
+    (!profileDirty || (profileRef.current?.canSave ?? true)) &&
+    (!dogsDirty || (dogsRef.current?.canSave ?? true)) &&
     isDirty;
 
   const handleSave = async () => {
@@ -46,8 +47,8 @@ export function ProfilePage() {
         </Button>
       </div>
 
-      <UserProfileCard ref={profileRef} onDirtyChange={() => forceUpdate(n => n + 1)} />
-      <DogsCard ref={dogsRef} onDirtyChange={() => forceUpdate(n => n + 1)} />
+      <UserProfileCard ref={profileRef} onDirtyChange={setProfileDirty} />
+      <DogsCard ref={dogsRef} onDirtyChange={setDogsDirty} />
     </div>
   );
 }

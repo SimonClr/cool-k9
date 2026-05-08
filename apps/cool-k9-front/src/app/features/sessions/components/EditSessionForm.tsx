@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useSession } from '@/app/features/sessions/hooks/useSessions';
 import { useAuth } from '@authentication';
 import { Loader2 } from 'lucide-react';
-import { AdminSessionForm } from './AdminSessionForm';
+import { SessionForm } from './SessionForm';
 import { UserSessionView } from './UserSessionView';
 
 export function EditSessionForm({ sessionId }: { sessionId: string }) {
@@ -27,7 +27,7 @@ export function EditSessionForm({ sessionId }: { sessionId: string }) {
   }
 
   if (user?.isAdmin) {
-    return <AdminSessionForm session={session} />;
+    return <SessionForm mode="admin-edit" session={session} />;
   }
 
   return <UserSessionView session={session} />;

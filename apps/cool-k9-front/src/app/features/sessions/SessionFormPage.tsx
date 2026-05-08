@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { CreateSessionForm } from './components/CreateSessionForm';
+import { SessionForm } from './components/SessionForm';
 import { EditSessionForm } from './components/EditSessionForm';
 
 export function SessionFormPage() {
@@ -20,7 +20,7 @@ export function SessionFormPage() {
         Mes séances
       </Button>
 
-      {isEditMode ? <EditSessionForm sessionId={id} /> : <CreateSessionForm />}
+      {isEditMode ? <EditSessionForm sessionId={id} /> : <SessionForm mode="create" />}
     </div>
   );
 }

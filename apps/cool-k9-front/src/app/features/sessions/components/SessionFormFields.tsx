@@ -14,25 +14,16 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { AlertCircle, CalendarIcon, Info, MapPin, MessageSquare, Target } from 'lucide-react';
+import { CalendarIcon, Info, MapPin, MessageSquare, Target } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/utils/cn.utils';
-import { LocationAutocomplete, LocationValue } from './LocationAutocomplete';
+import { LocationAutocomplete } from './LocationAutocomplete';
+import { type LocationValue } from '../models/location.model';
 import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '../constants/session.constants';
 import { EXERCISE_TYPE_LABELS } from '../constants/exercise-type.constants';
 import { SectionCard } from './SectionCard';
-
-// ─── FieldError ───────────────────────────────────────────────────────────────
-
-export function FieldError({ id, message }: { id: string; message: string }) {
-  return (
-    <p id={id} role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-      <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-      {message}
-    </p>
-  );
-}
+import { FieldError } from '@/components/ui/field-error';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
