@@ -4,3 +4,5 @@ export type FieldErrors = {
   duration?: string;
   exerciseType?: string;
 };
+
+export type SessionFormMode = 'create' | 'admin-edit';

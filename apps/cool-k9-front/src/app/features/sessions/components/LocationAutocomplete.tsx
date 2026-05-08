@@ -21,7 +21,8 @@ export function LocationAutocomplete({
   className,
 }: LocationAutocompleteProps) {
   const [query, setQuery] = useState(value);
-  const { suggestions, open, setOpen, search, clear } = useLocationSearch();
+  const { suggestions, search, clear } = useLocationSearch();
+  const open = suggestions.length > 0;
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,22 +32,18 @@ export function LocationAutocomplete({
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        clear();
       }
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [setOpen]);
+  }, [clear]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const q = e.target.value;
     setQuery(q);
     onChange(null, q);
     search(q);
-  };
-
-  const handleFocus = () => {
-    if (suggestions.length > 0) setOpen(true);
   };
 
   const handleSelect = (result: { place_id: number; display_name: string; lat: string; lon: string }) => {
@@ -70,7 +67,6 @@ export function LocationAutocomplete({
         type="text"
         value={query}
         onChange={handleInput}
-        onFocus={handleFocus}
         placeholder={placeholder}
         className={cn('pr-8', className)}
         autoComplete="off"
