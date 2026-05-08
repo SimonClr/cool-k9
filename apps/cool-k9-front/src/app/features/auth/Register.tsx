@@ -1,46 +1,37 @@
-import { FormEvent, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@authentication';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { FieldError } from '@/components/ui/field-error';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { registerSchema, type RegisterFormValues } from './models/register.schema';
 
 export function Register() {
-  const { register, isLoading, error } = useAuth();
+  const { register: authRegister, isLoading, error } = useAuth();
   const navigate = useNavigate();
-
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<{ firstName?: string; lastName?: string; email?: string; password?: string; confirmPassword?: string }>({});
 
   const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
-  const validate = () => {
-    const errors: typeof fieldErrors = {};
-    if (!firstName.trim()) errors.firstName = 'Le prénom est obligatoire';
-    if (!lastName.trim()) errors.lastName = 'Le nom est obligatoire';
-    if (!email.trim()) errors.email = 'L\'email est obligatoire';
-    if (!password) errors.password = 'Le mot de passe est obligatoire';
-    if (!confirmPassword) errors.confirmPassword = 'Veuillez confirmer le mot de passe';
-    else if (password && password !== confirmPassword) errors.confirmPassword = 'Les mots de passe ne correspondent pas';
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+  });
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
+  const { ref: lastNameRhfRef, ...lastNameRest } = register('lastName');
+  const { ref: emailRhfRef, ...emailRest } = register('email');
+  const { ref: passwordRhfRef, ...passwordRest } = register('password');
+  const { ref: confirmPasswordRhfRef, ...confirmPasswordRest } = register('confirmPassword');
 
+  const onSubmit = async ({ email, password, firstName, lastName }: RegisterFormValues) => {
     try {
-      await register(email, password, firstName, lastName);
+      await authRegister(email, password, firstName, lastName);
       navigate('/sessions', { replace: true });
     } catch {
       // error is already set in auth context
@@ -64,7 +55,7 @@ export function Register() {
   };
 
   const handleConfirmPasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent); }
+    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(onSubmit)(); }
   };
 
   return (
@@ -75,7 +66,7 @@ export function Register() {
           <CardDescription>Créez votre espace entraîneur</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             {error && (
               <div role="alert" className="flex items-center gap-2 text-destructive text-sm">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -87,129 +78,79 @@ export function Register() {
                 <Label htmlFor="firstName">Prénom</Label>
                 <Input
                   id="firstName"
-                  name="firstName"
                   type="text"
                   maxLength={40}
-                  value={firstName}
-                  onChange={e => {
-                    setFirstName(e.target.value);
-                    if (fieldErrors.firstName) setFieldErrors(prev => ({ ...prev, firstName: undefined }));
-                  }}
+                  {...register('firstName')}
                   onKeyDown={handleFirstNameKeyDown}
                   autoComplete="given-name"
-                  aria-invalid={!!fieldErrors.firstName}
-                  aria-describedby={fieldErrors.firstName ? 'firstName-error' : undefined}
-                  className={fieldErrors.firstName ? 'border-destructive' : ''}
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? 'firstName-error' : undefined}
+                  className={errors.firstName ? 'border-destructive' : ''}
                 />
-                {fieldErrors.firstName && (
-                  <p id="firstName-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-                    <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-                    {fieldErrors.firstName}
-                  </p>
-                )}
+                {errors.firstName && <FieldError id="firstName-error" message={errors.firstName.message!} />}
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="lastName">Nom</Label>
                 <Input
                   id="lastName"
-                  name="lastName"
                   type="text"
                   maxLength={30}
-                  ref={lastNameRef}
-                  value={lastName}
-                  onChange={e => {
-                    setLastName(e.target.value);
-                    if (fieldErrors.lastName) setFieldErrors(prev => ({ ...prev, lastName: undefined }));
-                  }}
+                  {...lastNameRest}
+                  ref={(e) => { lastNameRhfRef(e); lastNameRef.current = e; }}
                   onKeyDown={handleLastNameKeyDown}
                   autoComplete="family-name"
-                  aria-invalid={!!fieldErrors.lastName}
-                  aria-describedby={fieldErrors.lastName ? 'lastName-error' : undefined}
-                  className={fieldErrors.lastName ? 'border-destructive' : ''}
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? 'lastName-error' : undefined}
+                  className={errors.lastName ? 'border-destructive' : ''}
                 />
-                {fieldErrors.lastName && (
-                  <p id="lastName-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-                    <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-                    {fieldErrors.lastName}
-                  </p>
-                )}
+                {errors.lastName && <FieldError id="lastName-error" message={errors.lastName.message!} />}
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                name="email"
                 type="email"
-                ref={emailRef}
-                value={email}
-                onChange={e => {
-                  setEmail(e.target.value);
-                  if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
-                }}
+                {...emailRest}
+                ref={(e) => { emailRhfRef(e); emailRef.current = e; }}
                 onKeyDown={handleEmailKeyDown}
                 placeholder="trainer@coolk9.com"
                 autoComplete="email"
-                aria-invalid={!!fieldErrors.email}
-                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-                className={fieldErrors.email ? 'border-destructive' : ''}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
+                className={errors.email ? 'border-destructive' : ''}
               />
-              {fieldErrors.email && (
-                <p id="email-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-                  {fieldErrors.email}
-                </p>
-              )}
+              {errors.email && <FieldError id="email-error" message={errors.email.message!} />}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Mot de passe</Label>
               <Input
                 id="password"
-                name="password"
                 type="password"
-                ref={passwordRef}
-                value={password}
-                onChange={e => {
-                  setPassword(e.target.value);
-                  if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
-                }}
+                {...passwordRest}
+                ref={(e) => { passwordRhfRef(e); passwordRef.current = e; }}
                 onKeyDown={handlePasswordKeyDown}
                 autoComplete="new-password"
-                aria-invalid={!!fieldErrors.password}
-                aria-describedby={fieldErrors.password ? 'register-password-error' : undefined}
-                className={fieldErrors.password ? 'border-destructive' : ''}
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'register-password-error' : undefined}
+                className={errors.password ? 'border-destructive' : ''}
               />
-              {fieldErrors.password && (
-                <p id="register-password-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-                  {fieldErrors.password}
-                </p>
-              )}
+              {errors.password && <FieldError id="register-password-error" message={errors.password.message!} />}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
               <Input
                 id="confirmPassword"
-                name="confirmPassword"
                 type="password"
-                ref={confirmPasswordRef}
-                value={confirmPassword}
-                onChange={e => {
-                  setConfirmPassword(e.target.value);
-                  if (fieldErrors.confirmPassword) setFieldErrors(prev => ({ ...prev, confirmPassword: undefined }));
-                }}
+                {...confirmPasswordRest}
+                ref={(e) => { confirmPasswordRhfRef(e); confirmPasswordRef.current = e; }}
                 onKeyDown={handleConfirmPasswordKeyDown}
                 autoComplete="new-password"
-                aria-invalid={!!fieldErrors.confirmPassword}
-                aria-describedby={fieldErrors.confirmPassword ? 'confirm-password-error' : undefined}
-                className={fieldErrors.confirmPassword ? 'border-destructive' : ''}
+                aria-invalid={!!errors.confirmPassword}
+                aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined}
+                className={errors.confirmPassword ? 'border-destructive' : ''}
               />
-              {fieldErrors.confirmPassword && (
-                <p id="confirm-password-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-                  {fieldErrors.confirmPassword}
-                </p>
-              )}
+              {errors.confirmPassword && <FieldError id="confirm-password-error" message={errors.confirmPassword.message!} />}
             </div>
             <Button type="submit" className="w-full mt-2" disabled={isLoading} aria-busy={isLoading}>
               {isLoading ? (

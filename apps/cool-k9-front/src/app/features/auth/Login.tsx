@@ -1,11 +1,15 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@authentication';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { FieldError } from '@/components/ui/field-error';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { loginSchema, type LoginFormValues } from './models/login.schema';
 
 export function Login() {
   const { login, isLoading, error, clearError } = useAuth();
@@ -16,22 +20,15 @@ export function Login() {
 
   useEffect(() => { clearError(); }, []);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const validate = () => {
-    const errors: { email?: string; password?: string } = {};
-    if (!email.trim()) errors.email = 'L\'email est obligatoire';
-    if (!password) errors.password = 'Le mot de passe est obligatoire';
-    setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
+  const { ref: passwordRhfRef, ...passwordRest } = register('password');
+
+  const onSubmit = async ({ email, password }: LoginFormValues) => {
     try {
       await login(email, password);
       navigate(from, { replace: true });
@@ -45,7 +42,7 @@ export function Login() {
   };
 
   const handlePasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e as unknown as FormEvent); }
+    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(onSubmit)(); }
   };
 
   return (
@@ -59,7 +56,7 @@ export function Login() {
           <CardDescription>Connectez-vous à votre espace</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             {error && (
               <div role="alert" className="flex items-center gap-2 text-destructive text-sm">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -70,51 +67,31 @@ export function Login() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                name="email"
                 type="email"
-                value={email}
-                onChange={e => {
-                  setEmail(e.target.value);
-                  if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
-                }}
+                {...register('email')}
                 onKeyDown={handleEmailKeyDown}
                 placeholder="trainer@coolk9.com"
                 autoComplete="email"
-                aria-invalid={!!fieldErrors.email}
-                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-                className={fieldErrors.email ? 'border-destructive' : ''}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
+                className={errors.email ? 'border-destructive' : ''}
               />
-              {fieldErrors.email && (
-                <p id="email-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-                  {fieldErrors.email}
-                </p>
-              )}
+              {errors.email && <FieldError id="email-error" message={errors.email.message!} />}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Mot de passe</Label>
               <Input
                 id="password"
-                name="password"
                 type="password"
-                ref={passwordRef}
-                value={password}
-                onChange={e => {
-                  setPassword(e.target.value);
-                  if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
-                }}
+                {...passwordRest}
+                ref={(e) => { passwordRhfRef(e); passwordRef.current = e; }}
                 onKeyDown={handlePasswordKeyDown}
                 autoComplete="current-password"
-                aria-invalid={!!fieldErrors.password}
-                aria-describedby={fieldErrors.password ? 'password-error' : undefined}
-                className={fieldErrors.password ? 'border-destructive' : ''}
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'password-error' : undefined}
+                className={errors.password ? 'border-destructive' : ''}
               />
-              {fieldErrors.password && (
-                <p id="password-error" role="alert" className="flex items-center gap-1.5 text-destructive text-xs">
-                  <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
-                  {fieldErrors.password}
-                </p>
-              )}
+              {errors.password && <FieldError id="password-error" message={errors.password.message!} />}
             </div>
             <Button type="submit" className="w-full mt-2" disabled={isLoading} aria-busy={isLoading}>
               {isLoading ? (

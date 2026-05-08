@@ -1,30 +1,34 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@authentication';
 import { type CardHandle } from '../models/profile.model';
+import { profileSchema, type ProfileFormValues } from '../models/profile.schema';
 
 export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boolean) => void }>(
   function UserProfileCard({ onDirtyChange }, ref) {
   const { user, updateProfile } = useAuth();
 
-  const [firstName, setFirstName] = useState(user?.firstName ?? '');
-  const [lastName, setLastName] = useState(user?.lastName ?? '');
-
-  const isDirty =
-    firstName.trim() !== (user?.firstName ?? '') || lastName.trim() !== (user?.lastName ?? '');
-  const canSave = isDirty && firstName.trim() !== '' && lastName.trim() !== '';
+  const { register, handleSubmit, formState: { isDirty, isValid } } = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+    },
+  });
 
   useEffect(() => { onDirtyChange?.(isDirty); }, [isDirty]);
 
   useImperativeHandle(ref, () => ({
     isDirty,
-    canSave,
-    save: async () => {
+    canSave: isDirty && isValid,
+    save: handleSubmit(async ({ firstName, lastName }) => {
       await updateProfile(firstName.trim(), lastName.trim());
-    },
-  }), [isDirty, canSave, firstName, lastName]);
+    }),
+  }), [isDirty, isValid]);
 
   return (
     <Card>
@@ -35,8 +39,7 @@ export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty
             <Input
               id="firstName"
               maxLength={40}
-              value={firstName}
-              onChange={e => setFirstName(e.target.value)}
+              {...register('firstName')}
               autoComplete="given-name"
             />
           </div>
@@ -45,8 +48,7 @@ export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty
             <Input
               id="lastName"
               maxLength={30}
-              value={lastName}
-              onChange={e => setLastName(e.target.value)}
+              {...register('lastName')}
               autoComplete="family-name"
             />
           </div>

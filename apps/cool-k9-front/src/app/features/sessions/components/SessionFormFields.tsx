@@ -1,3 +1,4 @@
+import { Control, Controller, FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
 import { Environment, ExerciseType, Weather } from '@models';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,116 +25,62 @@ import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '../constants/session.constan
 import { EXERCISE_TYPE_LABELS } from '../constants/exercise-type.constants';
 import { SectionCard } from './SectionCard';
 import { FieldError } from '@/components/ui/field-error';
-
-// ─── Props ────────────────────────────────────────────────────────────────────
+import { type SessionFormValues } from '../models/session.schema';
 
 export interface SessionFormFieldsProps {
-  // Header action for the first section
-  infoHeaderAction?: React.ReactNode;
+  control: Control<SessionFormValues>;
+  register: UseFormRegister<SessionFormValues>;
+  errors: FieldErrors<SessionFormValues>;
 
-  // Users
+  // Date popover — UI state managed by parent
+  dateOpen: boolean;
+  onDateOpenChange: (open: boolean) => void;
+
+  // Location — coords handled by parent via setValue
+  onLocationChange: (coords: LocationValue | null, displayName: string) => void;
+
+  // User search — from useUserAndDogOptions
   userOptions: MultiSelectOption[];
-  selectedUserIds: string[];
-  onUsersChange: (ids: string[]) => void;
   usersLoading: boolean;
   hasNextPage: boolean | undefined;
   onFetchNextPage: () => void;
   onUsersSearchChange: (s: string) => void;
   onUsersOpenChange: (open: boolean) => void;
-  userFieldError?: string;
 
-  // Dogs
+  // Dog options — from useUserAndDogOptions
   dogOptions: MultiSelectOption[];
-  selectedDogIds: string[];
-  onDogsChange: (ids: string[]) => void;
   dogsLoading: boolean;
 
-  // Date
-  date: Date;
-  dateOpen: boolean;
-  onDateOpenChange: (open: boolean) => void;
-  onDateSelect: (d: Date | undefined) => void;
-  dateFieldError?: string;
-
-  // Duration
-  duration: string;
-  onDurationChange: (v: string) => void;
-  durationFieldError?: string;
-
-  // Exercise type
-  exerciseType: ExerciseType | '';
-  onExerciseTypeChange: (v: string) => void;
-  exerciseTypeFieldError?: string;
-
-  // Environment / weather
-  environment: Environment | '';
-  onEnvironmentChange: (v: string) => void;
-  weather: Weather | '';
-  onWeatherChange: (v: string) => void;
-
-  // Location
-  locationDisplay: string;
-  onLocationChange: (coords: LocationValue | null, display: string) => void;
-
-  // Text areas
-  route: string;
-  onRouteChange: (v: string) => void;
-  previousObjectives: string;
-  onPreviousObjectivesChange: (v: string) => void;
+  // Edit-mode specific
+  infoHeaderAction?: React.ReactNode;
   ownerObservationsReadOnly?: string | null;
-  trainerObservations: string;
-  onTrainerObservationsChange: (v: string) => void;
-  nextObjectives: string;
-  onNextObjectivesChange: (v: string) => void;
-
   isEditMode?: boolean;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export function SessionFormFields({
-  infoHeaderAction,
+  control,
+  register,
+  errors,
+  dateOpen,
+  onDateOpenChange,
+  onLocationChange,
   userOptions,
-  selectedUserIds,
-  onUsersChange,
   usersLoading,
   hasNextPage,
   onFetchNextPage,
   onUsersSearchChange,
   onUsersOpenChange,
-  userFieldError,
   dogOptions,
-  selectedDogIds,
-  onDogsChange,
   dogsLoading,
-  date,
-  dateOpen,
-  onDateOpenChange,
-  onDateSelect,
-  dateFieldError,
-  duration,
-  onDurationChange,
-  durationFieldError,
-  exerciseType,
-  onExerciseTypeChange,
-  exerciseTypeFieldError,
-  environment,
-  onEnvironmentChange,
-  weather,
-  onWeatherChange,
-  locationDisplay,
-  onLocationChange,
-  route,
-  onRouteChange,
-  previousObjectives,
-  onPreviousObjectivesChange,
+  infoHeaderAction,
   ownerObservationsReadOnly,
-  trainerObservations,
-  onTrainerObservationsChange,
-  nextObjectives,
-  onNextObjectivesChange,
   isEditMode = false,
 }: SessionFormFieldsProps) {
+  const selectedUserIds = useWatch({ control, name: 'userIds', defaultValue: [] });
+  const locationDisplay = useWatch({ control, name: 'locationDisplay', defaultValue: '' });
+  const environment = useWatch({ control, name: 'environment' });
+
+
   return (
     <div className="flex flex-col gap-2">
       {/* Section: Informations générales */}
@@ -146,42 +93,52 @@ export function SessionFormFields({
 
         {/* Clients + Chiens */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div
-            className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}
-          >
+          <div className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}>
             <Label>Clients</Label>
-            <MultiSelect
-              options={userOptions}
-              selected={selectedUserIds}
-              onChange={onUsersChange}
-              placeholder="Sélectionner des clients"
-              searchPlaceholder="Rechercher un client..."
-              hasError={!!userFieldError}
-              onSearchChange={onUsersSearchChange}
-              isLoading={usersLoading}
-              hasMore={hasNextPage}
-              onLoadMore={onFetchNextPage}
-              onOpenChange={onUsersOpenChange}
+            <Controller
+              control={control}
+              name="userIds"
+              render={({ field }) => (
+                <MultiSelect
+                  options={userOptions}
+                  selected={field.value ?? []}
+                  onChange={field.onChange}
+                  placeholder="Sélectionner des clients"
+                  searchPlaceholder="Rechercher un client..."
+                  hasError={!!errors.userIds}
+                  onSearchChange={onUsersSearchChange}
+                  isLoading={usersLoading}
+                  hasMore={hasNextPage}
+                  onLoadMore={onFetchNextPage}
+                  onOpenChange={onUsersOpenChange}
+                />
+              )}
             />
-            {userFieldError && <FieldError id="userIds-error" message={userFieldError} />}
+            {errors.userIds && <FieldError id="userIds-error" message={errors.userIds.message!} />}
           </div>
 
           {selectedUserIds.length > 0 && (
             <div className="flex flex-col gap-1.5">
               <Label>Chiens</Label>
-              <MultiSelect
-                options={dogOptions}
-                selected={selectedDogIds}
-                onChange={onDogsChange}
-                placeholder={
-                  dogsLoading
-                    ? 'Chargement...'
-                    : dogOptions.length === 0
-                      ? 'Aucun chien enregistré'
-                      : 'Sélectionner des chiens'
-                }
-                searchPlaceholder="Rechercher un chien..."
-                disabled={dogsLoading || dogOptions.length === 0}
+              <Controller
+                control={control}
+                name="dogIds"
+                render={({ field }) => (
+                  <MultiSelect
+                    options={dogOptions}
+                    selected={field.value ?? []}
+                    onChange={field.onChange}
+                    placeholder={
+                      dogsLoading
+                        ? 'Chargement...'
+                        : dogOptions.length === 0
+                          ? 'Aucun chien enregistré'
+                          : 'Sélectionner des chiens'
+                    }
+                    searchPlaceholder="Rechercher un chien..."
+                    disabled={dogsLoading || dogOptions.length === 0}
+                  />
+                )}
               />
             </div>
           )}
@@ -191,34 +148,40 @@ export function SessionFormFields({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label>Date</Label>
-            <Popover open={dateOpen} onOpenChange={onDateOpenChange}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  aria-invalid={!!dateFieldError}
-                  aria-describedby={dateFieldError ? 'date-error' : undefined}
-                  className={cn(
-                    'justify-start text-left font-normal bg-transparent shadow-sm',
-                    !date && 'text-muted-foreground',
-                    dateFieldError && 'border-destructive'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                  {date ? format(date, 'PPP', { locale: fr }) : 'Choisir une date'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={onDateSelect}
-                  locale={fr}
-                  classNames={{ root: 'w-full' }}
-                />
-              </PopoverContent>
-            </Popover>
-            {dateFieldError && <FieldError id="date-error" message={dateFieldError} />}
+            <Controller
+              control={control}
+              name="date"
+              render={({ field }) => (
+                <Popover open={dateOpen} onOpenChange={onDateOpenChange}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      aria-invalid={!!errors.date}
+                      aria-describedby={errors.date ? 'date-error' : undefined}
+                      className={cn(
+                        'justify-start text-left font-normal bg-transparent shadow-sm',
+                        !field.value && 'text-muted-foreground',
+                        errors.date && 'border-destructive'
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                      {field.value ? format(field.value, 'PPP', { locale: fr }) : 'Choisir une date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={d => { if (d) { field.onChange(d); onDateOpenChange(false); } }}
+                      locale={fr}
+                      classNames={{ root: 'w-full' }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
+            />
+            {errors.date && <FieldError id="date-error" message={errors.date.message!} />}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -228,44 +191,49 @@ export function SessionFormFields({
               type="number"
               min={1}
               placeholder="60"
-              value={duration}
-              onChange={e => onDurationChange(e.target.value)}
-              aria-invalid={!!durationFieldError}
-              aria-describedby={durationFieldError ? 'duration-error' : undefined}
-              className={durationFieldError ? 'border-destructive' : ''}
+              {...register('duration')}
+              aria-invalid={!!errors.duration}
+              aria-describedby={errors.duration ? 'duration-error' : undefined}
+              className={errors.duration ? 'border-destructive' : ''}
             />
-            {durationFieldError && <FieldError id="duration-error" message={durationFieldError} />}
+            {errors.duration && <FieldError id="duration-error" message={errors.duration.message!} />}
           </div>
         </div>
 
         {/* Type de séance */}
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="exerciseType">Type de séance</Label>
-          <Select value={exerciseType} onValueChange={onExerciseTypeChange}>
-            <SelectTrigger
-              id="exerciseType"
-              aria-invalid={!!exerciseTypeFieldError}
-              aria-describedby={exerciseTypeFieldError ? 'exerciseType-error' : undefined}
-              className={cn(exerciseTypeFieldError && 'border-destructive')}
-            >
-              <SelectValue placeholder="Sélectionner un type">
-                {exerciseType && EXERCISE_TYPE_LABELS[exerciseType as ExerciseType] && (
-                  <Badge variant={EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].variant}>
-                    {EXERCISE_TYPE_LABELS[exerciseType as ExerciseType].label}
-                  </Badge>
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
-                <SelectItem key={value} value={value}>
-                  <Badge variant={data.variant}>{data.label}</Badge>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {exerciseTypeFieldError && (
-            <FieldError id="exerciseType-error" message={exerciseTypeFieldError} />
+          <Controller
+            control={control}
+            name="exerciseType"
+            render={({ field }) => (
+              <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                <SelectTrigger
+                  id="exerciseType"
+                  aria-invalid={!!errors.exerciseType}
+                  aria-describedby={errors.exerciseType ? 'exerciseType-error' : undefined}
+                  className={cn(errors.exerciseType && 'border-destructive')}
+                >
+                  <SelectValue placeholder="Sélectionner un type">
+                    {field.value && EXERCISE_TYPE_LABELS[field.value as ExerciseType] && (
+                      <Badge variant={EXERCISE_TYPE_LABELS[field.value as ExerciseType].variant}>
+                        {EXERCISE_TYPE_LABELS[field.value as ExerciseType].label}
+                      </Badge>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
+                    <SelectItem key={value} value={value}>
+                      <Badge variant={data.variant}>{data.label}</Badge>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.exerciseType && (
+            <FieldError id="exerciseType-error" message={errors.exerciseType.message!} />
           )}
         </div>
 
@@ -274,8 +242,8 @@ export function SessionFormFields({
           <Label htmlFor="location">Lieu</Label>
           <LocationAutocomplete
             id="location"
-            value={locationDisplay}
-            onChange={(coords, displayName) => onLocationChange(coords, displayName)}
+            value={locationDisplay ?? ''}
+            onChange={onLocationChange}
             placeholder="Parc de la Tête d'Or, Lyon"
           />
         </div>
@@ -284,34 +252,46 @@ export function SessionFormFields({
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="environment">Environnement</Label>
-            <Select value={environment} onValueChange={onEnvironmentChange}>
-              <SelectTrigger id="environment">
-                <SelectValue placeholder="— Non défini —" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(ENVIRONMENT_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="environment"
+              render={({ field }) => (
+                <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                  <SelectTrigger id="environment">
+                    <SelectValue placeholder="— Non défini —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(ENVIRONMENT_LABELS).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
           {environment === Environment.OUTDOOR && (
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="weather">Météo</Label>
-              <Select value={weather} onValueChange={onWeatherChange}>
-                <SelectTrigger id="weather">
-                  <SelectValue placeholder="— Non défini —" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(WEATHER_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                control={control}
+                name="weather"
+                render={({ field }) => (
+                  <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                    <SelectTrigger id="weather">
+                      <SelectValue placeholder="— Non défini —" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(WEATHER_LABELS).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
           )}
         </div>
@@ -324,8 +304,7 @@ export function SessionFormFields({
           <Textarea
             id="route"
             placeholder="Description du parcours..."
-            value={route}
-            onChange={e => onRouteChange(e.target.value)}
+            {...register('route')}
           />
         </SectionCard>
       )}
@@ -352,8 +331,7 @@ export function SessionFormFields({
             <Textarea
               id="trainerObservations"
               placeholder="Observations Cool-K9..."
-              value={trainerObservations}
-              onChange={e => onTrainerObservationsChange(e.target.value)}
+              {...register('trainerObservations')}
             />
           </div>
         </div>
@@ -367,8 +345,7 @@ export function SessionFormFields({
             <Textarea
               id="previousObjectives"
               placeholder="Objectifs de la séance..."
-              value={previousObjectives}
-              onChange={e => onPreviousObjectivesChange(e.target.value)}
+              {...register('previousObjectives')}
             />
           </div>
 
@@ -377,8 +354,7 @@ export function SessionFormFields({
             <Textarea
               id="nextObjectives"
               placeholder="Objectifs de la prochaine séance..."
-              value={nextObjectives}
-              onChange={e => onNextObjectivesChange(e.target.value)}
+              {...register('nextObjectives')}
             />
           </div>
         </div>

@@ -1,4 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Dog, Loader2, Plus, CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,13 +13,7 @@ import { fr } from 'date-fns/locale';
 import { cn } from '@/utils/cn.utils';
 import { useDogs, useCreateDog, useUpdateDog } from '@/app/features/dogs/hooks/useDogs';
 import { type CardHandle } from '../models/profile.model';
-
-type DogRow = {
-  id?: string;
-  name: string;
-  birthDate: string; // ISO date string YYYY-MM-DD
-  isNew: boolean;
-};
+import { dogsSchema, type DogsFormValues } from '../models/dogs.schema';
 
 export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boolean) => void }>(
   function DogsCard({ onDirtyChange }, ref) {
@@ -25,66 +21,47 @@ export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boole
   const createDog = useCreateDog();
   const updateDog = useUpdateDog();
 
-  const [dogRows, setDogRows] = useState<DogRow[]>([]);
-  const [originalRows, setOriginalRows] = useState<DogRow[]>([]);
   const [openDateIndex, setOpenDateIndex] = useState<number | null>(null);
+
+  const { register, control, handleSubmit, reset, formState: { isDirty, isValid, dirtyFields } } =
+    useForm<DogsFormValues>({
+      resolver: zodResolver(dogsSchema),
+      defaultValues: { dogs: [] },
+    });
+
+  const { fields, append } = useFieldArray({ control, name: 'dogs' });
 
   useEffect(() => {
     if (!dogs) return;
-    const rows: DogRow[] = dogs.map(d => ({
-      id: d.id,
-      name: d.name,
-      birthDate: d.birthDate.toISOString().split('T')[0],
-      isNew: false,
-    }));
-    setDogRows(rows);
-    setOriginalRows(rows);
+    reset({
+      dogs: dogs.map(d => ({
+        id: d.id,
+        name: d.name,
+        birthDate: d.birthDate.toISOString().split('T')[0],
+      })),
+    });
   }, [dogs]);
-
-  const isDirty = dogRows.some(row => {
-    if (row.isNew) return true;
-    const orig = originalRows.find(r => r.id === row.id);
-    return orig && (orig.name !== row.name || orig.birthDate !== row.birthDate);
-  });
-
-  const canSave = isDirty && dogRows.every(row => row.name.trim() !== '' && row.birthDate !== '');
 
   useEffect(() => { onDirtyChange?.(isDirty); }, [isDirty]);
 
   useImperativeHandle(ref, () => ({
     isDirty,
-    canSave,
-    save: async () => {
-      for (const row of dogRows) {
-        if (row.isNew) {
+    canSave: isDirty && isValid,
+    save: handleSubmit(async ({ dogs: rows }) => {
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row.id) {
           await createDog.mutateAsync({ name: row.name.trim(), birthDate: new Date(row.birthDate) });
-        } else {
-          const orig = originalRows.find(r => r.id === row.id);
-          if (orig && (orig.name !== row.name || orig.birthDate !== row.birthDate)) {
-            await updateDog.mutateAsync({
-              id: row.id!,
-              name: row.name.trim(),
-              birthDate: new Date(row.birthDate),
-            });
-          }
+        } else if (dirtyFields.dogs?.[i]) {
+          await updateDog.mutateAsync({
+            id: row.id,
+            name: row.name.trim(),
+            birthDate: new Date(row.birthDate),
+          });
         }
       }
-    },
-  }), [isDirty, canSave, dogRows, originalRows]);
-
-  const updateRowName = (index: number, value: string) => {
-    setDogRows(prev => prev.map((row, i) => (i === index ? { ...row, name: value } : row)));
-  };
-
-  const updateRowDate = (index: number, date: Date) => {
-    const iso = date.toISOString().split('T')[0];
-    setDogRows(prev => prev.map((row, i) => (i === index ? { ...row, birthDate: iso } : row)));
-    setOpenDateIndex(null);
-  };
-
-  const addNewRow = () => {
-    setDogRows(prev => [...prev, { name: '', birthDate: '', isNew: true }]);
-  };
+    }),
+  }), [isDirty, isValid, dirtyFields]);
 
   return (
     <Card>
@@ -98,56 +75,66 @@ export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boole
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {dogRows.length > 0 && (
+            {fields.length > 0 && (
               <div className="flex flex-col gap-3">
                 <div className="grid grid-cols-2 gap-3 px-1">
                   <Label>Nom</Label>
                   <Label>Date de naissance</Label>
                 </div>
-                {dogRows.map((row, i) => (
-                  <div key={row.id ?? `new-${i}`} className="grid grid-cols-2 gap-3">
+                {fields.map((field, i) => (
+                  <div key={field.id} className="grid grid-cols-2 gap-3">
                     <Input
                       placeholder="Rex"
-                      value={row.name}
-                      onChange={e => updateRowName(i, e.target.value)}
                       maxLength={50}
+                      {...register(`dogs.${i}.name`)}
                     />
-                    <Popover
-                      open={openDateIndex === i}
-                      onOpenChange={open => setOpenDateIndex(open ? i : null)}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className={cn(
-                            'w-full justify-start text-left font-normal bg-transparent',
-                            !row.birthDate && 'text-muted-foreground'
-                          )}
+                    <Controller
+                      control={control}
+                      name={`dogs.${i}.birthDate`}
+                      render={({ field: dateField }) => (
+                        <Popover
+                          open={openDateIndex === i}
+                          onOpenChange={open => setOpenDateIndex(open ? i : null)}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                          {row.birthDate
-                            ? format(new Date(row.birthDate), 'PPP', { locale: fr })
-                            : 'Choisir une date'}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-[var(--radix-popover-trigger-width)] p-0"
-                        align="start"
-                      >
-                        <Calendar
-                          mode="single"
-                          selected={row.birthDate ? new Date(row.birthDate) : undefined}
-                          onSelect={d => { if (d) updateRowDate(i, d); }}
-                          locale={fr}
-                          captionLayout="dropdown"
-                          startMonth={new Date(new Date().getFullYear() - 25, 0)}
-                          endMonth={new Date(new Date().getFullYear(), 11)}
-                          disabled={d => d > new Date()}
-                          classNames={{ root: 'w-full' }}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className={cn(
+                                'w-full justify-start text-left font-normal bg-transparent',
+                                !dateField.value && 'text-muted-foreground'
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                              {dateField.value
+                                ? format(new Date(dateField.value), 'PPP', { locale: fr })
+                                : 'Choisir une date'}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-[var(--radix-popover-trigger-width)] p-0"
+                            align="start"
+                          >
+                            <Calendar
+                              mode="single"
+                              selected={dateField.value ? new Date(dateField.value) : undefined}
+                              onSelect={d => {
+                                if (d) {
+                                  dateField.onChange(d.toISOString().split('T')[0]);
+                                  setOpenDateIndex(null);
+                                }
+                              }}
+                              locale={fr}
+                              captionLayout="dropdown"
+                              startMonth={new Date(new Date().getFullYear() - 25, 0)}
+                              endMonth={new Date(new Date().getFullYear(), 11)}
+                              disabled={d => d > new Date()}
+                              classNames={{ root: 'w-full' }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    />
                   </div>
                 ))}
               </div>
@@ -155,7 +142,7 @@ export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boole
 
             <button
               type="button"
-              onClick={addNewRow}
+              onClick={() => append({ name: '', birthDate: '' })}
               className="flex items-center justify-center gap-2 w-full rounded-lg border-2 border-dashed border-border py-3 text-sm text-muted-foreground hover:border-foreground/40 hover:text-foreground transition-colors"
             >
               <Dog className="h-4 w-4" aria-hidden="true" />
