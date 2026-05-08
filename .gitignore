@@ -39,6 +39,9 @@ testem.log
 .env.local
 .env.*.local
 
+# Procédures admin privées
+docs/admin-procedures.md
+
 # System Files
 .DS_Store
 Thumbs.db
