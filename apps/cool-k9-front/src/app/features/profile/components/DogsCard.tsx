@@ -49,7 +49,7 @@ export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
 
   const canSave = isDirty && dogRows.every(row => row.name.trim() !== '' && row.birthDate !== '');
 
-  useEffect(() => { onDirtyChange?.(); }, [isDirty]);
+  useEffect(() => { onDirtyChange?.(); }, [isDirty, canSave]);
 
   useImperativeHandle(ref, () => ({
     isDirty,
