@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Loader2, LogOut, Menu, Moon, Sun, UserCircle, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn.utils';
 import { useAuth, useTheme } from '@authentication';
 
 import { useDogs } from '@/app/features/dogs';

@@ -37,12 +37,13 @@
 ```
 features/<feature>/
   index.ts               ← API publique de la feature
-  pages/
-    <Feature>.tsx        ← page principale
-    components/          ← composants propres à la feature
+  <Feature>.tsx          ← page(s) de la feature à la racine
+  components/            ← sous-composants propres à la feature
   hooks/                 ← hooks React Query de la feature
-  services/              ← appels API de la feature
-  types/                 ← types propres à la feature (un fichier par notion)
+  services/              ← logique métier sans state (mapping, transformation)
+  api/                   ← appels réseau bruts (fetch)
+  models/                ← types et interfaces (un fichier par notion)
+  constants/             ← constantes propres à la feature
   utils/                 ← fonctions pures propres à la feature
 ```
 
@@ -80,16 +81,34 @@ features/<feature>/
 ## Logique métier
 
 - **Hooks** : calculs/transformations qui dépendent du state React → `hooks/` de la feature (ou `/hooks/` si partagé par 2+ features)
-- **Services** : logique métier sans state → `services/` de la feature
-- **Api** : appels réseau bruts → `api/` de la feature
+- **Services** : logique métier sans state (mapping, transformation) → `services/` de la feature
+- **Api** : appels réseau bruts (fetch) → `api/` de la feature
 - **Utils** : fonctions pures (pas de state) → `features/<feature>/utils/` si propres à une feature, `/utils/` si partagées par 2+ features, inline si usage unique
-- **Constants** : constantes globales partagées → `/constants/` (variables en SCREAMING_SNAKE_CASE, fichiers en camelCase) — si une constante n'est utilisée que dans un seul fichier, elle est définie directement dans ce fichier
+- **Constants** : constantes sans état → `features/<feature>/constants/` si propres à une feature, `app/constants/` si globales (variables en SCREAMING_SNAKE_CASE)
 
-## Types
+## Conventions de nommage des fichiers
 
-- Type utilisé dans une seule feature → `features/<feature>/types/` (un fichier par notion)
-- Type utilisé dans 2+ features mais dont la source est claire → reste dans la feature d'origine, exposé via son `index.ts`
-- Type vraiment transversal sans feature d'attache → `/types/`
+La convention s'applique **partout de façon homogène** : à la racine globale comme dans les sous-dossiers de features.
+
+| Élément           | Convention            |
+|-------------------|-----------------------|
+| hook              | `useDog.ts`           |
+| composant React   | `DogCard.tsx`         |
+| service           | `dog.service.ts`      |
+| api               | `dog.api.ts`          |
+| model             | `dog.model.ts`        |
+| constante         | `dog.constants.ts`    |
+| utils             | `dog.utils.ts`        |
+| store             | `dog.store.ts`        |
+| test              | `dog.service.test.ts` |
+
+Règle de tri : fichier de constantes pures → `.constants.ts`, fonctions pures → `.utils.ts`, types/interfaces → `.types.ts`. Plusieurs catégories dans un même fichier → séparer en plusieurs fichiers.
+
+## Models
+
+- Model utilisé dans une seule feature → `features/<feature>/models/` (un fichier par notion)
+- Model utilisé dans 2+ features mais dont la source est claire → reste dans la feature d'origine, exposé via son `index.ts`
+- Model vraiment transversal sans feature d'attache → `/models/`
 - Ne jamais exporter un type depuis un composant pour le réutiliser ailleurs
 
 ## Styles

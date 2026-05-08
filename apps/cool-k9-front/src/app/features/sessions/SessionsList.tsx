@@ -23,7 +23,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { useAuth } from '@authentication';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn.utils';
 
 export function SessionsList() {
   const navigate = useNavigate();

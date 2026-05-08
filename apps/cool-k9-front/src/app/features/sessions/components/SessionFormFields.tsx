@@ -17,10 +17,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { AlertCircle, CalendarIcon, Info, MapPin, MessageSquare, Target } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn.utils';
 import { LocationAutocomplete, LocationValue } from './LocationAutocomplete';
-import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '../utils/session-labels';
-import { EXERCISE_TYPE_LABELS } from '../utils/exercise-type';
+import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '../constants/session.constants';
+import { EXERCISE_TYPE_LABELS } from '../constants/exercise-type.constants';
 import { SectionCard } from './SectionCard';
 
 // ─── FieldError ───────────────────────────────────────────────────────────────

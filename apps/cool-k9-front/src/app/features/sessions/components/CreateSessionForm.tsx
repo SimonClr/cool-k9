@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { SessionFormFields } from './SessionFormFields';
-import { type FieldErrors } from '../types/session.types';
+import { type FieldErrors } from '../models/session.model';
 import { type LocationValue } from './LocationAutocomplete';
 
 export function CreateSessionForm() {

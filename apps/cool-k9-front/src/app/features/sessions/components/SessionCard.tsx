@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Session } from '@models';
-import { getExerciseTypeData } from '../utils/exercise-type';
+import { getExerciseTypeData } from '../utils/exercise-type.utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Dog, MapPin, Thermometer, User } from 'lucide-react';
-import { WEATHER_LABELS } from '../utils/session-labels';
+import { WEATHER_LABELS } from '../constants/session.constants';
 import { useAuth } from '@authentication';
-import { formatDateShort } from '@/lib/date-format';
+import { formatDateShort } from '@/utils/date-format.utils';
 
 interface SessionCardProps {
   session: Session;

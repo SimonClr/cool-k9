@@ -6,9 +6,9 @@ import { Label } from '@/components/ui/label';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn.utils';
 import { Dog, ExerciseType } from '@models';
-import { EXERCISE_TYPE_LABELS } from '../utils/exercise-type';
+import { EXERCISE_TYPE_LABELS } from '../constants/exercise-type.constants';
 
 interface SessionFiltersProps {
   userIds: string[];

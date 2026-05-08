@@ -16,15 +16,12 @@ import {
   Target,
   Thermometer,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import {
-  OBSERVATION_STATUS_LABELS,
-  OBSERVATION_STATUS_VARIANTS,
-} from '../types/session.types';
-import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '../utils/session-labels';
-import { getExerciseTypeData } from '../utils/exercise-type';
+import { cn } from '@/utils/cn.utils';
+import { OBSERVATION_STATUS_LABELS, OBSERVATION_STATUS_VARIANTS } from '../constants/session.constants';
+import { ENVIRONMENT_LABELS, WEATHER_LABELS } from '../constants/session.constants';
+import { getExerciseTypeData } from '../utils/exercise-type.utils';
 import { SectionCard } from './SectionCard';
-import { formatDateShort } from '@/lib/date-format';
+import { formatDateShort } from '@/utils/date-format.utils';
 
 // ─── UserSessionView ──────────────────────────────────────────────────────────
 

@@ -10,7 +10,8 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { SessionFormFields } from './SessionFormFields';
-import { type FieldErrors, OBSERVATION_STATUS_LABELS, OBSERVATION_STATUS_VARIANTS } from '../types/session.types';
+import { type FieldErrors } from '../models/session.model';
+import { OBSERVATION_STATUS_LABELS, OBSERVATION_STATUS_VARIANTS } from '../constants/session.constants';
 import { type LocationValue } from './LocationAutocomplete';
 
 export function SessionForm({ session }: { session?: Session }) {

@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@authentication';
-import { type CardHandle } from '../types/profile.types';
+import { type CardHandle } from '../models/profile.model';
 
 export const UserProfileCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
   function UserProfileCard({ onDirtyChange }, ref) {

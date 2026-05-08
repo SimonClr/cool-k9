@@ -8,9 +8,9 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn.utils';
 import { useDogs, useCreateDog, useUpdateDog } from '@/app/features/dogs/hooks/useDogs';
-import { type CardHandle } from '../types/profile.types';
+import { type CardHandle } from '../models/profile.model';
 
 type DogRow = {
   id?: string;

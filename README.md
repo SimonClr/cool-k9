@@ -139,15 +139,16 @@ L'archi est **feature-based** côté front et **modulaire NestJS** côté back. 
 cool-k9/
 ├── apps/
 │   ├── cool-k9-front/                       # Application React
-│   │   └── src/app/
-│   │       ├── features/                    # Une feature par dossier
-│   │       │   ├── auth/                    # Login, Register
-│   │       │   ├── sessions/                # Séances (pages, components, hooks, services, types)
-│   │       │   ├── dogs/                    # Chiens
-│   │       │   ├── profile/                 # Profil utilisateur
-│   │       │   └── admin/                   # Pages admin (Pricing…)
-│   │       ├── layout/                      # Layout global, navigation
-│   │       ├── constants/                   # Constantes globales (api.ts…)
+│   │   └── src/
+│   │       ├── app/
+│   │       │   ├── features/                # Une feature par dossier
+│   │       │   │   ├── auth/                # Login, Register
+│   │       │   │   ├── sessions/            # Séances (components, hooks, services, api, types, constants, utils)
+│   │       │   │   ├── dogs/                # Chiens
+│   │       │   │   ├── profile/             # Profil utilisateur
+│   │       │   │   └── admin/               # Pages admin (Pricing…)
+│   │       │   ├── layout/                  # Layout global, navigation
+│   │       │   └── constants/               # Constantes globales (api.constants.ts…)
 │   │       └── utils/                       # Fonctions pures partagées
 │   └── cool-k9-back/                        # API NestJS
 │       └── src/app/
