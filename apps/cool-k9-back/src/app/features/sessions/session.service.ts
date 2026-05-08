@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Environment, ExerciseType, ObservationStatus, Session, Weather } from '@models';
+import { Environment, ExerciseType, ObservationStatus, PaginatedResponse, Session, Weather } from '@models';
 import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class SessionService {
     perPage = 20,
     userIds?: string[],
     dogIds?: string[],
-  ): Promise<{ sessions: Session[]; total: number; page: number; perPage: number }> {
+  ): Promise<PaginatedResponse<Session>> {
     let query = this.supabaseService.admin
       .from('sessions')
       .select('*', { count: 'exact' })
@@ -93,7 +93,7 @@ export class SessionService {
     });
 
     return {
-      sessions,
+      data: sessions,
       total: count ?? 0,
       page,
       perPage,

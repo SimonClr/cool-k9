@@ -66,7 +66,7 @@ export function SessionsList() {
     filterDogIds
   );
 
-  const sessions = data?.sessions ?? [];
+  const sessions = data?.data ?? [];
   const totalPages = data ? Math.ceil(data.total / data.perPage) : 1;
 
   const handleNewSession = () => navigate('/sessions/new');

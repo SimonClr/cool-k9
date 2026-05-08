@@ -54,7 +54,7 @@ export function AdminSessionForm({ session }: { session: Session }) {
   const { data: availableDogs, isLoading: dogsLoading } = useMultiUserDogs(selectedUserIds);
 
   const searchedOptions: MultiSelectOption[] = (usersPages?.pages ?? [])
-    .flatMap(p => p.users)
+    .flatMap(p => p.data)
     .map(u => ({
       value: u.id,
       label: `${u.firstName} ${u.lastName}`.trim() || u.email,

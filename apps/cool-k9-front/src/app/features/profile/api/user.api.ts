@@ -1,6 +1,6 @@
+import { PaginatedResponse, User } from '@models';
 import { API_BASE_URL } from '@/app/constants/api.constants';
 import { getAuthHeaders } from '@/utils/auth-headers.utils';
-import { UsersPage } from '../services/user.service';
 
 const API_URL = `${API_BASE_URL}/users`;
 
@@ -8,7 +8,7 @@ export async function apiFetchUsers(params?: {
   search?: string;
   page?: number;
   perPage?: number;
-}): Promise<UsersPage> {
+}): Promise<PaginatedResponse<User>> {
   const query = new URLSearchParams();
   if (params?.search) query.set('search', params.search);
   if (params?.page != null) query.set('page', String(params.page));

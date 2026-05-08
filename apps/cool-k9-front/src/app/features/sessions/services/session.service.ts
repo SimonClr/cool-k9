@@ -1,14 +1,7 @@
-import { ExerciseType, Session } from '@models';
+import { ExerciseType, PaginatedResponse, Session } from '@models';
 import { apiFetchSessions, apiFetchSession, apiUpdateSession, apiCreateSession } from '../api/session.api';
 
 export type CreateSessionInput = Omit<Session, 'id' | 'dogNames' | 'dogIds'> & { dogIds?: string[] };
-
-export interface SessionsPage {
-  sessions: Session[];
-  total: number;
-  page: number;
-  perPage: number;
-}
 
 export class SessionService {
   static async getSessions(params?: {
@@ -17,11 +10,11 @@ export class SessionService {
     perPage?: number;
     userIds?: string[];
     dogIds?: string[];
-  }): Promise<SessionsPage> {
+  }): Promise<PaginatedResponse<Session>> {
     const result = await apiFetchSessions(params);
     return {
       ...result,
-      sessions: result.sessions.map(session => ({
+      data: result.data.map(session => ({
         ...session,
         date: new Date(session.date),
       })),

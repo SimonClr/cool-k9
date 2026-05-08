@@ -1,20 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@supabase/supabase-js';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { User, PaginatedResponse } from '@models';
 import { SupabaseService } from '../../supabase/supabase.service';
-
-export interface AppUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-}
-
-export interface GetUsersResult {
-  users: AppUser[];
-  total: number;
-  page: number;
-  perPage: number;
-}
 
 interface GetUsersParams {
   search?: string;
@@ -22,7 +9,7 @@ interface GetUsersParams {
   perPage?: number;
 }
 
-function mapUser(user: User): AppUser {
+function mapUser(user: SupabaseUser): User {
   return {
     id: user.id,
     email: user.email ?? '',
@@ -35,7 +22,7 @@ function mapUser(user: User): AppUser {
 export class UserService {
   constructor(private readonly supabaseService: SupabaseService) {}
 
-  async getUsers({ search, page = 1, perPage = 20 }: GetUsersParams = {}): Promise<GetUsersResult> {
+  async getUsers({ search, page = 1, perPage = 20 }: GetUsersParams = {}): Promise<PaginatedResponse<User>> {
     if (search) {
       // Supabase Admin API has no text search — fetch a large batch and filter in-memory
       const { data, error } = await this.supabaseService.admin.auth.admin.listUsers({
@@ -54,7 +41,7 @@ export class UserService {
 
       const start = (page - 1) * perPage;
       return {
-        users: matched.slice(start, start + perPage).map(mapUser),
+        data: matched.slice(start, start + perPage).map(mapUser),
         total: matched.length,
         page,
         perPage,
@@ -69,7 +56,7 @@ export class UserService {
     if (error) throw new Error(error.message);
 
     return {
-      users: (data.users ?? []).map(mapUser),
+      data: (data.users ?? []).map(mapUser),
       total: (data as unknown as { total?: number }).total ?? 0,
       page,
       perPage,

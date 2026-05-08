@@ -1,7 +1,7 @@
-import { ExerciseType, Session } from '@models';
+import { ExerciseType, PaginatedResponse, Session } from '@models';
 import { API_BASE_URL } from '@/app/constants/api.constants';
 import { getAuthHeaders } from '@/utils/auth-headers.utils';
-import { CreateSessionInput, SessionsPage } from '../services/session.service';
+import { CreateSessionInput } from '../services/session.service';
 
 const API_URL = `${API_BASE_URL}/sessions`;
 
@@ -11,7 +11,7 @@ export async function apiFetchSessions(params?: {
   perPage?: number;
   userIds?: string[];
   dogIds?: string[];
-}): Promise<SessionsPage> {
+}): Promise<PaginatedResponse<Session>> {
   const query = new URLSearchParams();
   if (params?.exerciseTypes?.length) query.set('exerciseTypes', params.exerciseTypes.join(','));
   if (params?.page != null) query.set('page', String(params.page));

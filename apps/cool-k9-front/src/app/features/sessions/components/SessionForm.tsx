@@ -68,7 +68,7 @@ export function SessionForm({ session }: { session?: Session }) {
   }, [availableDogs, dogsLoading, selectedUserIds, isEdit]);
 
   const searchedOptions: MultiSelectOption[] = (usersPages?.pages ?? [])
-    .flatMap(p => p.users)
+    .flatMap(p => p.data)
     .map(u => ({
       value: u.id,
       label: `${u.firstName} ${u.lastName}`.trim() || u.email,

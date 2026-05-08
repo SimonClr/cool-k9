@@ -33,7 +33,7 @@ export function CreateSessionForm() {
   } = useUserSearch(debouncedSearch, usersOpen);
 
   const userOptions: MultiSelectOption[] = (usersPages?.pages ?? [])
-    .flatMap(p => p.users)
+    .flatMap(p => p.data)
     .map(u => ({
       value: u.id,
       label: `${u.firstName} ${u.lastName}`.trim() || u.email,
