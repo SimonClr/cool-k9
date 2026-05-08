@@ -29,14 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const user: AuthUser | null = session?.user
-        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['role'] === 'admin', firstName: session.user.user_metadata?.['first_name'] ?? '', lastName: session.user.user_metadata?.['last_name'] ?? '' }
+        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['app_role'] === 'admin', firstName: session.user.user_metadata?.['first_name'] ?? '', lastName: session.user.user_metadata?.['last_name'] ?? '' }
         : null;
       setState({ user, isAuthenticated: !!user, isLoading: false, error: null });
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const user: AuthUser | null = session?.user
-        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['role'] === 'admin', firstName: session.user.user_metadata?.['first_name'] ?? '', lastName: session.user.user_metadata?.['last_name'] ?? '' }
+        ? { id: session.user.id, email: session.user.email ?? '', isAdmin: session.user.app_metadata?.['app_role'] === 'admin', firstName: session.user.user_metadata?.['first_name'] ?? '', lastName: session.user.user_metadata?.['last_name'] ?? '' }
         : null;
       setState({ user, isAuthenticated: !!user, isLoading: false, error: null });
     });

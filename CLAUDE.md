@@ -21,6 +21,7 @@
 - React 19 avec TypeScript : hooks, functional components et conventions modernes ([doc](https://react.dev/))
 - Tailwind CSS v4 avec utility classes pour le styling ([doc](https://tailwindcss.com/))
 - shadcn/ui pour les composants UI ([doc](https://ui.shadcn.com/)) — importer depuis `@/components/ui` et utiliser l'utilitaire `cn()` pour merger les classes
+- Supabase Auth : ne jamais utiliser le claim `role` dans `app_metadata` (réservé par GoTrue, casse l'auth). Pour des claims custom, préfixer (ex: `app_role`)
 
 ## Architecture feature-based (frontend)
 
