@@ -1,5 +1,5 @@
 import { Control, Controller, FieldErrors, UseFormRegister, useWatch } from 'react-hook-form';
-import { Environment, ExerciseType, Weather } from '@models';
+import { Environment, ExerciseType } from '@models';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -80,7 +80,6 @@ export function SessionFormFields({
   const locationDisplay = useWatch({ control, name: 'locationDisplay', defaultValue: '' });
   const environment = useWatch({ control, name: 'environment' });
 
-
   return (
     <div className="flex flex-col gap-2">
       {/* Section: Informations générales */}
@@ -90,200 +89,194 @@ export function SessionFormFields({
         headerAction={infoHeaderAction}
       >
         <div className="flex flex-col gap-4">
-
-        {/* Clients + Chiens */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className={cn('flex flex-col gap-1.5', selectedUserIds.length === 0 && 'sm:col-span-2')}>
-            <Label>Clients</Label>
-            <Controller
-              control={control}
-              name="userIds"
-              render={({ field }) => (
-                <MultiSelect
-                  options={userOptions}
-                  selected={field.value ?? []}
-                  onChange={field.onChange}
-                  placeholder="Sélectionner des clients"
-                  searchPlaceholder="Rechercher un client..."
-                  hasError={!!errors.userIds}
-                  onSearchChange={onUsersSearchChange}
-                  isLoading={usersLoading}
-                  hasMore={hasNextPage}
-                  onLoadMore={onFetchNextPage}
-                  onOpenChange={onUsersOpenChange}
-                />
+          {/* Clients + Chiens */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div
+              className={cn(
+                'flex flex-col gap-1.5',
+                selectedUserIds.length === 0 && 'sm:col-span-2'
               )}
-            />
-            {errors.userIds && <FieldError id="userIds-error" message={errors.userIds.message!} />}
-          </div>
-
-          {selectedUserIds.length > 0 && (
-            <div className="flex flex-col gap-1.5">
-              <Label>Chiens</Label>
+            >
+              <Label>Clients</Label>
               <Controller
                 control={control}
-                name="dogIds"
+                name="userIds"
                 render={({ field }) => (
                   <MultiSelect
-                    options={dogOptions}
+                    options={userOptions}
                     selected={field.value ?? []}
                     onChange={field.onChange}
-                    placeholder={
-                      dogsLoading
-                        ? 'Chargement...'
-                        : dogOptions.length === 0
-                          ? 'Aucun chien enregistré'
-                          : 'Sélectionner des chiens'
-                    }
-                    searchPlaceholder="Rechercher un chien..."
-                    disabled={dogsLoading || dogOptions.length === 0}
+                    placeholder="Sélectionner des clients"
+                    searchPlaceholder="Rechercher un client..."
+                    hasError={!!errors.userIds}
+                    onSearchChange={onUsersSearchChange}
+                    isLoading={usersLoading}
+                    hasMore={hasNextPage}
+                    onLoadMore={onFetchNextPage}
+                    onOpenChange={onUsersOpenChange}
                   />
                 )}
               />
+              {errors.userIds && <FieldError id="userIds-error" message={errors.userIds.message} />}
             </div>
-          )}
-        </div>
 
-        {/* Date + Durée */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label>Date</Label>
-            <Controller
-              control={control}
-              name="date"
-              render={({ field }) => (
-                <Popover open={dateOpen} onOpenChange={onDateOpenChange}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-invalid={!!errors.date}
-                      aria-describedby={errors.date ? 'date-error' : undefined}
-                      className={cn(
-                        'justify-start text-left font-normal bg-transparent shadow-sm',
-                        !field.value && 'text-muted-foreground',
-                        errors.date && 'border-destructive'
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                      {field.value ? format(field.value, 'PPP', { locale: fr }) : 'Choisir une date'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={d => { if (d) { field.onChange(d); onDateOpenChange(false); } }}
-                      locale={fr}
-                      classNames={{ root: 'w-full' }}
+            {selectedUserIds.length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <Label>Chiens</Label>
+                <Controller
+                  control={control}
+                  name="dogIds"
+                  render={({ field }) => (
+                    <MultiSelect
+                      options={dogOptions}
+                      selected={field.value ?? []}
+                      onChange={field.onChange}
+                      placeholder={
+                        dogsLoading
+                          ? 'Chargement...'
+                          : dogOptions.length === 0
+                            ? 'Aucun chien enregistré'
+                            : 'Sélectionner des chiens'
+                      }
+                      searchPlaceholder="Rechercher un chien..."
+                      disabled={dogsLoading || dogOptions.length === 0}
                     />
-                  </PopoverContent>
-                </Popover>
-              )}
-            />
-            {errors.date && <FieldError id="date-error" message={errors.date.message!} />}
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="duration">Durée (min)</Label>
-            <Input
-              id="duration"
-              type="number"
-              min={1}
-              placeholder="60"
-              {...register('duration')}
-              aria-invalid={!!errors.duration}
-              aria-describedby={errors.duration ? 'duration-error' : undefined}
-              className={errors.duration ? 'border-destructive' : ''}
-            />
-            {errors.duration && <FieldError id="duration-error" message={errors.duration.message!} />}
-          </div>
-        </div>
-
-        {/* Type de séance */}
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="exerciseType">Type de séance</Label>
-          <Controller
-            control={control}
-            name="exerciseType"
-            render={({ field }) => (
-              <Select value={field.value ?? ''} onValueChange={field.onChange}>
-                <SelectTrigger
-                  id="exerciseType"
-                  aria-invalid={!!errors.exerciseType}
-                  aria-describedby={errors.exerciseType ? 'exerciseType-error' : undefined}
-                  className={cn(errors.exerciseType && 'border-destructive')}
-                >
-                  <SelectValue placeholder="Sélectionner un type">
-                    {field.value && EXERCISE_TYPE_LABELS[field.value as ExerciseType] && (
-                      <Badge variant={EXERCISE_TYPE_LABELS[field.value as ExerciseType].variant}>
-                        {EXERCISE_TYPE_LABELS[field.value as ExerciseType].label}
-                      </Badge>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
-                    <SelectItem key={value} value={value}>
-                      <Badge variant={data.variant}>{data.label}</Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  )}
+                />
+              </div>
             )}
-          />
-          {errors.exerciseType && (
-            <FieldError id="exerciseType-error" message={errors.exerciseType.message!} />
-          )}
-        </div>
+          </div>
 
-        {/* Lieu */}
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="location">Lieu</Label>
-          <LocationAutocomplete
-            id="location"
-            value={locationDisplay ?? ''}
-            onChange={onLocationChange}
-            placeholder="Parc de la Tête d'Or, Lyon"
-          />
-        </div>
+          {/* Date + Durée */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label>Date</Label>
+              <Controller
+                control={control}
+                name="date"
+                render={({ field }) => (
+                  <Popover open={dateOpen} onOpenChange={onDateOpenChange}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        aria-invalid={!!errors.date}
+                        aria-describedby={errors.date ? 'date-error' : undefined}
+                        className={cn(
+                          'justify-start text-left font-normal bg-transparent shadow-sm',
+                          !field.value && 'text-muted-foreground',
+                          errors.date && 'border-destructive'
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                        {field.value
+                          ? format(field.value, 'PPP', { locale: fr })
+                          : 'Choisir une date'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-[var(--radix-popover-trigger-width)] p-0"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={d => {
+                          if (d) {
+                            field.onChange(d);
+                            onDateOpenChange(false);
+                          }
+                        }}
+                        locale={fr}
+                        classNames={{ root: 'w-full' }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )}
+              />
+              {errors.date && <FieldError id="date-error" message={errors.date.message} />}
+            </div>
 
-        {/* Environnement + Météo */}
-        <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="duration">Durée (min)</Label>
+              <Input
+                id="duration"
+                type="number"
+                min={1}
+                placeholder="60"
+                {...register('duration')}
+                aria-invalid={!!errors.duration}
+                aria-describedby={errors.duration ? 'duration-error' : undefined}
+                className={errors.duration ? 'border-destructive' : ''}
+              />
+              {errors.duration && (
+                <FieldError id="duration-error" message={errors.duration.message} />
+              )}
+            </div>
+          </div>
+
+          {/* Type de séance */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="environment">Environnement</Label>
+            <Label htmlFor="exerciseType">Type de séance</Label>
             <Controller
               control={control}
-              name="environment"
+              name="exerciseType"
               render={({ field }) => (
                 <Select value={field.value ?? ''} onValueChange={field.onChange}>
-                  <SelectTrigger id="environment">
-                    <SelectValue placeholder="— Non défini —" />
+                  <SelectTrigger
+                    id="exerciseType"
+                    aria-invalid={!!errors.exerciseType}
+                    aria-describedby={errors.exerciseType ? 'exerciseType-error' : undefined}
+                    className={cn(errors.exerciseType && 'border-destructive')}
+                  >
+                    <SelectValue placeholder="Sélectionner un type">
+                      {field.value && EXERCISE_TYPE_LABELS[field.value as ExerciseType] && (
+                        <Badge variant={EXERCISE_TYPE_LABELS[field.value as ExerciseType].variant}>
+                          {EXERCISE_TYPE_LABELS[field.value as ExerciseType].label}
+                        </Badge>
+                      )}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(ENVIRONMENT_LABELS).map(([value, label]) => (
+                    {Object.entries(EXERCISE_TYPE_LABELS).map(([value, data]) => (
                       <SelectItem key={value} value={value}>
-                        {label}
+                        <Badge variant={data.variant}>{data.label}</Badge>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               )}
             />
+            {errors.exerciseType && (
+              <FieldError id="exerciseType-error" message={errors.exerciseType.message} />
+            )}
           </div>
-          {environment === Environment.OUTDOOR && (
+
+          {/* Lieu */}
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="location">Lieu</Label>
+            <LocationAutocomplete
+              id="location"
+              value={locationDisplay ?? ''}
+              onChange={onLocationChange}
+              placeholder="Parc de la Tête d'Or, Lyon"
+            />
+          </div>
+
+          {/* Environnement + Météo */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="weather">Météo</Label>
+              <Label htmlFor="environment">Environnement</Label>
               <Controller
                 control={control}
-                name="weather"
+                name="environment"
                 render={({ field }) => (
                   <Select value={field.value ?? ''} onValueChange={field.onChange}>
-                    <SelectTrigger id="weather">
+                    <SelectTrigger id="environment">
                       <SelectValue placeholder="— Non défini —" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(WEATHER_LABELS).map(([value, label]) => (
+                      {Object.entries(ENVIRONMENT_LABELS).map(([value, label]) => (
                         <SelectItem key={value} value={value}>
                           {label}
                         </SelectItem>
@@ -293,24 +286,45 @@ export function SessionFormFields({
                 )}
               />
             </div>
-          )}
-        </div>
+            {environment === Environment.OUTDOOR && (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="weather">Météo</Label>
+                <Controller
+                  control={control}
+                  name="weather"
+                  render={({ field }) => (
+                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
+                      <SelectTrigger id="weather">
+                        <SelectValue placeholder="— Non défini —" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(WEATHER_LABELS).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </SectionCard>
 
       {/* Section: Parcours */}
       {environment === Environment.OUTDOOR && (
         <SectionCard icon={<MapPin className="h-4 w-4" aria-hidden="true" />} title="Parcours">
-          <Textarea
-            id="route"
-            placeholder="Description du parcours..."
-            {...register('route')}
-          />
+          <Textarea id="route" placeholder="Description du parcours..." {...register('route')} />
         </SectionCard>
       )}
 
       {/* Section: Observations */}
-      <SectionCard icon={<MessageSquare className="h-4 w-4" aria-hidden="true" />} title="Observations">
+      <SectionCard
+        icon={<MessageSquare className="h-4 w-4" aria-hidden="true" />}
+        title="Observations"
+      >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {isEditMode && (
             <div className="flex flex-col gap-1.5">

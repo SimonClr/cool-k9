@@ -76,7 +76,7 @@ export function Login() {
                 aria-describedby={errors.email ? 'email-error' : undefined}
                 className={errors.email ? 'border-destructive' : ''}
               />
-              {errors.email && <FieldError id="email-error" message={errors.email.message!} />}
+              {errors.email && <FieldError id="email-error" message={errors.email.message} />}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Mot de passe</Label>
@@ -91,7 +91,7 @@ export function Login() {
                 aria-describedby={errors.password ? 'password-error' : undefined}
                 className={errors.password ? 'border-destructive' : ''}
               />
-              {errors.password && <FieldError id="password-error" message={errors.password.message!} />}
+              {errors.password && <FieldError id="password-error" message={errors.password.message} />}
             </div>
             <Button type="submit" className="w-full mt-2" disabled={isLoading} aria-busy={isLoading}>
               {isLoading ? (

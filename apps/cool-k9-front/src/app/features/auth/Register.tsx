@@ -107,7 +107,7 @@ export function Register() {
                   className={errors.firstName ? 'border-destructive' : ''}
                 />
                 {errors.firstName && (
-                  <FieldError id="firstName-error" message={errors.firstName.message!} />
+                  <FieldError id="firstName-error" message={errors.firstName.message} />
                 )}
               </div>
               <div className="flex flex-col gap-1.5">
@@ -128,7 +128,7 @@ export function Register() {
                   className={errors.lastName ? 'border-destructive' : ''}
                 />
                 {errors.lastName && (
-                  <FieldError id="lastName-error" message={errors.lastName.message!} />
+                  <FieldError id="lastName-error" message={errors.lastName.message} />
                 )}
               </div>
             </div>
@@ -149,7 +149,7 @@ export function Register() {
                 aria-describedby={errors.email ? 'email-error' : undefined}
                 className={errors.email ? 'border-destructive' : ''}
               />
-              {errors.email && <FieldError id="email-error" message={errors.email.message!} />}
+              {errors.email && <FieldError id="email-error" message={errors.email.message} />}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Mot de passe</Label>
@@ -168,7 +168,7 @@ export function Register() {
                 className={errors.password ? 'border-destructive' : ''}
               />
               {errors.password && (
-                <FieldError id="register-password-error" message={errors.password.message!} />
+                <FieldError id="register-password-error" message={errors.password.message} />
               )}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -188,7 +188,7 @@ export function Register() {
                 className={errors.confirmPassword ? 'border-destructive' : ''}
               />
               {errors.confirmPassword && (
-                <FieldError id="confirm-password-error" message={errors.confirmPassword.message!} />
+                <FieldError id="confirm-password-error" message={errors.confirmPassword.message} />
               )}
             </div>
             <Button
