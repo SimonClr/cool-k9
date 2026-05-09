@@ -5,10 +5,7 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 import { ExerciseType } from '@models';
 import { SupabaseAuthGuard } from '../../auth/supabase-auth.guard';
 import { AdminGuard } from '../../auth/admin.guard';
-
-interface AuthenticatedRequest extends Request {
-  user: { userId: string; email: string; role?: string };
-}
+import { AuthenticatedRequest } from '../../common/types/authenticated-request';
 
 @Controller('sessions')
 @UseGuards(SupabaseAuthGuard)

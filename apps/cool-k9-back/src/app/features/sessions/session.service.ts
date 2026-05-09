@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Environment, ExerciseType, ObservationStatus, PaginatedResponse, Session, Weather } from '@models';
 import { SupabaseService } from '../../supabase/supabase.service';
+import { CreateSessionDto } from './dto/create-session.dto';
+import { UpdateSessionDto } from './dto/update-session.dto';
 
 @Injectable()
 export class SessionService {
@@ -100,7 +102,7 @@ export class SessionService {
     };
   }
 
-  async createSession(dto: import('./dto/create-session.dto').CreateSessionDto): Promise<Session> {
+  async createSession(dto: CreateSessionDto): Promise<Session> {
     // Fetch dog names for denormalization
     let dogNames: string[] = [];
     if (dto.dogIds && dto.dogIds.length > 0) {
@@ -160,7 +162,7 @@ export class SessionService {
     userId: string,
     role: string,
     id: string,
-    dto: import('./dto/update-session.dto').UpdateSessionDto,
+    dto: UpdateSessionDto,
   ): Promise<Session> {
     // Verify access
     let checkQuery = this.supabaseService.admin

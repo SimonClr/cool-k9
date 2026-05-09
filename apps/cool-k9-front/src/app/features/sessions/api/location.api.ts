@@ -1,9 +1,4 @@
-export interface NominatimResult {
-  place_id: number;
-  display_name: string;
-  lat: string;
-  lon: string;
-}
+import type { NominatimResult } from '../models/location.model';
 
 export async function apiFetchLocationSuggestions(query: string): Promise<NominatimResult[]> {
   const res = await fetch(

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Dog as DogModel, Session } from '@models';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
-import { useUserSearch } from '@/app/features/profile/hooks/useUsers';
-import { useMultiUserDogs } from '@/app/features/dogs/hooks/useDogs';
+import { useUserSearch } from '@/app/features/profile';
+import { useMultiUserDogs } from '@/app/features/dogs';
+import { formatDogAge } from '../utils/dog-info-format.utils';
 
 export function useUserAndDogOptions(
   selectedUserIds: string[],
@@ -48,7 +49,7 @@ export function useUserAndDogOptions(
   const dogOptions: MultiSelectOption[] = availableDogs.map((d: DogModel) => ({
     value: d.id,
     label: d.name,
-    sublabel: `${Math.floor((Date.now() - new Date(d.birthDate).getTime()) / (365.25 * 24 * 3600 * 1000))} ans`,
+    sublabel: formatDogAge(d.birthDate),
   }));
 
   // Auto-selection: dog IDs to add when a user has exactly one dog (create mode only)

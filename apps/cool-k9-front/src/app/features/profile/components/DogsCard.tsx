@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/utils/cn.utils';
-import { useDogs, useCreateDog, useUpdateDog } from '@/app/features/dogs/hooks/useDogs';
+import { useDogs, useCreateDog, useUpdateDog } from '@/app/features/dogs';
 import { type CardHandle } from '../models/profile.model';
 import { dogsSchema, type DogsFormValues } from '../models/dogs.schema';
 

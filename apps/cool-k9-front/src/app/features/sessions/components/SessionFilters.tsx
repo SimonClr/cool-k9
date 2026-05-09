@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/app/features/auth';
-import { useUserSearch } from '@/app/features/profile/hooks/useUsers';
-import { useDogs, useMultiUserDogs } from '@/app/features/dogs/hooks/useDogs';
+import { useUserSearch } from '@/app/features/profile';
+import { useDogs, useMultiUserDogs } from '@/app/features/dogs';
 import { Label } from '@/components/ui/label';
 import type { MultiSelectOption } from '@/components/ui/multi-select';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/utils/cn.utils';
 import { Dog, ExerciseType } from '@models';
+import { formatDogAge } from '../utils/dog-info-format.utils';
 import { EXERCISE_TYPE_LABELS } from '../constants/exercise-type.constants';
 
 interface SessionFiltersProps {
@@ -78,7 +79,7 @@ export function SessionFilters({
   const dogOptions: MultiSelectOption[] = availableDogs.map(d => ({
     value: d.id,
     label: d.name,
-    sublabel: `${Math.floor((Date.now() - new Date(d.birthDate).getTime()) / (365.25 * 24 * 3600 * 1000))} ans`,
+    sublabel: formatDogAge(d.birthDate),
   }));
 
   return (

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { apiFetchLocationSuggestions, type NominatimResult } from '../api/location.api';
+import { apiFetchLocationSuggestions } from '../api/location.api';
+import type { NominatimResult } from '../models/location.model';
 
 export function useLocationSearch() {
   const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);

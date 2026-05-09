@@ -3,6 +3,7 @@ import { DogService } from './dog.service';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 import { SupabaseAuthGuard } from '../../auth/supabase-auth.guard';
+import { AuthenticatedRequest } from '../../common/types/authenticated-request';
 
 @Controller('dogs')
 @UseGuards(SupabaseAuthGuard)
@@ -11,7 +12,7 @@ export class DogController {
 
   @Get()
   getDogs(
-    @Req() req: { user: { userId: string; role?: string } },
+    @Req() req: AuthenticatedRequest,
     @Query('userId') userId?: string,
   ) {
     const effectiveUserId = req.user.role === 'admin' && userId ? userId : req.user.userId;
@@ -20,7 +21,7 @@ export class DogController {
 
   @Post()
   createDog(
-    @Req() req: { user: { userId: string } },
+    @Req() req: AuthenticatedRequest,
     @Body() dto: CreateDogDto,
   ) {
     return this.dogService.createDog(req.user.userId, dto);
@@ -28,7 +29,7 @@ export class DogController {
 
   @Patch(':id')
   updateDog(
-    @Req() req: { user: { userId: string } },
+    @Req() req: AuthenticatedRequest,
     @Param('id') id: string,
     @Body() dto: UpdateDogDto,
   ) {
