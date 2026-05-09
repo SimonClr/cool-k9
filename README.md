@@ -20,8 +20,9 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 - **Vite 7** - Build tool et dev server ultra-rapide
 - **TypeScript** - Typage statique
 - **React Router 6** - Routage côté client
-- **Tailwind CSS 3** - Framework CSS utility-first
+- **Tailwind CSS v4** - Framework CSS utility-first
 - **shadcn/ui** - Composants UI construits sur Radix UI
+- **React Hook Form + Zod** - Gestion des formulaires et validation par schéma
 - **lucide-react** - Bibliothèque d'icônes
 
 ### Backend (cool-k9-back)

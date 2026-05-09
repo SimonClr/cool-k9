@@ -21,6 +21,7 @@
 - React 19 avec TypeScript : hooks, functional components et conventions modernes ([doc](https://react.dev/))
 - Tailwind CSS v4 avec utility classes pour le styling ([doc](https://tailwindcss.com/))
 - shadcn/ui pour les composants UI ([doc](https://ui.shadcn.com/)) — importer depuis `@/components/ui` et utiliser l'utilitaire `cn()` pour merger les classes
+- React Hook Form + Zod pour tous les formulaires (voir section [Formulaires](#formulaires))
 - Supabase Auth : ne jamais utiliser le claim `role` dans `app_metadata` (réservé par GoTrue, casse l'auth). Pour des claims custom, préfixer (ex: `app_role`)
 
 ## Architecture feature-based (frontend)
@@ -120,3 +121,76 @@ Règle de tri : fichier de constantes pures → `.constants.ts`, fonctions pures
 ## Formatage
 
 - Toujours utiliser les utilitaires de `/utils/formatters.ts` — jamais de `toLocaleDateString`, `toFixed`, ou formatage inline dans les composants
+
+## Formulaires
+
+Tous les formulaires utilisent **React Hook Form + Zod** via `@hookform/resolvers/zod`. Ne jamais créer de formulaire avec des `useState` individuels + validation manuelle.
+
+### Structure
+
+- Schema Zod dans `features/{feature}/models/{form}.schema.ts`
+- Pas de hook dédié `useXxxForm` — `useForm` est appelé directement dans le composant formulaire
+- Les messages d'erreur sont dans le schema Zod, pas dans les composants
+
+### Pattern de base
+
+**1. Schema**
+```ts
+export const loginSchema = z.object({
+  email: z.string().min(1, "L'email est obligatoire"),
+});
+export type LoginFormValues = z.infer<typeof loginSchema>;
+```
+
+**2. Formulaire**
+```ts
+const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+  resolver: zodResolver(loginSchema),
+  defaultValues: { email: '' },
+});
+```
+
+**3. Input natif**
+```tsx
+<Input {...register('email')} />
+```
+
+**4. Composant contrôlé** (Select shadcn, MultiSelect, Calendar…)
+```tsx
+<Controller
+  control={control}
+  name="field"
+  render={({ field }) => (
+    <Select value={field.value} onValueChange={field.onChange} />
+  )}
+/>
+```
+
+**5. Erreur**
+```tsx
+{errors.email && <FieldError id="email-error" message={errors.email.message!} />}
+```
+
+### Règles
+
+- Inputs natifs HTML : `{...register('field')}`
+- Composants contrôlés (Select shadcn, MultiSelect, Calendar, LocationAutocomplete) : `Controller`
+- Erreurs : composant partagé `FieldError` dans `components/ui/field-error.tsx`
+- `isDirty` / `isValid` : utiliser `formState.isDirty` / `formState.isValid`, jamais calculé manuellement
+- Liste dynamique : `useFieldArray`
+- État UI pur (popover ouvert/fermé) : `useState` local dans le composant, jamais dans un hook ou dans RHF
+
+**Double-ref** — pour combiner le ref RHF avec un `useRef` local (ex : focus enchaîné entre champs) :
+
+```ts
+const { ref: rhfRef, ...rest } = register('password');
+```
+```tsx
+<Input
+  {...rest}
+  ref={e => {
+    rhfRef(e);
+    localRef.current = e;
+  }}
+/>
+```
