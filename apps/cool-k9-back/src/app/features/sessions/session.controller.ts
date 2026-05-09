@@ -5,7 +5,7 @@ import { UpdateSessionDto } from './dto/update-session.dto';
 import { ExerciseType } from '@models';
 import { SupabaseAuthGuard } from '../../auth/supabase-auth.guard';
 import { AdminGuard } from '../../auth/admin.guard';
-import { AuthenticatedRequest } from '../../common/types/authenticated-request';
+import { AuthenticatedRequest } from '../../common/authenticated-request.model';
 
 @Controller('sessions')
 @UseGuards(SupabaseAuthGuard)

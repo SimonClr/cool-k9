@@ -11,7 +11,6 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 - **cool-k9-front** : Application React frontend
 - **cool-k9-back** : API NestJS backend
 - **models** : Bibliothèque partagée de modèles TypeScript (`@models`)
-- **authentication** : Bibliothèque partagée de gestion de l'authentification (`@authentication`)
 
 ## Stack technique
 
@@ -31,7 +30,6 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 
 ### Libs partagées
 - **@models** - Types et interfaces partagés entre frontend et backend
-- **@authentication** - Contexte d'authentification React (`AuthProvider`, `useAuth`, `ProtectedRoute`) basé sur Supabase
 
 ## Prérequis
 
@@ -143,13 +141,14 @@ cool-k9/
 │   │   └── src/
 │   │       ├── app/
 │   │       │   ├── features/                # Une feature par dossier
-│   │       │   │   ├── auth/                # Login, Register
-│   │       │   │   ├── sessions/            # Séances (components, hooks, services, api, types, constants, utils)
+│   │       │   │   ├── auth/                # Login, Register, AuthProvider, ProtectedRoute
+│   │       │   │   ├── sessions/            # Séances (components, hooks, services, api, models, constants, utils)
 │   │       │   │   ├── dogs/                # Chiens
 │   │       │   │   ├── profile/             # Profil utilisateur
 │   │       │   │   └── admin/               # Pages admin (Pricing…)
 │   │       │   ├── layout/                  # Layout global, navigation
 │   │       │   └── constants/               # Constantes globales (api.constants.ts…)
+│   │       ├── components/ui/               # Composants shadcn/ui partagés
 │   │       └── utils/                       # Fonctions pures partagées
 │   └── cool-k9-back/                        # API NestJS
 │       └── src/app/
@@ -157,11 +156,11 @@ cool-k9/
 │           │   ├── sessions/
 │           │   ├── dogs/
 │           │   └── users/
+│           ├── common/                      # Models partagés entre modules (authenticated-request.model.ts…)
 │           ├── auth/                        # SupabaseAuthGuard, AdminGuard
 │           └── supabase/                    # Client Supabase (service_role)
 ├── libs/
-│   ├── models/                              # Types partagés (@models)
-│   └── authentication/                      # Auth Supabase (@authentication)
+│   └── models/                              # Types partagés (@models)
 ├── supabase/
 │   └── schema.sql                           # DDL des tables public.*
 └── .github/workflows/

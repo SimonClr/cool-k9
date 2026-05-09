@@ -3,7 +3,7 @@ import { DogService } from './dog.service';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 import { SupabaseAuthGuard } from '../../auth/supabase-auth.guard';
-import { AuthenticatedRequest } from '../../common/types/authenticated-request';
+import { AuthenticatedRequest } from '../../common/authenticated-request.model';
 
 @Controller('dogs')
 @UseGuards(SupabaseAuthGuard)

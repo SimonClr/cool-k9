@@ -103,7 +103,7 @@ La convention s'applique **partout de façon homogène** : à la racine globale 
 | store             | `dog.store.ts`        |
 | test              | `dog.service.test.ts` |
 
-Règle de tri : fichier de constantes pures → `.constants.ts`, fonctions pures → `.utils.ts`, types/interfaces → `.types.ts`. Plusieurs catégories dans un même fichier → séparer en plusieurs fichiers.
+Règle de tri : fichier de constantes pures → `.constants.ts`, fonctions pures → `.utils.ts`, types/interfaces → `.model.ts`. Plusieurs catégories dans un même fichier → séparer en plusieurs fichiers.
 
 ## Models
 
@@ -114,13 +114,14 @@ Règle de tri : fichier de constantes pures → `.constants.ts`, fonctions pures
 
 ## Styles
 
-- Couleurs et thème centralisés dans `/constants/theme.ts`
-- Ne jamais redéfinir localement une couleur déjà définie dans le thème
 - Privilégier les utility classes Tailwind, éviter le CSS custom sauf cas justifié
+- Ne jamais définir de couleurs inline (hex, rgb) dans les composants — utiliser les tokens Tailwind/shadcn (`text-destructive`, `bg-muted`, etc.)
 
 ## Formatage
 
-- Toujours utiliser les utilitaires de `/utils/formatters.ts` — jamais de `toLocaleDateString`, `toFixed`, ou formatage inline dans les composants
+- Toujours utiliser les utilitaires de `/src/utils/` — jamais de `toLocaleDateString`, `toFixed`, ou formatage inline dans les composants
+- Dates globales : `formatDateShort()` depuis `src/utils/date-format.utils.ts`
+- Infos spécifiques à une feature : créer un `.utils.ts` dans `features/<feature>/utils/` (ex : `dog-info-format.utils.ts` pour `formatDogAge`)
 
 ## Formulaires
 
