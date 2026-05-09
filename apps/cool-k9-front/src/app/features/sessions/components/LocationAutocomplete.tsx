@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { MapPin } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn.utils';
 import { type LocationValue } from '../models/location.model';
 import { useLocationSearch } from '../hooks/useLocationSearch';
 
