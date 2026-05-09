@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@authentication';
+import { useAuth } from '@/app/features/auth';
 import { type CardHandle } from '../models/profile.model';
 import { profileSchema, type ProfileFormValues } from '../models/profile.schema';
 

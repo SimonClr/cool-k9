@@ -22,7 +22,7 @@ import {
   PlusCircle,
   SlidersHorizontal,
 } from 'lucide-react';
-import { useAuth } from '@authentication';
+import { useAuth } from '@/app/features/auth';
 import { cn } from '@/utils/cn.utils';
 
 export function SessionsList() {

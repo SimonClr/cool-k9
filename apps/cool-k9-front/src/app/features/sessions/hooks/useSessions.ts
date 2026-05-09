@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@authentication';
+import { useAuth } from '@/app/features/auth';
 import { SessionService, CreateSessionInput } from '../services/session.service';
 import { ExerciseType } from '@models';
 

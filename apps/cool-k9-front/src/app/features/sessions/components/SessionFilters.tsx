@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '@authentication';
+import { useAuth } from '@/app/features/auth';
 import { useUserSearch } from '@/app/features/profile/hooks/useUsers';
 import { useDogs, useMultiUserDogs } from '@/app/features/dogs/hooks/useDogs';
 import { Label } from '@/components/ui/label';

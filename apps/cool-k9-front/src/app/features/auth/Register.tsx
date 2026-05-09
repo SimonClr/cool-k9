@@ -2,14 +2,14 @@ import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@authentication';
+import { useAuth } from './AuthProvider';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FieldError } from '@/components/ui/field-error';
 import { AlertCircle, Loader2 } from 'lucide-react';
-import { registerSchema, type RegisterFormValues } from './models/register.schema';
+import { type RegisterFormValues, registerSchema } from './models/register.schema';
 
 export function Register() {
   const { register: authRegister, isLoading, error } = useAuth();
@@ -20,7 +20,11 @@ export function Register() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
 
@@ -39,23 +43,38 @@ export function Register() {
   };
 
   const handleFirstNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); lastNameRef.current?.focus(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      lastNameRef.current?.focus();
+    }
   };
 
   const handleLastNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); emailRef.current?.focus(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      emailRef.current?.focus();
+    }
   };
 
   const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); passwordRef.current?.focus(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      passwordRef.current?.focus();
+    }
   };
 
   const handlePasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); confirmPasswordRef.current?.focus(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      confirmPasswordRef.current?.focus();
+    }
   };
 
   const handleConfirmPasswordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); handleSubmit(onSubmit)(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit(onSubmit)();
+    }
   };
 
   return (
@@ -87,7 +106,9 @@ export function Register() {
                   aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                   className={errors.firstName ? 'border-destructive' : ''}
                 />
-                {errors.firstName && <FieldError id="firstName-error" message={errors.firstName.message!} />}
+                {errors.firstName && (
+                  <FieldError id="firstName-error" message={errors.firstName.message!} />
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="lastName">Nom</Label>
@@ -96,14 +117,19 @@ export function Register() {
                   type="text"
                   maxLength={30}
                   {...lastNameRest}
-                  ref={(e) => { lastNameRhfRef(e); lastNameRef.current = e; }}
+                  ref={e => {
+                    lastNameRhfRef(e);
+                    lastNameRef.current = e;
+                  }}
                   onKeyDown={handleLastNameKeyDown}
                   autoComplete="family-name"
                   aria-invalid={!!errors.lastName}
                   aria-describedby={errors.lastName ? 'lastName-error' : undefined}
                   className={errors.lastName ? 'border-destructive' : ''}
                 />
-                {errors.lastName && <FieldError id="lastName-error" message={errors.lastName.message!} />}
+                {errors.lastName && (
+                  <FieldError id="lastName-error" message={errors.lastName.message!} />
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
@@ -112,7 +138,10 @@ export function Register() {
                 id="email"
                 type="email"
                 {...emailRest}
-                ref={(e) => { emailRhfRef(e); emailRef.current = e; }}
+                ref={e => {
+                  emailRhfRef(e);
+                  emailRef.current = e;
+                }}
                 onKeyDown={handleEmailKeyDown}
                 placeholder="trainer@coolk9.com"
                 autoComplete="email"
@@ -128,14 +157,19 @@ export function Register() {
                 id="password"
                 type="password"
                 {...passwordRest}
-                ref={(e) => { passwordRhfRef(e); passwordRef.current = e; }}
+                ref={e => {
+                  passwordRhfRef(e);
+                  passwordRef.current = e;
+                }}
                 onKeyDown={handlePasswordKeyDown}
                 autoComplete="new-password"
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? 'register-password-error' : undefined}
                 className={errors.password ? 'border-destructive' : ''}
               />
-              {errors.password && <FieldError id="register-password-error" message={errors.password.message!} />}
+              {errors.password && (
+                <FieldError id="register-password-error" message={errors.password.message!} />
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
@@ -143,16 +177,26 @@ export function Register() {
                 id="confirmPassword"
                 type="password"
                 {...confirmPasswordRest}
-                ref={(e) => { confirmPasswordRhfRef(e); confirmPasswordRef.current = e; }}
+                ref={e => {
+                  confirmPasswordRhfRef(e);
+                  confirmPasswordRef.current = e;
+                }}
                 onKeyDown={handleConfirmPasswordKeyDown}
                 autoComplete="new-password"
                 aria-invalid={!!errors.confirmPassword}
                 aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined}
                 className={errors.confirmPassword ? 'border-destructive' : ''}
               />
-              {errors.confirmPassword && <FieldError id="confirm-password-error" message={errors.confirmPassword.message!} />}
+              {errors.confirmPassword && (
+                <FieldError id="confirm-password-error" message={errors.confirmPassword.message!} />
+              )}
             </div>
-            <Button type="submit" className="w-full mt-2" disabled={isLoading} aria-busy={isLoading}>
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={isLoading}
+              aria-busy={isLoading}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

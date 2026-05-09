@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Loader2, LogOut, Menu, Moon, Sun, UserCircle, X } from 'lucide-react';
 import { cn } from '@/utils/cn.utils';
-import { useAuth, useTheme } from '@authentication';
+import { useAuth } from '@/app/features/auth';
+import { useTheme } from './ThemeProvider';
 
 import { useDogs } from '@/app/features/dogs';
 

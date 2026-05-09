@@ -4,7 +4,8 @@ import * as ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import App from './app/app';
-import { AuthProvider, ThemeProvider } from '@authentication';
+import { AuthProvider } from '@/app/features/auth';
+import { ThemeProvider } from '@/app/layout';
 
 const queryClient = new QueryClient({
   defaultOptions: {

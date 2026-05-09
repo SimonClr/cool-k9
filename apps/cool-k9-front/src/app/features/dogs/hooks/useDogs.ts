@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@authentication';
+import { useAuth } from '@/app/features/auth';
 import { DogService } from '@/app/features/dogs';
 
 export const DOGS_QUERY_KEY = (userId: string) => ['dogs', userId] as const;

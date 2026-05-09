@@ -1,9 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { AdminRoute, ProtectedRoute } from '@authentication';
-import { Layout } from './layout/Layout';
+import { AdminRoute, Login, ProtectedRoute } from '@/app/features/auth';
+import { Layout } from '@/app/layout';
 import { Loader2 } from 'lucide-react';
-import { Login } from '@/app/features/auth';
 
 const SessionsList = lazy(() =>
   import('./features/sessions/SessionsList').then(m => ({ default: m.SessionsList }))

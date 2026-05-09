@@ -1,12 +1,6 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from 'react';
-import { supabase } from './supabase.client';
-import type { AuthState, AuthUser } from './types';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { supabase } from './services/supabase.service';
+import type { AuthState, AuthUser } from './models/auth.model';
 
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;

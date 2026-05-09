@@ -1,4 +1,4 @@
-import { supabase } from '@authentication';
+import { supabase } from '@/app/features/auth';
 
 export async function getAuthHeaders(): Promise<HeadersInit> {
   const {

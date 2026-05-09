@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useSession } from '@/app/features/sessions/hooks/useSessions';
-import { useAuth } from '@authentication';
+import { useAuth } from '@/app/features/auth';
 import { Loader2 } from 'lucide-react';
 import { SessionForm } from './SessionForm';
 import { UserSessionView } from './UserSessionView';
