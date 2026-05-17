@@ -1,7 +1,5 @@
 # Cool K9 - Dog Trainer App
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
-
 Application de gestion de séances d'éducation canine construite avec un monorepo Nx.
 
 ## Architecture du projet
@@ -15,6 +13,7 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 ## Stack technique
 
 ### Frontend (cool-k9-front)
+
 - **React 19** - Framework UI avec hooks et functional components
 - **Vite 7** - Build tool et dev server ultra-rapide
 - **TypeScript** - Typage statique
@@ -25,10 +24,12 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 - **lucide-react** - Bibliothèque d'icônes
 
 ### Backend (cool-k9-back)
+
 - **NestJS** - Framework Node.js progressif
 - **TypeScript** - Typage statique
 
 ### Libs partagées
+
 - **@models** - Types et interfaces partagés entre frontend et backend
 
 ## Prérequis
@@ -48,12 +49,14 @@ pnpm install
 L'app utilise Supabase pour l'authentification et la base de données. Deux fichiers `.env` sont nécessaires (templates fournis dans `*.env.example`) :
 
 `apps/cool-k9-front/.env`
+
 ```
 VITE_SUPABASE_URL=https://<project-ref>.supabase.co
 VITE_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
 `apps/cool-k9-back/.env`
+
 ```
 SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=sb_secret_...

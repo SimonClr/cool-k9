@@ -79,6 +79,48 @@ features/<feature>/
 - Sous-composants regroupés dans le même dossier
 - Pas de plusieurs composants exportés dans le même fichier
 
+### forwardRef + useImperativeHandle
+
+Utiliser ce pattern quand un parent doit orchestrer plusieurs sous-composants éditables (isDirty, canSave, save) sans remonter tout leur état.
+
+L'interface `CardHandle` est définie dans `features/profile/models/profile.model.ts` :
+
+```ts
+export interface CardHandle {
+  isDirty: boolean;
+  canSave: boolean;
+  save: () => Promise<void>;
+}
+```
+
+**Sous-composant** :
+```
+export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
+  function DogsCard({ onDirtyChange }, ref) {
+    const isDirty = ...; // calculé depuis l'état local
+    const canSave = ...; // calculé depuis l'état local
+
+    useImperativeHandle(ref, () => ({ isDirty, canSave, save }), [isDirty, canSave]);
+    useEffect(() => { onDirtyChange?.(); }, [isDirty]);
+  }
+);
+```
+
+**Parent orchestrateur** :
+```
+const profileRef = useRef<CardHandle>(null);
+const [, forceUpdate] = useState(0);
+
+const isDirty = profileRef.current?.isDirty ?? false;
+const handleSave = async () => {
+  if (profileRef.current?.isDirty) await profileRef.current.save();
+};
+
+<DogsCard ref={profileRef} onDirtyChange={() => forceUpdate(n => n + 1)} />
+```
+
+> Le `forceUpdate` est nécessaire : React ne re-rend pas sur mutation d'un ref. Le callback `onDirtyChange` déclenche le re-render pour relire `ref.current.isDirty`.
+
 ## Logique métier
 
 - **Hooks** : calculs/transformations qui dépendent du state React → `hooks/` de la feature (ou `/hooks/` si partagé par 2+ features)
@@ -86,6 +128,41 @@ features/<feature>/
 - **Api** : appels réseau bruts (fetch) → `api/` de la feature
 - **Utils** : fonctions pures (pas de state) → `features/<feature>/utils/` si propres à une feature, `/utils/` si partagées par 2+ features, inline si usage unique
 - **Constants** : constantes sans état → `features/<feature>/constants/` si propres à une feature, `app/constants/` si globales (variables en SCREAMING_SNAKE_CASE)
+
+### Mapping enum → UI
+
+Pour associer à chaque valeur d'enum un libellé et un variant de badge, utiliser la structure suivante (exemple dans `features/sessions/`) :
+
+```
+models/exercise.model.ts             ← interface ExerciseTypeData { label; variant }
+constants/exercise-type.constants.ts ← Record<ExerciseType, ExerciseTypeData>
+utils/exercise-type.utils.ts         ← getExerciseTypeData(type) avec fallback
+```
+
+```
+// exercise.model.ts
+export interface ExerciseTypeData {
+  label: string;
+  variant: 'default' | 'secondary' | 'success' | 'warning' | 'info' | 'error';
+}
+
+// exercise-type.constants.ts
+export const EXERCISE_TYPE_LABELS: Record<ExerciseType, ExerciseTypeData> = {
+  [ExerciseType.INITIATION]: { label: 'Initiation', variant: 'success' },
+  // ...
+};
+
+// exercise-type.utils.ts
+export function getExerciseTypeData(type: ExerciseType): ExerciseTypeData {
+  return EXERCISE_TYPE_LABELS[type] ?? { label: type, variant: 'default' };
+}
+```
+
+Usage dans un composant :
+```tsx
+const { label, variant } = getExerciseTypeData(session.exerciseType);
+<Badge variant={variant}>{label}</Badge>
+```
 
 ## Conventions de nommage des fichiers
 
@@ -176,6 +253,20 @@ const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValue
 
 - Inputs natifs HTML : `{...register('field')}`
 - Composants contrôlés (Select shadcn, MultiSelect, Calendar, LocationAutocomplete) : `Controller`
+- `LocationAutocomplete` (`features/sessions/components/LocationAutocomplete.tsx`) a une signature `onChange` spécialisée :
+  ```tsx
+  <Controller
+    control={control}
+    name="location"
+    render={({ field }) => (
+      <LocationAutocomplete
+        value={field.value?.name ?? ''}
+        onChange={(coords, displayName) => field.onChange(coords ?? null)}
+      />
+    )}
+  />
+  ```
+  > `onChange` reçoit `(LocationValue | null, displayName: string)`. Si l'utilisateur tape du texte libre sans sélectionner une suggestion, `coords` est `null`.
 - Erreurs : composant partagé `FieldError` dans `components/ui/field-error.tsx`
 - `isDirty` / `isValid` : utiliser `formState.isDirty` / `formState.isValid`, jamais calculé manuellement
 - Liste dynamique : `useFieldArray`
