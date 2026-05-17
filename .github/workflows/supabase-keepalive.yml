@@ -2,8 +2,8 @@ name: Supabase keepalive
 
 on:
   schedule:
-    # Tous les 3 jours à 6h UTC. Largement sous le seuil de pause (~7j).
-    - cron: '0 6 */3 * *'
+    # Tous les 2 jours à 6h UTC. Garde une marge confortable sous le seuil de pause (7j).
+    - cron: '0 6 */2 * *'
   # Permet aussi un déclenchement manuel depuis l'onglet Actions.
   workflow_dispatch:
 
@@ -14,13 +14,13 @@ jobs:
       - name: Hit Supabase REST endpoint
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           set -e
           status=$(curl -s -o /tmp/body -w "%{http_code}" \
             "$SUPABASE_URL/rest/v1/dogs?select=id&limit=1" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY")
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
           echo "HTTP $status"
           cat /tmp/body
           if [ "$status" -ne 200 ]; then
