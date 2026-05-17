@@ -17,13 +17,34 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           set -e
-          status=$(curl -s -o /tmp/body -w "%{http_code}" \
+
+          # Vérification des secrets
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "::error::SUPABASE_URL is empty — secret not configured"
+            exit 1
+          fi
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::SUPABASE_ANON_KEY is empty — secret not configured"
+            exit 1
+          fi
+
+          echo "Target: $SUPABASE_URL/rest/v1/dogs?select=id&limit=1"
+          echo "Anon key prefix: ${SUPABASE_ANON_KEY:0:20}..."
+
+          status=$(curl -v -o /tmp/body -w "%{http_code}" \
             "$SUPABASE_URL/rest/v1/dogs?select=id&limit=1" \
             -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
-          echo "HTTP $status"
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            2>/tmp/curl_verbose)
+
+          echo "=== curl verbose ==="
+          cat /tmp/curl_verbose
+          echo "=== response body ==="
           cat /tmp/body
+          echo "=== HTTP status: $status ==="
+
           if [ "$status" -ne 200 ]; then
             echo "::error::Supabase keepalive failed with HTTP $status"
             exit 1
           fi
+          echo "Keepalive OK"
