@@ -2,8 +2,9 @@ name: Supabase keepalive
 
 on:
   schedule:
-    # Tous les 2 jours à 6h UTC. Garde une marge confortable sous le seuil de pause (7j).
-    - cron: '0 6 */2 * *'
+    # Quotidien à 6h UTC. Marge confortable sous le seuil de pause Supabase (7j),
+    # même si un run de cron est retardé ou sauté par GitHub.
+    - cron: '0 6 * * *'
   # Permet aussi un déclenchement manuel depuis l'onglet Actions.
   workflow_dispatch:
 

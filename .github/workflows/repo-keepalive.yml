@@ -1,0 +1,31 @@
+name: Repo keepalive
+
+# Empêche GitHub de désactiver les workflows planifiés du repo.
+# GitHub désactive tout workflow `schedule` après 60 jours sans commit sur le repo.
+# Ce workflow committe un timestamp une fois par mois pour réinitialiser ce compteur
+# (bénéficie à tous les workflows, y compris supabase-keepalive.yml).
+on:
+  schedule:
+    # Le 1er de chaque mois à 3h UTC — ~30j d'intervalle, confortablement sous les 60j.
+    - cron: '0 3 1 * *'
+  # Permet aussi un déclenchement manuel depuis l'onglet Actions.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump keepalive timestamp
+        run: |
+          set -e
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          date -u +%Y-%m-%dT%H:%M:%SZ > .github/keepalive-timestamp
+          git add .github/keepalive-timestamp
+          git commit -m "chore: repo keepalive bump [skip ci]"
+          git push
