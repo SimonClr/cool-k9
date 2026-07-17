@@ -74,10 +74,15 @@ SUPABASE_SERVICE_ROLE_KEY=sb_secret_...
 
 ### Anti-pause (tier gratuit)
 
-Le tier gratuit Supabase pause les projets après ~7 jours d'inactivité. Un workflow GitHub Actions ([`.github/workflows/supabase-keepalive.yml`](.github/workflows/supabase-keepalive.yml)) ping la base tous les 3 jours pour empêcher la pause. Pour qu'il fonctionne, ajouter ces secrets dans Settings → Secrets and variables → Actions :
+Maintenir le projet actif nécessite de contourner **deux limites indépendantes**, d'où deux workflows GitHub Actions :
 
-- `SUPABASE_URL` (même valeur que `apps/cool-k9-back/.env`)
-- `SUPABASE_SERVICE_ROLE_KEY` (même valeur que `apps/cool-k9-back/.env`)
+1. **Pause Supabase** — le tier gratuit pause les projets après ~7 jours sans activité DB. [`.github/workflows/supabase-keepalive.yml`](.github/workflows/supabase-keepalive.yml) ping la base **quotidiennement** pour l'empêcher. Nécessite ces secrets dans Settings → Secrets and variables → Actions :
+   - `SUPABASE_URL` (même valeur que `apps/cool-k9-back/.env`)
+   - `SUPABASE_SERVICE_ROLE_KEY` (même valeur que `apps/cool-k9-back/.env`)
+
+2. **Désactivation GitHub** — GitHub désactive tout workflow planifié (`schedule`) après 60 jours sans commit sur le repo. Sans push régulier, le ping ci-dessus finirait donc par s'arrêter. [`.github/workflows/repo-keepalive.yml`](.github/workflows/repo-keepalive.yml) committe un timestamp **une fois par mois** pour réinitialiser ce compteur (au bénéfice de tous les workflows).
+
+> **Note** : `repo-keepalive.yml` pousse un commit sur `main` via `github-actions[bot]`. Si `main` est protégée par une branch protection, autoriser le bot à pusher (ou passer par un PAT), sinon le workflow échouera.
 
 ## Commandes de développement
 
@@ -168,7 +173,8 @@ cool-k9/
 │   └── schema.sql                           # DDL des tables public.*
 └── .github/workflows/
     ├── ci.yml
-    └── supabase-keepalive.yml               # Ping Supabase tous les 3 jours
+    ├── supabase-keepalive.yml               # Ping Supabase quotidien (anti-pause 7j)
+    └── repo-keepalive.yml                   # Commit mensuel (anti-désactivation GitHub 60j)
 ```
 
 ## Gestion des tâches Nx
