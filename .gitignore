@@ -38,6 +38,9 @@ testem.log
 .env
 .env.local
 .env.*.local
+# Environment-specific files hold real secrets; only .env.example is tracked.
+.env.production
+.env.development
 
 # Procédures admin privées
 docs/admin-procedures.md
