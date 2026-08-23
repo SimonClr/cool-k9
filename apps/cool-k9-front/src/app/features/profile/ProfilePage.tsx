@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { UserProfileCard } from './components/UserProfileCard';
 import { DogsCard } from './components/DogsCard';
+import { DataExportCard } from './components/DataExportCard';
 import { type CardHandle } from './models/profile.model';
 
 export function ProfilePage() {
@@ -49,6 +50,7 @@ export function ProfilePage() {
 
       <UserProfileCard ref={profileRef} onDirtyChange={setProfileDirty} />
       <DogsCard ref={dogsRef} onDirtyChange={setDogsDirty} />
+      <DataExportCard />
     </div>
   );
 }

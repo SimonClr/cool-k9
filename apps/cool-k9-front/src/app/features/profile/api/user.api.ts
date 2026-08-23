@@ -1,4 +1,4 @@
-import { PaginatedResponse, User } from '@models';
+import { PaginatedResponse, User, UserDataExport } from '@models';
 import { API_BASE_URL } from '@/app/constants/api.constants';
 import { getAuthHeaders } from '@/utils/auth-headers.utils';
 
@@ -17,5 +17,11 @@ export async function apiFetchUsers(params?: {
   const url = query.toString() ? `${API_URL}?${query}` : API_URL;
   const response = await fetch(url, { headers: await getAuthHeaders() });
   if (!response.ok) throw new Error('Failed to fetch users');
+  return response.json();
+}
+
+export async function apiExportMyData(): Promise<UserDataExport> {
+  const response = await fetch(`${API_URL}/me/export`, { headers: await getAuthHeaders() });
+  if (!response.ok) throw new Error('Failed to export user data');
   return response.json();
 }
