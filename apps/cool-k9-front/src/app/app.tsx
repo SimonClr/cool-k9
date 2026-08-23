@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AdminRoute, Login, ProtectedRoute } from '@/app/features/auth';
+import { LEGAL_ROUTES } from '@/app/features/legal';
 import { Layout } from '@/app/layout';
 import { Loader2 } from 'lucide-react';
 
@@ -16,6 +17,15 @@ const ProfilePage = lazy(() =>
 );
 const SessionFormPage = lazy(() =>
   import('./features/sessions/SessionFormPage').then(m => ({ default: m.SessionFormPage }))
+);
+const PrivacyPolicy = lazy(() =>
+  import('./features/legal/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy }))
+);
+const TermsOfService = lazy(() =>
+  import('./features/legal/TermsOfService').then(m => ({ default: m.TermsOfService }))
+);
+const LegalNotice = lazy(() =>
+  import('./features/legal/LegalNotice').then(m => ({ default: m.LegalNotice }))
 );
 
 function PageLoader() {
@@ -40,6 +50,32 @@ export function App() {
         element={
           <Suspense fallback={<PageLoader />}>
             <Register />
+          </Suspense>
+        }
+      />
+
+      {/* Legal documents stay reachable while signed out. */}
+      <Route
+        path={LEGAL_ROUTES.privacy}
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <PrivacyPolicy />
+          </Suspense>
+        }
+      />
+      <Route
+        path={LEGAL_ROUTES.terms}
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <TermsOfService />
+          </Suspense>
+        }
+      />
+      <Route
+        path={LEGAL_ROUTES.notice}
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <LegalNotice />
           </Suspense>
         }
       />
