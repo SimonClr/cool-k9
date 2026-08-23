@@ -1,6 +1,6 @@
-// Pages are intentionally NOT re-exported here: app.tsx loads them lazily from
-// their own files so each ends up in its own chunk. Re-exporting them would pull
-// all three into whatever bundle imports this index.
-export { LegalLinks } from './components/LegalLinks';
+// Only constants are re-exported here. Components and pages are imported from
+// their own files: this index is pulled into the entry bundle (AuthProvider
+// reads LEGAL_INFO) as well as into lazy chunks, so re-exporting a component
+// through it makes Rollup build a circular dependency between those chunks.
 export { LEGAL_ROUTES } from './constants/legal-routes.constants';
 export { LEGAL_INFO, PENDING_VALUE } from './constants/legal-info.constants';

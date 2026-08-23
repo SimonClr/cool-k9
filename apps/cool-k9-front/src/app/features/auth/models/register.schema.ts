@@ -6,6 +6,13 @@ export const registerSchema = z.object({
   email: z.string().min(1, "L'email est obligatoire").email('Email invalide'),
   password: z.string().min(1, 'Le mot de passe est obligatoire'),
   confirmPassword: z.string().min(1, 'Veuillez confirmer le mot de passe'),
+  // boolean().refine() rather than literal(true): the field is genuinely a
+  // boolean the user can uncheck, and only its accepted value is constrained.
+  // literal(true) would type the field as `true`, which no default value can
+  // satisfy.
+  acceptedTerms: z.boolean().refine(v => v, {
+    message: 'Vous devez accepter les conditions générales et la politique de confidentialité',
+  }),
 }).refine(d => d.password === d.confirmPassword, {
   message: 'Les mots de passe ne correspondent pas',
   path: ['confirmPassword'],

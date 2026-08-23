@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from './services/supabase.service';
+import { LEGAL_INFO } from '@/app/features/legal';
 import type { AuthState, AuthUser } from './models/auth.model';
 
 interface AuthContextValue extends AuthState {
@@ -68,7 +69,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { first_name: firstName, last_name: lastName } } });
+    // Consent proof goes to user_metadata, never app_metadata, which GoTrue
+    // reserves. Recording the version tells apart consent given to a later
+    // revision of the documents.
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          terms_accepted_at: new Date().toISOString(),
+          terms_version: LEGAL_INFO.documentsVersion,
+        },
+      },
+    });
     setState((prev) => ({ ...prev, isLoading: false }));
 
     if (data.user?.identities?.length === 0) {

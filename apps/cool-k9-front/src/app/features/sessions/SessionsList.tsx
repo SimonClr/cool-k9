@@ -86,12 +86,11 @@ export function SessionsList() {
         </Button>
       )}
 
-      <header className="sticky top-0 z-10 -mx-4 sm:-mx-8 -mt-4 px-4 sm:px-8 pb-8 mb-3">
-        {/* Couche blur + dégradé — s'étend vers le haut pour couvrir le gap du padding de main */}
+      <header className="sticky top-0 z-10 -mx-4 -mt-4 px-4 pt-4 sm:pb-4 pb-8 mb-3">
+        {/* Couche blur + dégradé — couvre toute la zone collante, padding compris */}
         <div
-          className="absolute inset-x-0 bottom-0 bg-background/20 backdrop-blur-[6px] -z-10"
+          className="absolute inset-0 bg-background/20 backdrop-blur-[6px] -z-10"
           style={{
-            top: '-1rem',
             maskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent 100%)',
           }}

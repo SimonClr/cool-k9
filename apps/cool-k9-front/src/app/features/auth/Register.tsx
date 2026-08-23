@@ -1,13 +1,15 @@
 import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LegalLinks } from '@/app/features/legal';
-import { useForm } from 'react-hook-form';
+import { LEGAL_ROUTES } from '@/app/features/legal';
+import { LegalLinks } from '@/app/features/legal/components/LegalLinks';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from './AuthProvider';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { FieldError } from '@/components/ui/field-error';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { type RegisterFormValues, registerSchema } from './models/register.schema';
@@ -23,10 +25,12 @@ export function Register() {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    defaultValues: { acceptedTerms: false },
   });
 
   const { ref: lastNameRhfRef, ...lastNameRest } = register('lastName');
@@ -79,8 +83,11 @@ export function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
+    <div className="min-h-screen flex justify-center bg-background px-4 py-8">
+      {/* my-auto rather than items-center on the parent: with centring, a card
+          taller than the viewport overflows past the padding and ends up flush
+          against the screen edges. */}
+      <Card className="w-full max-w-sm my-auto">
         <CardHeader className="text-center">
           <img src="/logo.png" alt="Cool K9" className="h-32 w-auto mx-auto mb-2" />
           <CardDescription>Créez votre espace entraîneur</CardDescription>
@@ -192,6 +199,50 @@ export function Register() {
                 <FieldError id="confirm-password-error" message={errors.confirmPassword.message} />
               )}
             </div>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-start gap-2">
+                <Controller
+                  control={control}
+                  name="acceptedTerms"
+                  render={({ field }) => (
+                    <Checkbox
+                      id="acceptedTerms"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                      aria-invalid={!!errors.acceptedTerms}
+                      aria-describedby={errors.acceptedTerms ? 'accepted-terms-error' : undefined}
+                      className="mt-0.5"
+                    />
+                  )}
+                />
+                <Label htmlFor="acceptedTerms" className="text-sm font-normal leading-snug">
+                  J'accepte les{' '}
+                  <Link
+                    to={LEGAL_ROUTES.terms}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    conditions générales
+                  </Link>{' '}
+                  et la{' '}
+                  <Link
+                    to={LEGAL_ROUTES.privacy}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    politique de confidentialité
+                  </Link>
+                </Label>
+              </div>
+              {errors.acceptedTerms && (
+                <FieldError id="accepted-terms-error" message={errors.acceptedTerms.message} />
+              )}
+            </div>
+
             <Button
               type="submit"
               className="w-full mt-2"
