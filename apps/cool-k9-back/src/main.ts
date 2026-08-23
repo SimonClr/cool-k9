@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
@@ -33,6 +33,18 @@ async function bootstrap() {
     credentials: true,
     maxAge: 86400,
   });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      // Reject unknown fields outright instead of stripping them silently: a mismatch
+      // between the frontend and backend contracts should be loud, not invisible.
+      forbidNonWhitelisted: true,
+      transform: true,
+      // Implicit conversion is deliberately left off: combined with the rule above it
+      // coerces optional fields in surprising ways.
+    })
+  );
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
