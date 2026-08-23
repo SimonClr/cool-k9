@@ -21,6 +21,10 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 - **Tailwind CSS v4** - Framework CSS utility-first
 - **shadcn/ui** - Composants UI construits sur Radix UI
 - **React Hook Form + Zod** - Gestion des formulaires et validation par schéma
+- **TanStack React Query** - Cache et synchronisation des données serveur (hooks des features)
+- **sonner** - Notifications toast
+- **axios** - Client HTTP
+- **date-fns / react-day-picker** - Manipulation de dates et sélecteur de calendrier
 - **lucide-react** - Bibliothèque d'icônes
 
 ### Backend (cool-k9-back)
@@ -38,7 +42,7 @@ Ce projet utilise [Nx](https://nx.dev) pour gérer un monorepo contenant :
 
 ## Prérequis
 
-- Node.js (version recommandée : 18+)
+- Node.js 20+ (requis par Nx 22 et Vite 7)
 - pnpm (gestionnaire de packages)
 - Un projet Supabase (voir [Configuration Supabase](#configuration-supabase))
 
@@ -79,7 +83,7 @@ CORS_ORIGINS=http://localhost:4200
 1. Créer un projet sur [supabase.com/dashboard](https://supabase.com/dashboard).
 2. Copier les clés depuis Settings → API et mettre à jour les deux `.env` ci-dessus.
 3. Désactiver la confirmation email : Authentication → Providers → Email → décocher *Confirm email* → Save.
-4. Coller le contenu de [`supabase/schema.sql`](supabase/schema.sql) dans le SQL Editor du projet et exécuter.
+4. Coller le contenu de [`supabase/init.sql`](supabase/init.sql) dans le SQL Editor du projet et exécuter. Le fichier est rejouable : l'exécuter sur une base déjà provisionnée aligne son schéma sans détruire les données.
 5. Lancer le front (`pnpm start:front`), aller sur `/register`, créer un compte.
 
 > **Note** : ne jamais utiliser le claim `role` dans `app_metadata` (réservé par GoTrue, casse l'auth). Le claim custom est `app_role`.
@@ -104,7 +108,7 @@ Le backend applique les protections suivantes, configurées dans `main.ts` et `a
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **CORS**                   | Seules les origines listées dans `CORS_ORIGINS` sont acceptées. Aucune origine n'est codée en dur.                               |
 | **En-têtes HTTP**          | Helmet : `nosniff`, protection contre l'inclusion en cadre, suppression de `X-Powered-By`. HSTS activé uniquement en production. |
-| **Limitation de débit**    | 100 requêtes/min par IP. `GET /api/users` est plafonné à 10/min (endpoint coûteux). `/api/health` en est exempté.                |
+| **Limitation de débit**    | 100 requêtes/min par IP. Endpoints durcis : `GET /api/users` 10/min, `GET /api/users/me/export` et `DELETE /api/users/me` 3/min. `/api/health` en est exempté. |
 | **Validation des entrées** | Tout corps de requête est validé ; un champ inconnu ou mal typé renvoie `400` en nommant le champ.                               |
 | **Configuration**          | Les variables d'environnement sont validées au démarrage ; le processus s'arrête avant d'écouter si l'une manque.                |
 
@@ -120,6 +124,52 @@ Endpoint public et exempté de la limitation, destiné au monitoring externe et 
 ### Derrière un proxy
 
 L'application fait confiance à un seul niveau de proxy (`trust proxy: 1`), ce qui permet à la limitation de débit de voir l'IP réelle du client plutôt que celle du proxy. À ajuster si la chaîne de proxys change.
+
+## Conformité RGPD
+
+Les obligations légales sont portées par la feature `legal/` côté front et par le module `users` côté back.
+
+### Documents légaux
+
+Trois pages publiques, accessibles sans compte depuis le footer :
+
+| Document              | Route                  |
+| --------------------- | ---------------------- |
+| Politique de confidentialité | `/confidentialite`     |
+| Conditions générales  | `/conditions-generales` |
+| Mentions légales      | `/mentions-legales`    |
+
+Les routes sont déclarées une seule fois dans `features/legal/constants/legal-routes.constants.ts`. Les informations
+variables (hébergeur, éditeur, durée de conservation…) vivent dans `legal-info.constants.ts` ; celles qui ne sont pas
+encore arbitrées s'affichent via `PendingInfo` plutôt que d'être inventées.
+
+### Consentement à l'inscription
+
+Le formulaire d'inscription exige une case cochée renvoyant vers les CGU et la politique de confidentialité. La preuve
+du consentement est enregistrée dans `user_metadata` (`terms_accepted_at`, `terms_version`) — **jamais** dans
+`app_metadata`, réservé par GoTrue. Versionner le consentement permet de distinguer celui donné à une révision
+antérieure des documents.
+
+### Droits des personnes
+
+| Droit          | Endpoint                    | Limite  |
+| -------------- | --------------------------- | ------- |
+| Portabilité    | `GET /api/users/me/export`  | 3/min   |
+| Effacement     | `DELETE /api/users/me`      | 3/min   |
+
+Les deux routes déduisent l'identifiant du **token vérifié**, jamais de la requête : un appelant ne peut donc agir que
+sur son propre compte. L'export agrège le compte, ses chiens et toutes les séances auxquelles il participe.
+
+La suppression est irréversible et confirmée côté front par la saisie du mot `SUPPRIMER`. Elle traite les séances
+avant de supprimer le compte, tant que l'identifiant résout encore : une séance partagée perd l'identifiant et
+subsiste (elle documente aussi l'activité des autres participants), une séance dont le compte était le dernier
+participant est supprimée. Les chiens partent ensuite par cascade.
+
+### Durée de conservation
+
+Les données vivent aussi longtemps que le compte et disparaissent lorsque l'utilisateur le supprime. Il n'existe ni
+job de purge, ni logique d'expiration, ni `pg_cron` sur le projet : la politique de confidentialité annonce donc ce
+que le code fait réellement, plutôt qu'une durée fixe qu'aucun traitement n'appliquerait.
 
 ## Commandes de développement
 
@@ -167,13 +217,50 @@ pnpm build:back
 nx build cool-k9-back
 ```
 
-### Build complet (frontend + backend + libs)
+### Build complet (libs + frontend + backend)
 
 ```sh
 pnpm build
 # ou
-nx run-many -t build
+pnpm nx run-many -t build -p models cool-k9-front cool-k9-back
 ```
+
+> Les libs se construisent avant les apps : le front et le back consomment `@models`.
+
+## Qualité du code
+
+### Formatage
+
+```sh
+pnpm format        # réécrit les fichiers
+pnpm format:check  # vérifie sans écrire
+```
+
+### Lint et typage
+
+Les trois projets exposent la cible `eslint:lint` (et non `lint`, qui n'existe que sur `models`) :
+
+```sh
+pnpm nx run-many -t eslint:lint            # ESLint sur front, back et models
+pnpm nx run-many -t typecheck              # front et models uniquement
+```
+
+> `cool-k9-back` n'expose pas de cible `typecheck` : son typage est vérifié par `pnpm build:back`.
+
+### Tests
+
+**Aucun test n'est écrit à ce jour** et aucun n'est exécuté en CI. Seul `models` expose une cible `test`
+(Vitest) ; `cool-k9-back` n'a pas de cible de test du tout et il n'existe pas de projet e2e. L'amorçage de
+l'outillage et l'écriture de la suite font l'objet d'un change OpenSpec dédié (`testing-suite`).
+
+### Intégration continue
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) s'exécute sur chaque push vers `main` et chaque pull request.
+Il construit les libs, puis le front et le back en parallèle. **Il ne lance ni lint, ni typecheck, ni tests** — ces
+vérifications restent à la main du développeur en local tant que la suite de tests n'existe pas.
+
+Le build du front tourne avec des variables `VITE_*` factices : Vite les inline au moment du build, les vraies valeurs
+appartiennent donc à la plateforme qui construit ce qui est livré. Le build échoue quand même si une variable manque.
 
 ## Structure du code
 
@@ -189,9 +276,10 @@ cool-k9/
 │   │       │   │   ├── auth/                # Login, Register, AuthProvider, ProtectedRoute
 │   │       │   │   ├── sessions/            # Séances (components, hooks, services, api, models, constants, utils)
 │   │       │   │   ├── dogs/                # Chiens
-│   │       │   │   ├── profile/             # Profil utilisateur
+│   │       │   │   ├── profile/             # Profil, export de données, suppression de compte
+│   │       │   │   ├── legal/               # Pages légales (CGU, confidentialité, mentions)
 │   │       │   │   └── admin/               # Pages admin (Pricing…)
-│   │       │   ├── layout/                  # Layout global, navigation
+│   │       │   ├── layout/                  # Layout global, navigation, ThemeProvider (thème clair/sombre)
 │   │       │   └── constants/               # Constantes globales (api.constants.ts…)
 │   │       ├── components/ui/               # Composants shadcn/ui partagés
 │   │       └── utils/                       # Fonctions pures partagées
@@ -200,7 +288,7 @@ cool-k9/
 │           ├── features/                    # Un module NestJS par feature
 │           │   ├── sessions/
 │           │   ├── dogs/
-│           │   └── users/
+│           │   └── users/                   # Profils, export RGPD, suppression de compte
 │           ├── common/                      # Models partagés entre modules (authenticated-request.model.ts…)
 │           ├── auth/                        # SupabaseAuthGuard, AdminGuard
 │           ├── config/                      # Schéma des variables d'env, parsing des origines CORS
@@ -209,9 +297,9 @@ cool-k9/
 ├── libs/
 │   └── models/                              # Types partagés (@models)
 ├── supabase/
-│   └── schema.sql                           # DDL des tables public.*
+│   └── init.sql                             # Schéma Postgres complet (tables, RLS, rejouable)
 └── .github/workflows/
-    ├── ci.yml
+    ├── ci.yml                               # Build des libs, du front et du back
     ├── supabase-keepalive.yml               # Ping Supabase quotidien (anti-pause 7j)
     └── repo-keepalive.yml                   # Commit mensuel (anti-désactivation GitHub 60j)
 ```
@@ -234,12 +322,16 @@ nx graph
 
 ### Créer un nouveau composant React
 
+Sur Nx 22, le générateur prend un **chemin positionnel** ; le flag `--project` n'existe plus.
+
 ```sh
-nx g @nx/react:component my-component --project=cool-k9-front
+pnpm nx g @nx/react:component apps/cool-k9-front/src/app/features/dogs/components/DogCard
 ```
 
 ### Créer une nouvelle bibliothèque
 
 ```sh
-nx g @nx/react:lib my-lib
+pnpm nx g @nx/react:lib libs/my-lib
 ```
+
+> En cas de doute sur un flag, le vérifier avec `pnpm nx g <générateur> --help` plutôt que de le deviner.

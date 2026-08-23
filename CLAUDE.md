@@ -22,6 +22,8 @@
 - Tailwind CSS v4 avec utility classes pour le styling ([doc](https://tailwindcss.com/))
 - shadcn/ui pour les composants UI ([doc](https://ui.shadcn.com/)) — importer depuis `@/components/ui` et utiliser l'utilitaire `cn()` pour merger les classes
 - React Hook Form + Zod pour tous les formulaires (voir section [Formulaires](#formulaires))
+- TanStack React Query pour toute donnée serveur : les hooks de chaque feature vivent dans son dossier `hooks/`. Ne jamais gérer un `useState` + `useEffect` de fetch à la main
+- sonner pour le feedback utilisateur : `import { toast } from 'sonner'` puis `toast.success(...)` / `toast.error(...)`. Pas d'alerte ni de bannière maison
 - Supabase Auth : ne jamais utiliser le claim `role` dans `app_metadata` (réservé par GoTrue, casse l'auth). Pour des claims custom, préfixer (ex: `app_role`)
 
 ## Langue
@@ -46,7 +48,7 @@ Règle de tri : si un développeur est le seul à le lire, c'est en anglais ; si
 ## Architecture feature-based (frontend)
 
 - `app/features/<feature>/` — tout ce qui appartient à une feature
-- `app/layout/` — composants de navigation et layout global
+- `app/layout/` — layout global, navigation et `ThemeProvider` (thème clair/sombre)
 - `app/constants/` — constantes globales (ex: `api.ts` pour `API_BASE_URL`)
 - `app/utils/` — fonctions pures partagées par toute l'app
 - `components/ui/` — composants shadcn/ui partagés
@@ -138,15 +140,21 @@ export interface CardHandle {
 }
 ```
 
+Le sous-composant **remonte son `isDirty` en argument** du callback, et le parent le stocke dans un `useState`. C'est cet état qui déclenche le re-render — jamais un `forceUpdate`.
+
 **Sous-composant** :
 ```
-export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
+export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: (isDirty: boolean) => void }>(
   function DogsCard({ onDirtyChange }, ref) {
-    const isDirty = ...; // calculé depuis l'état local
-    const canSave = ...; // calculé depuis l'état local
+    const { formState: { isDirty, isValid, dirtyFields } } = useForm(...);
 
-    useImperativeHandle(ref, () => ({ isDirty, canSave, save }), [isDirty, canSave]);
-    useEffect(() => { onDirtyChange?.(); }, [isDirty]);
+    useEffect(() => { onDirtyChange?.(isDirty); }, [isDirty]);
+
+    useImperativeHandle(ref, () => ({
+      isDirty,
+      canSave: isDirty && isValid,
+      save,
+    }), [isDirty, isValid, dirtyFields]);
   }
 );
 ```
@@ -154,17 +162,28 @@ export const DogsCard = forwardRef<CardHandle, { onDirtyChange?: () => void }>(
 **Parent orchestrateur** :
 ```
 const profileRef = useRef<CardHandle>(null);
-const [, forceUpdate] = useState(0);
+const dogsRef = useRef<CardHandle>(null);
+const [profileDirty, setProfileDirty] = useState(false);
+const [dogsDirty, setDogsDirty] = useState(false);
 
-const isDirty = profileRef.current?.isDirty ?? false;
+const isDirty = profileDirty || dogsDirty;
+const canSave =
+  (!profileDirty || (profileRef.current?.canSave ?? true)) &&
+  (!dogsDirty || (dogsRef.current?.canSave ?? true)) &&
+  isDirty;
+
 const handleSave = async () => {
   if (profileRef.current?.isDirty) await profileRef.current.save();
+  if (dogsRef.current?.isDirty) await dogsRef.current.save();
 };
 
-<DogsCard ref={profileRef} onDirtyChange={() => forceUpdate(n => n + 1)} />
+<UserProfileCard ref={profileRef} onDirtyChange={setProfileDirty} />
+<DogsCard ref={dogsRef} onDirtyChange={setDogsDirty} />
 ```
 
-> Le `forceUpdate` est nécessaire : React ne re-rend pas sur mutation d'un ref. Le callback `onDirtyChange` déclenche le re-render pour relire `ref.current.isDirty`.
+> React ne re-rend pas sur mutation d'un ref : c'est le `useState` alimenté par `onDirtyChange` qui provoque le re-render, lequel permet ensuite de relire `ref.current.canSave`. Le ref reste la source pour `canSave` et `save`, l'état local pour `isDirty`.
+
+Implémentation de référence : `features/profile/ProfilePage.tsx` et ses cartes.
 
 ## Logique métier
 
