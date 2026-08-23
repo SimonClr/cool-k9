@@ -1,7 +1,15 @@
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const configDir = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  // Resolved from this file rather than the working directory: a relative glob silently
+  // matches nothing when the build runs from elsewhere, producing a near-empty stylesheet
+  // instead of an error.
+  content: [join(configDir, 'src/**/*.{js,jsx,ts,tsx}')],
   theme: {
     extend: {
       fontFamily: {
