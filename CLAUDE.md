@@ -72,6 +72,8 @@ features/<feature>/
 - `app/features/<feature>/` — un module NestJS par feature métier
 - `app/auth/` — module d'infrastructure pour l'authentification (guards)
 - `app/supabase/` — module d'infrastructure pour l'accès à la base de données
+- `app/config/` — schéma de validation des variables d'environnement, parsing des origines CORS
+- `app/health/` — endpoint `/api/health` (public, exempté de la limitation de débit)
 - `app.module.ts` importe uniquement les feature modules et les modules d'infrastructure
 
 ## Structure d'un module backend
@@ -85,6 +87,30 @@ features/<feature>/
     create-<feature>.dto.ts
     update-<feature>.dto.ts
 ```
+
+## Sécurité backend
+
+Un `ValidationPipe` global est actif avec `whitelist` et `forbidNonWhitelisted` : **tout champ non déclaré dans un DTO provoque un `400`**. Chaque propriété de DTO doit donc porter ses décorateurs `class-validator`, sinon elle sera rejetée même lorsqu'elle est légitime.
+
+```ts
+export class CreateDogDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(80)
+  name: string;
+
+  @IsDateString()
+  birthDate: string;
+}
+```
+
+`@IsOptional()` ignore à la fois `undefined` et `null` : c'est ce qui permet au client d'effacer un champ en envoyant `null` (voir `UpdateSessionDto`).
+
+Autres règles :
+
+- **Variables d'environnement** : toute nouvelle variable requise doit être ajoutée au schéma Zod dans `app/config/env.schema.ts` et aux deux `.env.example`. L'application refuse de démarrer si l'une manque — ne jamais ajouter de valeur de repli.
+- **Limitation de débit** : un seul profil est déclaré globalement. Pour durcir un endpoint coûteux, utiliser `@Throttle({ default: { ... } })` sur la route — la clé doit reprendre le nom du profil global, sinon la limite s'ajoute au lieu de remplacer. **Ne jamais déclarer un second profil dans `forRoot()`** : tout profil global s'applique à toutes les routes.
+- **CORS** : les origines viennent de `CORS_ORIGINS`, jamais du code.
 
 ## Index files
 
