@@ -181,4 +181,100 @@ export class UserService {
       otherParticipantCount: participants.filter(id => id !== userId).length,
     };
   }
+
+  /**
+   * Erases the account and everything it alone owns, for the GDPR right to erasure.
+   *
+   * Order matters and is not interchangeable: sessions are settled first, while the
+   * identifier still resolves, then the account goes and the dogs follow by cascade
+   * (dogs_user_id_fkey is ON DELETE CASCADE). Deleting the account first would leave
+   * the sessions untreatable, since nothing would link them back to anyone.
+   *
+   * sessions.user_ids is a plain uuid[] with no foreign key, so no cascade applies to
+   * it and each session has to be settled by hand:
+   *  - shared with others  -> drop the identifier, the session documents their activity too;
+   *  - last participant    -> delete it, nobody could read it any more.
+   *
+   * Sessions the account created as an administrator are covered by the database:
+   * sessions_created_by_fkey is ON DELETE SET NULL, so the deletion does not trip the
+   * constraint. Verified against the live schema rather than assumed.
+   */
+  async deleteUserAccount(userId: string): Promise<void> {
+    await this.detachFromSessions(userId);
+
+    const { error } = await this.supabaseService.admin.auth.admin.deleteUser(userId);
+    if (error) throw new Error(error.message);
+  }
+
+  private async detachFromSessions(userId: string): Promise<void> {
+    // Every page is walked: leaving one behind would keep the identifier in a
+    // session, which is exactly the residue erasure is meant to remove.
+    for (;;) {
+      const { data, error } = await this.supabaseService.admin
+        .from('sessions')
+        .select('id, user_ids, dog_ids, dog_names')
+        .contains('user_ids', [userId])
+        .range(0, EXPORT_PAGE_SIZE - 1);
+
+      if (error) throw new Error(error.message);
+
+      const rows = (data ?? []) as Record<string, unknown>[];
+      if (!rows.length) return;
+
+      for (const row of rows) {
+        await this.detachFromSession(row, userId);
+      }
+
+      // The rows just handled no longer match the filter, so a short page means
+      // the last one. Re-querying from 0 avoids skipping rows as the set shrinks.
+      if (rows.length < EXPORT_PAGE_SIZE) return;
+    }
+  }
+
+  private async detachFromSession(row: Record<string, unknown>, userId: string): Promise<void> {
+    const id = row['id'] as string;
+    const remaining = ((row['user_ids'] as string[]) ?? []).filter(participant => participant !== userId);
+
+    if (!remaining.length) {
+      const { error } = await this.supabaseService.admin.from('sessions').delete().eq('id', id);
+      if (error) throw new Error(error.message);
+      return;
+    }
+
+    // The session survives for the others, so the departing owner's dogs are dropped
+    // from it as well: their rows disappear by cascade, and keeping their identifiers
+    // would leave the session pointing at nothing and still naming their animals.
+    const dogIds = (row['dog_ids'] as string[]) ?? [];
+    const dogNames = (row['dog_names'] as string[]) ?? [];
+    const ownedDogIds = await this.findDogIdsOwnedBy(userId, dogIds);
+
+    const keptDogIds: string[] = [];
+    const keptDogNames: string[] = [];
+    dogIds.forEach((dogId, index) => {
+      if (ownedDogIds.has(dogId)) return;
+      keptDogIds.push(dogId);
+      // dog_names is positional against dog_ids, so both are filtered together.
+      if (index < dogNames.length) keptDogNames.push(dogNames[index]);
+    });
+
+    const { error } = await this.supabaseService.admin
+      .from('sessions')
+      .update({ user_ids: remaining, dog_ids: keptDogIds, dog_names: keptDogNames })
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+  }
+
+  private async findDogIdsOwnedBy(userId: string, dogIds: string[]): Promise<Set<string>> {
+    if (!dogIds.length) return new Set();
+
+    const { data, error } = await this.supabaseService.admin
+      .from('dogs')
+      .select('id')
+      .eq('user_id', userId)
+      .in('id', dogIds);
+
+    if (error) throw new Error(error.message);
+
+    return new Set((data ?? []).map(dogRow => dogRow['id'] as string));
+  }
 }

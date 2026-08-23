@@ -25,3 +25,11 @@ export async function apiExportMyData(): Promise<UserDataExport> {
   if (!response.ok) throw new Error('Failed to export user data');
   return response.json();
 }
+
+export async function apiDeleteMyAccount(): Promise<void> {
+  const response = await fetch(`${API_URL}/me`, {
+    method: 'DELETE',
+    headers: await getAuthHeaders(),
+  });
+  if (!response.ok) throw new Error('Failed to delete account');
+}

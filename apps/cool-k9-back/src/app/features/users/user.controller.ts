@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Query, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { UserService } from './user.service';
 import { SupabaseAuthGuard } from '../../auth/supabase-auth.guard';
@@ -40,5 +40,16 @@ export class UserController {
     // The identifier comes from the verified token, never from the request, so a
     // caller cannot ask for somebody else's export.
     return this.userService.exportUserData(req.user.userId);
+  }
+
+  // Irreversible, so it is rate-limited too: a burst of calls here can only be a
+  // mistake or an attack, never legitimate use.
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Throttle({ default: { ttl: 60_000, limit: 3 } })
+  async deleteMyAccount(@Req() req: AuthenticatedRequest): Promise<void> {
+    // Same rule as the export: the identifier comes from the verified token, so a
+    // caller can only ever delete their own account.
+    await this.userService.deleteUserAccount(req.user.userId);
   }
 }
