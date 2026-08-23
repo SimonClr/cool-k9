@@ -70,6 +70,33 @@ export default defineConfig(({ mode, command }) => {
       coverage: {
         provider: 'v8',
         reportsDirectory: '../../coverage/apps/cool-k9-front',
+        /**
+         * The threshold covers the layers that carry logic — hooks, services and
+         * validation schemas — and nothing else. Pages, layouts and the shadcn/ui
+         * components are presentation: the last come from a tested third-party
+         * library, and including any of them would inflate the figure with code
+         * that has nothing to assert.
+         */
+        include: [
+          'src/app/features/**/hooks/**/*.{ts,tsx}',
+          'src/app/features/**/services/**/*.ts',
+          'src/app/features/**/models/*.schema.ts',
+        ],
+        exclude: [
+          '**/index.ts',
+          // A bare createClient() call: configuration, with no behaviour to assert.
+          '**/services/supabase.service.ts',
+        ],
+        /**
+         * Set just under the level actually reached, so a genuine regression trips
+         * the build while an unrelated refactor does not.
+         */
+        thresholds: {
+          statements: 95,
+          branches: 88,
+          functions: 95,
+          lines: 95,
+        },
       },
     },
     build: {

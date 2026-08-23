@@ -46,3 +46,43 @@ jobs:
       - uses: ./.github/actions/setup
       - run: pnpm install --frozen-lockfile
       - run: pnpm nx build cool-k9-back
+
+  # The unit tests run alongside the builds rather than after them: neither suite
+  # consumes a build artifact, so chaining them would only lengthen the pipeline.
+  test-back:
+    needs: build-libs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: pnpm install --frozen-lockfile
+      # --coverage is what enforces the thresholds declared in jest.config.ts;
+      # without it the suite passes even when coverage has collapsed.
+      - run: pnpm nx test cool-k9-back --coverage
+      - name: Upload backend coverage
+        # Kept even when the job fails: a threshold breach is precisely when the
+        # report needs reading.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-back
+          path: coverage/apps/cool-k9-back
+          retention-days: 7
+          if-no-files-found: ignore
+
+  test-front:
+    needs: build-libs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm nx test cool-k9-front --coverage
+      - name: Upload frontend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-front
+          path: coverage/apps/cool-k9-front
+          retention-days: 7
+          if-no-files-found: ignore
