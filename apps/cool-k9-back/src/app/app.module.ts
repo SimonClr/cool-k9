@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { validateEnv } from './config/env.schema';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AuthModule } from './auth/auth.module';
 import { SessionModule } from './features/sessions/session.module';
@@ -20,6 +21,7 @@ const ENV_FILE_PATH = join(__dirname, '..', '..', '..', 'apps', 'cool-k9-back', 
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ENV_FILE_PATH,
+      validate: validateEnv,
       // In production the platform injects variables into the environment directly,
       // and no .env file is shipped alongside the bundle.
       ignoreEnvFile: process.env.NODE_ENV === 'production',
