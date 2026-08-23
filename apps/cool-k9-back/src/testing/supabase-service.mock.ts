@@ -31,8 +31,22 @@ export interface MockSupabase {
   setResult(result: SupabaseResult): void;
   /** Queues results consumed one per terminal call, for services that query twice. */
   queueResults(results: SupabaseResult[]): void;
+  /**
+   * Queues results per table, for services that query several tables concurrently.
+   * `Promise.all` makes the interleaving of a single global queue unpredictable,
+   * so each table draws from its own.
+   */
+  queueResultsFor(table: string, results: SupabaseResult[]): void;
   /** Users returned by `auth.admin.listUsers`. */
   setUsers(users: unknown[]): void;
+  /** Error returned alongside `auth.admin.listUsers`, for the failure paths. */
+  setListUsersError(error: { message: string } | null): void;
+  /** Result `auth.getUser` resolves to, used by `SupabaseAuthGuard`. */
+  setAuthUser(result: { data: { user: unknown }; error: { message: string } | null }): void;
+  /** Result `auth.admin.getUserById` resolves to. */
+  setUserById(result: { data: { user: unknown } | null; error: { message: string } | null }): void;
+  /** Tokens passed to `auth.getUser`, in order. */
+  tokens: string[];
   /** True when `method` was called with arguments deep-equal to `args`. */
   wasCalledWith(method: string, ...args: unknown[]): boolean;
   /** True when `method` was called at all. */
@@ -56,16 +70,32 @@ export function createMockSupabase(initial?: SupabaseResult): MockSupabase {
   const tables: string[] = [];
   let result: SupabaseResult = initial ?? { data: null, error: null, count: 0 };
   let queue: SupabaseResult[] = [];
+  const tableQueues = new Map<string, SupabaseResult[]>();
   let users: unknown[] = [];
+  let listUsersError: { message: string } | null = null;
+  let authUser: { data: { user: unknown }; error: { message: string } | null } = {
+    data: { user: null },
+    error: null,
+  };
+  let userById: { data: { user: unknown } | null; error: { message: string } | null } = {
+    data: null,
+    error: null,
+  };
+  const tokens: string[] = [];
 
-  const nextResult = (): SupabaseResult => (queue.length > 0 ? (queue.shift() as SupabaseResult) : result);
+  const nextResult = (table?: string): SupabaseResult => {
+    const perTable = table ? tableQueues.get(table) : undefined;
+    if (perTable && perTable.length > 0) return perTable.shift() as SupabaseResult;
+    if (queue.length > 0) return queue.shift() as SupabaseResult;
+    return result;
+  };
 
-  const createBuilder = (): unknown => {
+  const createBuilder = (table?: string): unknown => {
     const target = {
       // Makes the builder awaitable: `await query` and `await query.range(...)`
       // both settle through here.
       then: (resolve: (value: SupabaseResult) => unknown, reject?: (reason: unknown) => unknown) =>
-        Promise.resolve(nextResult()).then(resolve, reject),
+        Promise.resolve(nextResult(table)).then(resolve, reject),
     };
 
     return new Proxy(target, {
@@ -77,9 +107,9 @@ export function createMockSupabase(initial?: SupabaseResult): MockSupabase {
 
           // Terminal calls resolve; every other step keeps the chain going.
           if (prop === 'single' || prop === 'maybeSingle') {
-            return Promise.resolve(nextResult());
+            return Promise.resolve(nextResult(table));
           }
-          return createBuilder();
+          return createBuilder(table);
         };
       },
     });
@@ -90,11 +120,29 @@ export function createMockSupabase(initial?: SupabaseResult): MockSupabase {
       from: (table: string) => {
         tables.push(table);
         calls.push({ method: 'from', args: [table] });
-        return createBuilder();
+        return createBuilder(table);
       },
       auth: {
+        getUser: async (token: string) => {
+          tokens.push(token);
+          calls.push({ method: 'getUser', args: [token] });
+          return authUser;
+        },
         admin: {
-          listUsers: async () => ({ data: { users }, error: null }),
+          listUsers: async (params?: unknown) => {
+            calls.push({ method: 'listUsers', args: params === undefined ? [] : [params] });
+            return listUsersError
+              ? { data: { users: [] }, error: listUsersError }
+              : { data: { users }, error: null };
+          },
+          getUserById: async (id: string) => {
+            calls.push({ method: 'getUserById', args: [id] });
+            return userById;
+          },
+          deleteUser: async (id: string) => {
+            calls.push({ method: 'deleteUser', args: [id] });
+            return { data: null, error: nextResult().error };
+          },
         },
       },
     },
@@ -110,9 +158,22 @@ export function createMockSupabase(initial?: SupabaseResult): MockSupabase {
     queueResults(next) {
       queue = [...next];
     },
+    queueResultsFor(table, next) {
+      tableQueues.set(table, [...next]);
+    },
     setUsers(next) {
       users = next;
     },
+    setListUsersError(next) {
+      listUsersError = next;
+    },
+    setAuthUser(next) {
+      authUser = next;
+    },
+    setUserById(next) {
+      userById = next;
+    },
+    tokens,
     wasCalledWith(method, ...args) {
       return calls.some(
         call => call.method === method && JSON.stringify(call.args) === JSON.stringify(args)
