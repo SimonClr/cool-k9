@@ -24,6 +24,25 @@
 - React Hook Form + Zod pour tous les formulaires (voir section [Formulaires](#formulaires))
 - Supabase Auth : ne jamais utiliser le claim `role` dans `app_metadata` (réservé par GoTrue, casse l'auth). Pour des claims custom, préfixer (ex: `app_role`)
 
+## Langue
+
+Tout ce qui vit **dans le code** est en **anglais** : noms de variables, fonctions, types et fichiers, commentaires, messages de commit, et messages d'erreur techniques (`throw new Error(...)`, exceptions NestJS, erreurs de configuration ou de build).
+
+```ts
+// Hide trainer observations until the owner has submitted their own
+throw new UnauthorizedException('Missing authorization token');
+throw new Error('VITE_API_BASE_URL is not defined. Set it in the app .env file.');
+```
+
+Seuls les **textes affichés à l'utilisateur** restent en **français**, l'application s'adressant à un public francophone : libellés d'interface, messages de validation des schémas Zod, contenus des pages.
+
+```ts
+email: z.string().min(1, "L'email est obligatoire"),
+<span className="sr-only">Chargement...</span>
+```
+
+Règle de tri : si un développeur est le seul à le lire, c'est en anglais ; si un utilisateur peut le voir, c'est en français.
+
 ## Architecture feature-based (frontend)
 
 - `app/features/<feature>/` — tout ce qui appartient à une feature
