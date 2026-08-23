@@ -242,9 +242,11 @@ La convention s'applique **partout de façon homogène** : à la racine globale 
 | constante         | `dog.constants.ts`    |
 | utils             | `dog.utils.ts`        |
 | store             | `dog.store.ts`        |
-| test              | `dog.service.test.ts` |
+| test              | `dog.service.spec.ts` |
 
 Règle de tri : fichier de constantes pures → `.constants.ts`, fonctions pures → `.utils.ts`, types/interfaces → `.model.ts`. Plusieurs catégories dans un même fichier → séparer en plusieurs fichiers.
+
+Les fichiers de test portent le suffixe `.spec` **des deux côtés** — `.spec.ts` au backend sous Jest, `.spec.ts`/`.spec.tsx` au frontend sous Vitest. Le suffixe `.test` n'est pas utilisé, bien que les deux exécuteurs l'acceptent : un seul suffixe garde les motifs de recherche et les exclusions de couverture univoques.
 
 ## Models
 

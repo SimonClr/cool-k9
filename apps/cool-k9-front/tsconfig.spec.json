@@ -12,9 +12,7 @@
   },
   "include": [
     "src/**/*.spec.ts",
-    "src/**/*.test.ts",
     "src/**/*.spec.tsx",
-    "src/**/*.test.tsx",
     "src/**/*.d.ts",
     "src/test-setup.ts"
   ]

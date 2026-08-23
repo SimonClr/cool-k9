@@ -62,7 +62,7 @@ export default defineConfig(({ mode, command }) => {
       environment: 'jsdom',
       globals: true,
       setupFiles: ['src/test-setup.ts'],
-      include: ['src/**/*.{test,spec}.{ts,tsx}'],
+      include: ['src/**/*.spec.{ts,tsx}'],
       watch: false,
       // A run that matches no test file is a tooling failure, not a success.
       passWithNoTests: false,
