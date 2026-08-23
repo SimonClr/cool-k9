@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LegalLinks } from '@/app/features/legal';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from './AuthProvider';
@@ -111,6 +112,8 @@ export function Login() {
               S'inscrire
             </Link>
           </p>
+
+          <LegalLinks />
         </CardContent>
       </Card>
     </div>

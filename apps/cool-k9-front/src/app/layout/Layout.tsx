@@ -7,6 +7,7 @@ import { Loader2, LogOut, Menu, Moon, Sun, UserCircle, X } from 'lucide-react';
 import { cn } from '@/utils/cn.utils';
 import { useAuth } from '@/app/features/auth';
 import { useTheme } from './ThemeProvider';
+import { Footer } from './Footer';
 
 import { useDogs } from '@/app/features/dogs';
 
@@ -236,22 +237,34 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto overscroll-none px-4 sm:px-4 py-4">
-        <Suspense
-          fallback={
-            <div
-              className="flex items-center justify-center h-full"
-              aria-live="polite"
-              aria-busy="true"
+      {/* The scrolling area is a min-h-full column and <main> takes the spare
+          space, so the footer sits at the bottom of the viewport when the page
+          is short, and is pushed below the content when it scrolls. */}
+      <div className="flex-1 overflow-y-auto overscroll-none">
+        <div className="flex min-h-full flex-col">
+          <main className="flex-1 px-4 sm:px-4 py-4">
+            <Suspense
+              fallback={
+                <div
+                  className="flex items-center justify-center h-full"
+                  aria-live="polite"
+                  aria-busy="true"
+                >
+                  <Loader2
+                    className="h-8 w-8 animate-spin text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <span className="sr-only">Chargement...</span>
+                </div>
+              }
             >
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" aria-hidden="true" />
-              <span className="sr-only">Chargement...</span>
-            </div>
-          }
-        >
-          <Outlet />
-        </Suspense>
-      </main>
+              <Outlet />
+            </Suspense>
+          </main>
+
+          <Footer />
+        </div>
+      </div>
     </div>
   );
 }

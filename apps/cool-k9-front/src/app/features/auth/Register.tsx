@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { LegalLinks } from '@/app/features/legal';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from './AuthProvider';
@@ -214,6 +215,8 @@ export function Register() {
               Se connecter
             </Link>
           </p>
+
+          <LegalLinks />
         </CardContent>
       </Card>
     </div>
