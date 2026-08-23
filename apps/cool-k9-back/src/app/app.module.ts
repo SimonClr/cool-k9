@@ -6,6 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { validateEnv } from './config/env.schema';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AuthModule } from './auth/auth.module';
+import { HealthModule } from './health/health.module';
 import { SessionModule } from './features/sessions/session.module';
 import { DogModule } from './features/dogs/dog.module';
 import { UserModule } from './features/users/user.module';
@@ -35,6 +36,7 @@ const ENV_FILE_PATH = join(__dirname, '..', '..', '..', 'apps', 'cool-k9-back', 
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }]),
     SupabaseModule,
     AuthModule,
+    HealthModule,
     SessionModule,
     DogModule,
     UserModule,
