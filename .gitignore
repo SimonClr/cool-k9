@@ -42,6 +42,10 @@ testem.log
 # Procédures admin privées
 docs/admin-procedures.md
 
+# Planification & spécifications (OpenSpec)
+openspec/
+.openspec/
+
 # System Files
 .DS_Store
 Thumbs.db
