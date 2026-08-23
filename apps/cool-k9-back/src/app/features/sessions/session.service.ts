@@ -102,7 +102,7 @@ export class SessionService {
     };
   }
 
-  async createSession(dto: CreateSessionDto): Promise<Session> {
+  async createSession(createdBy: string, dto: CreateSessionDto): Promise<Session> {
     // Fetch dog names for denormalization
     let dogNames: string[] = [];
     if (dto.dogIds && dto.dogIds.length > 0) {
@@ -150,6 +150,7 @@ export class SessionService {
         owner_observations: dto.ownerObservations ?? null,
         trainer_observations: dto.trainerObservations ?? null,
         observation_status: observationStatus,
+        created_by: createdBy,
       })
       .select('*')
       .single();

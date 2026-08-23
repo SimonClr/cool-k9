@@ -35,9 +35,10 @@ export class SessionController {
   @Post()
   @UseGuards(AdminGuard)
   createSession(
-    @Body() dto: CreateSessionDto
+    @Request() req: AuthenticatedRequest,
+    @Body() dto: CreateSessionDto,
   ) {
-    return this.sessionService.createSession(dto);
+    return this.sessionService.createSession(req.user.userId, dto);
   }
 
   @Patch(':id')
