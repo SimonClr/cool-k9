@@ -22,10 +22,16 @@ jobs:
   build-front:
     needs: build-libs
     runs-on: ubuntu-latest
+    # Placeholders, not real values: this build only checks that the app compiles,
+    # and its artifact is discarded. Vite inlines VITE_* at build time, so the real
+    # values belong to whoever builds what ships — the hosting platform. Keeping the
+    # production values here too would mean maintaining them in a second place
+    # without ever verifying the deployed configuration.
+    # The build still fails if a variable is missing (see vite.config.mts).
     env:
-      VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-      VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+      VITE_SUPABASE_URL: https://ci.invalid
+      VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+      VITE_API_BASE_URL: https://ci.invalid/api
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
