@@ -57,6 +57,21 @@ export default defineConfig(({ mode, command }) => {
     // worker: {
     //   plugins: () => [ nxViteTsPaths() ],
     // },
+    test: {
+      name: 'cool-k9-front',
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: ['src/test-setup.ts'],
+      include: ['src/**/*.{test,spec}.{ts,tsx}'],
+      watch: false,
+      // A run that matches no test file is a tooling failure, not a success.
+      passWithNoTests: false,
+      reporters: ['default'],
+      coverage: {
+        provider: 'v8',
+        reportsDirectory: '../../coverage/apps/cool-k9-front',
+      },
+    },
     build: {
       outDir: '../../dist/cool-k9-front',
       emptyOutDir: true,

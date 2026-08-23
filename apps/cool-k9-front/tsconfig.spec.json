@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@models": ["../../libs/models/src/index.ts"],
+      "@authentication": ["../../libs/authentication/src/index.ts"]
+    },
+    "types": ["node", "vitest/globals", "vite/client", "@testing-library/jest-dom"]
+  },
+  "include": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.tsx",
+    "src/**/*.test.tsx",
+    "src/**/*.d.ts",
+    "src/test-setup.ts"
+  ]
+}

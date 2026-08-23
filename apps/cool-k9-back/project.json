@@ -40,11 +40,6 @@
           "buildTarget": "cool-k9-back:build:production"
         }
       }
-    },
-    "test": {
-      "options": {
-        "passWithNoTests": true
-      }
     }
   }
 }
