@@ -10,5 +10,6 @@ runs:
 
     - uses: actions/setup-node@v6
       with:
-        node-version: 20
+        # Aligned with the hosting platform runtime and the local dev environment.
+        node-version: 22
         cache: pnpm
