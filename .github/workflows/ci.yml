@@ -13,6 +13,10 @@ permissions:
 jobs:
   build-libs:
     runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
@@ -22,6 +26,10 @@ jobs:
   build-front:
     needs: build-libs
     runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
