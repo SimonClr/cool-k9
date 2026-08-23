@@ -78,9 +78,9 @@ export function TermsOfService() {
 
       <LegalSection title="Résiliation">
         <p>
-          Vous pouvez cesser d'utiliser l'application à tout moment et demander la suppression de
-          votre compte, laquelle entraîne l'effacement de vos données dans les conditions décrites
-          par la{' '}
+          Vous pouvez cesser d'utiliser l'application à tout moment et supprimer votre compte
+          vous-même depuis votre profil, sans avoir à en faire la demande. La suppression entraîne
+          l'effacement immédiat de vos données dans les conditions décrites par la{' '}
           <Link to={LEGAL_ROUTES.privacy} className="text-primary underline underline-offset-4">
             politique de confidentialité
           </Link>

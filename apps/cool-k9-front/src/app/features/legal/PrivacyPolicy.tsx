@@ -71,8 +71,14 @@ export function PrivacyPolicy() {
 
       <LegalSection title="Durée de conservation">
         <p>
-          Les données sont conservées <PendingInfo value={LEGAL_INFO.dataRetention} />. Elles sont
-          supprimées lorsque vous supprimez votre compte.
+          Les données sont conservées <PendingInfo value={LEGAL_INFO.dataRetention} /> : aucune
+          suppression automatique n'intervient au bout d'un délai déterminé.
+        </p>
+        <p>
+          Vous gardez la main sur cette durée : la suppression de votre compte, depuis votre
+          profil, efface immédiatement et définitivement votre compte, vos chiens et vos séances
+          personnelles. Les séances partagées avec d'autres participants restent accessibles à ces
+          derniers, sans que vous y figuriez.
         </p>
       </LegalSection>
 
@@ -104,9 +110,10 @@ export function PrivacyPolicy() {
           les données qui vous concernent.
         </p>
         <p>
-          Vous pouvez exercer ces droits en écrivant à{' '}
-          <PendingInfo value={LEGAL_INFO.editorEmail} />. Vous pouvez également modifier vos
-          informations directement depuis votre profil.
+          Vous exercez la plupart de ces droits directement depuis votre profil, sans démarche ni
+          délai : modifier vos informations, télécharger une copie de vos données au format JSON, ou
+          supprimer votre compte. Pour les autres demandes, écrivez à{' '}
+          <PendingInfo value={LEGAL_INFO.editorEmail} />.
         </p>
         <p>
           Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une

@@ -25,8 +25,15 @@ export const LEGAL_INFO = {
   dataHost: 'Supabase Inc.',
   dataHostRegion: 'Irlande (eu-west-1), Union européenne',
 
-  /** Retention period is the owner's decision; task 6.1 checks it against behaviour. */
-  dataRetention: PENDING_VALUE,
+  /**
+   * Reads into "Les données sont conservées {dataRetention}."
+   *
+   * States the behaviour the code actually implements: nothing expires on its own.
+   * There is no purge job, no expiry logic and no pg_cron on the project, so data
+   * lives as long as the account and goes when the user deletes it. Announcing a
+   * fixed period instead would promise an erasure nothing performs.
+   */
+  dataRetention: "pendant toute la durée de vie de votre compte",
 
   /** Recorded with each consent so a later revision can be told apart. Read by the register form. */
   documentsVersion: '1.0',
