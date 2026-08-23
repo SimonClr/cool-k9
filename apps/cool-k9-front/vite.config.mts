@@ -12,7 +12,15 @@ import path from 'path';
  */
 const REQUIRED_ENV_VARS = ['VITE_API_BASE_URL', 'VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
 
-export default defineConfig(({ mode }) => {
+/**
+ * Nx loads this file for every command in order to infer targets from it, long
+ * before any build runs. Throwing during that phase would break unrelated tasks
+ * (`nx build models`), so the check only applies to an actual build of this app.
+ */
+function assertRequiredEnv(mode: string) {
+  const isRunningTask = Boolean(process.env.NX_TASK_TARGET_PROJECT);
+  if (!isRunningTask) return;
+
   const env = loadEnv(mode, import.meta.dirname, 'VITE_');
   const missing = REQUIRED_ENV_VARS.filter(key => !env[key]);
 
@@ -23,6 +31,10 @@ export default defineConfig(({ mode }) => {
         `deployment platform environment variables.`
     );
   }
+}
+
+export default defineConfig(({ mode, command }) => {
+  if (command === 'build') assertRequiredEnv(mode);
 
   return {
     root: import.meta.dirname,
