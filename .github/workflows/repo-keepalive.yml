@@ -11,21 +11,43 @@ on:
   # Permet aussi un déclenchement manuel depuis l'onglet Actions.
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   keepalive:
     runs-on: ubuntu-latest
     steps:
+      # `main` is a protected branch requiring five status checks, which only a pull
+      # request can produce. The default GITHUB_TOKEN is therefore rejected on push.
+      # This App is an admin identity, and branch protection here does not enforce
+      # rules on admins, so its short-lived token is allowed through.
+      - name: Generate App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.KEEPALIVE_APP_ID }}
+          private-key: ${{ secrets.KEEPALIVE_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Bump keepalive timestamp
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
         run: |
           set -e
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 329927594 is the cool-k9-keepalive[bot] user id, which is what GitHub
+          # matches to attribute the commit to the App rather than to a plain author.
+          git config user.name  "$APP_SLUG[bot]"
+          git config user.email "329927594+$APP_SLUG[bot]@users.noreply.github.com"
           date -u +%Y-%m-%dT%H:%M:%SZ > .github/keepalive-timestamp
+
+          # Nothing to commit means the timestamp did not change; not a failure.
+          if git diff --quiet -- .github/keepalive-timestamp; then
+            echo "Timestamp unchanged, nothing to push."
+            exit 0
+          fi
+
           git add .github/keepalive-timestamp
           git commit -m "chore: repo keepalive bump [skip ci]"
+          git pull --rebase
           git push
