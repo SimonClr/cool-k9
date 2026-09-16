@@ -15,10 +15,11 @@ jobs:
   keepalive:
     runs-on: ubuntu-latest
     steps:
-      # `main` is a protected branch requiring five status checks, which only a pull
-      # request can produce. The default GITHUB_TOKEN is therefore rejected on push.
-      # This App is an admin identity, and branch protection here does not enforce
-      # rules on admins, so its short-lived token is allowed through.
+      # `main` is governed by a ruleset requiring five status checks, which only a
+      # pull request can produce, so the default GITHUB_TOKEN is rejected on push.
+      # This App is listed as a bypass actor on that ruleset — the only mechanism
+      # that lets a non-human identity push here. An admin's `enforce_admins: false`
+      # does NOT cover Apps, which is why the plain branch protection was replaced.
       - name: Generate App token
         id: app-token
         uses: actions/create-github-app-token@v3
